@@ -1,0 +1,4 @@
+const LAPTOP_WIDTH = 1024;
+const TABLET_WIDTH = 780;
+
+export { LAPTOP_WIDTH, TABLET_WIDTH };

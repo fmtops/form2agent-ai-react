@@ -1,0 +1,26 @@
+trigger:
+  - master
+
+pool:
+  vmImage: "ubuntu-latest"
+
+steps:
+  - script: npm install
+    displayName: "Install npm packages"
+
+  - script: npm run build
+    displayName: "Build react app"
+
+  - task: ArchiveFiles@2
+    displayName: "Zip build results"
+    inputs:
+      rootFolderOrFile: "$(Build.SourcesDirectory)/build"
+      includeRootFolder: false
+      archiveType: "zip"
+      archiveFile: "$(Build.ArtifactsStagingDirectory)/f2agent-fe-build.zip"
+      replaceExistingArchive: true
+      verbose: true
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: "$(Build.ArtifactsStagingDirectory)"
+      ArtifactName: f2agent-fe-build
