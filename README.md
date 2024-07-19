@@ -44,7 +44,7 @@ Now that you have your API key, you can proceed with setting up and running the 
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/fmtops/form2agent-web.git
+   git clone https://github.com/fmtops/form2agent-ai-react.git
    ```
 2. **Navigate to the project directory:**
    ```bash
@@ -63,7 +63,7 @@ Now that you have your API key, you can proceed with setting up and running the 
 
 ## **Environment Variables:**
 
-- **REACT_APP_AI_API_URL:** Backend API URL.
+- **REACT_APP_AI_API_URL:** Backend API URL. Use `https://form2agent-demo.freeportmetrics.com`
 
 ## **Running the Frontend:**
 
