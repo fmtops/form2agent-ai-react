@@ -2,7 +2,9 @@
 
 Form2Agent is a React-based chat application that uses OpenAI's language models to help you fill out forms quickly and efficiently. With Form2Agent, you can simply chat with the AI assistant, and it will intelligently fill in your form fields based on your conversation.
 
-**Demo Video:** [Link to demo video]
+**Demo Video:** https://youtu.be/yToOQGCHikk?si=BfhlPnwvUEnEI9kE
+
+**Demo App:** https://form2agent-demo.freeportmetrics.com
 
 **Features:**
 
