@@ -6,8 +6,7 @@ import { OPENAI_APIKEY_KEY } from "../consts/api-key.consts";
  * The `OPENAI_APIKEY_KEY` is a key under which we store the api key in local storage
  */
 const getStoredApiKey = () => {
-  const apiKey = localStorage.getItem(OPENAI_APIKEY_KEY);
-  return apiKey || "mock-api-key";
+  return localStorage.getItem(OPENAI_APIKEY_KEY) as string | null;
 };
 
 /**
