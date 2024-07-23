@@ -4,7 +4,7 @@ Form2Agent is a React-based chat application that uses OpenAI's language models 
 
 **Demo Video:** https://youtu.be/yToOQGCHikk?si=BfhlPnwvUEnEI9kE
 
-**Demo App:** https://form2agent-demo.freeportmetrics.com
+**Demo App:** [https://form2agent-demo.freeportmetrics.com](https://form2agent-demo.freeportmetrics.com/?utm_source=Github&utm_medium=Github&utm_campaign=Github_demoapp&utm_id=Github_demoapp)
 
 **Features:**
 
