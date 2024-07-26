@@ -17,6 +17,7 @@ import StyledChatDrawer from "../common/mui-styled/styled-chat-drawer";
 import ApiKeyConfirmDialog from "../common/api-key-confirm-dialog";
 import { getStoredApiKey } from "../../utils/api-key.utils";
 import { SHOULD_SHOW_API_KEY_DIALOG } from "../../consts/api-key.consts";
+import { handleAPIError } from "../../helpers/api-exception-handler";
 
 /**
  * ChatWindow component
@@ -79,15 +80,22 @@ const ChatWindow: React.FC<ChatPropType> = ({
 
     setDisableChat(true);
 
-    const response = await sendMessage({
-      chatId,
-      model: {
-        content: message,
-        appData: formValues,
-        appDescription: formContext,
-        fileContent: fileContent,
-      },
-    });
+    let aiMessage: string | undefined;
+    try {
+      const response = await sendMessage({
+        chatId,
+        model: {
+          content: message,
+          appData: formValues,
+          appDescription: formContext,
+          fileContent: fileContent,
+        },
+      });
+      aiMessage = response?.model.content;
+    } catch (e) {
+      aiMessage = handleAPIError(e);
+    }
+
     setFileContent("");
     setFileName("");
     setIsWaitingForResponse(false);
@@ -97,9 +105,9 @@ const ChatWindow: React.FC<ChatPropType> = ({
       {
         sender: ChatMessageSender.AI,
         message:
-          response !== undefined
-            ? response.model.content
-            : "An Error has occured. Try again later.",
+          aiMessage !== undefined
+            ? aiMessage
+            : "An unknown error has occured. Please try again later.",
       },
     ]);
 
@@ -114,23 +122,33 @@ const ChatWindow: React.FC<ChatPropType> = ({
     setIsExpanded(true);
 
     if (chatId || isChatBeingCreated) return;
+    setIsChatBeingCreated(true);
 
     setIsWaitingForResponse(true);
     setDisableChat(true);
-    const response = await createNewChat(
-      formDescription,
-      formValues,
-      formContext || ""
-    );
 
-    setChatId(response.id);
-    setIsWaitingForResponse(false);
-    setChatHistory((chat) => [
-      ...chat,
-      { sender: ChatMessageSender.AI, message: response.model.content },
-    ]);
-    setDisableChat(false);
+    let aiMessage: string;
+    try {
+      const response = await createNewChat(
+        formDescription,
+        formValues,
+        formContext || ""
+      );
+      setChatId(response.id);
+      aiMessage = response.model.content;
+    } catch (e) {
+      aiMessage = handleAPIError(e);
+    } finally {
+      setIsWaitingForResponse(false);
+      setChatHistory((chat) => [
+        ...chat,
+        { sender: ChatMessageSender.AI, message: aiMessage },
+      ]);
+      setDisableChat(false);
+      setIsChatBeingCreated(false);
+    }
   };
+
   const handleHoldInteraction = async (withVoice: boolean) => {
     if (withVoice) setVoiceResponse(true);
     if (chatId) {
@@ -162,7 +180,7 @@ const ChatWindow: React.FC<ChatPropType> = ({
     setCurrentReadMessage("");
   };
 
-  const { isTTSPlaying, getAndPlayTTS, stopTTS } =
+  const { isTTSPlaying, getAndPlayTTS, stopTTS, isLoadingAudio } =
     useSpeechSynthesis(handleReadFinish);
 
   const handleMessageRead = (message: string) => {
@@ -234,6 +252,7 @@ const ChatWindow: React.FC<ChatPropType> = ({
           isTTSPlaying={isTTSPlaying}
           currentReadMessage={currentReadMessage}
           isWaitingForResponse={isWaitingForResponse}
+          isLoadingAudio={isLoadingAudio}
         />
         <ChatBottomMenu
           disabled={disableChat || !chatId}

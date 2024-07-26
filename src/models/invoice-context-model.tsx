@@ -28,33 +28,24 @@ export type DescriptionContextType = {
 };
 
 export const DescriptionContext: DescriptionContextType = {
-  action: `Invisible field to perform some action/click/asks to do smth set this field to the action name - allowed actions are ${Object.keys(InvoiceAction).join(", ")} or null`,
+  action: `Allowed actions are ${Object.keys(InvoiceAction).join(", ")} or null`,
   invoiceNumber: "",
-  invoiceDate: `Date field with a default value ${new Date()
-    .toISOString()
-    .substr(
-      0,
-      10
-    )}. Ask user to confirm the date, unless it is provided via file upload.`,
+  invoiceDate: `format(ISO date) confirmOrUpdate()`,
   from: {
     companyName: "",
     address: "",
     city: "",
-    state: "if it is US state, use only two letters that represent that state",
-    postalCode:
-      "if possible define the postal code based on the provided values for cite and state",
-    country:
-      "provide full name of country, e.g. United States of America based on the provided values for cite and state if possible",
+    state: "abbreviate(2)",
+    postalCode: "deduceFrom(city, state)",
+    country: "deduceFrom(city, state)",
   },
   to: {
     companyName: "",
     address: "",
     city: "",
-    state: "if it is US state, use only two letters that represent that state",
-    postalCode:
-      "if possible define the postal code based on the provided values for cite and state",
-    country:
-      "provide full name of country, e.g. United States of America based on the provided values for cite and state if possible",
+    state: "abbreviate(2)",
+    postalCode: "deduceFrom(city, state)",
+    country: "deduceFrom(city, state)",
   },
   items: [
     {

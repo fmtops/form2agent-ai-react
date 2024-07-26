@@ -181,7 +181,7 @@ export const PatientRegistrationPage = () => {
         <ChatWindow
           createNewChat={aiChatService.createNewChat}
           sendMessage={sendMessage}
-          formDescription="Provide detailed health information to assist in your diagnosis and treatment planning. Fill action field with correct action enum if user says to do something. Do not populate action field on your own."
+          formDescription="Provide detailed health information to assist the doctor in patient's diagnosis and treatment planning."
           formValues={stringifyValues(patientRegistrationForm)}
           formContext={stringifyValues(PatientRegistrationContext)}
           setIsChatOpen={setIsChatOpen}
