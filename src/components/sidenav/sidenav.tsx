@@ -65,7 +65,7 @@ const SideNav = ({
       </div>
       <div className="p-5 flex flex-col gap-2">
         <div className="flex items-center  justify-between ">
-          Open API Key
+          OpenAI API Key
           <VpnKeyIcon
             onClick={() => setIsApiKeyDialogVisible(true)}
             className="text-3xl cursor-pointer text-text-secondary-light mr-8"

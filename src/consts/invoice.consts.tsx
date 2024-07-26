@@ -3,7 +3,7 @@ import { InvoiceFormType } from "../models/invoice-model";
 export const INVOICE_FORM_VALUES: InvoiceFormType = {
   action: null,
   invoiceNumber: "",
-  invoiceDate: new Date().toISOString().substr(0, 10),
+  invoiceDate: new Date().toISOString().substring(0, 10),
   from: {
     companyName: "",
     address: "",

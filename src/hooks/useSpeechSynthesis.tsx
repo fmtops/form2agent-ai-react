@@ -19,6 +19,7 @@ const useSpeechSynthesis = (onEnd: () => void) => {
   const aiAudioService = new AiAudioService();
   const audioRef = useRef(new Audio());
   const [isTTSPlaying, setIsTTSPlaying] = useState(false);
+  const [isLoadingAudio, setIsLoadingAudio] = useState(false);
 
   useEffect(() => {
     audioRef.current.onplay = () => {
@@ -43,8 +44,7 @@ const useSpeechSynthesis = (onEnd: () => void) => {
    * */
   const getAndPlayTTS = async (text: string) => {
     if (isTTSPlaying) return;
-    setIsTTSPlaying(true);
-
+    setIsLoadingAudio(true);
     try {
       const reader = await aiAudioService.textToSpeech(text);
       const playWithBlob = async () => {
@@ -95,11 +95,13 @@ const useSpeechSynthesis = (onEnd: () => void) => {
         const isAllowed = await canPlayAudio(audioRef);
         if (!isAllowed) throw new Error("Error playing - not allowed");
       }
-
+      setIsTTSPlaying(true);
       audioRef.current.play();
+      setIsLoadingAudio(false);
     } catch (error) {
       console.error("Error fetching or playing TTS data:", error);
       audioRef.current.pause();
+      setIsLoadingAudio(false);
     }
   };
 
@@ -107,7 +109,7 @@ const useSpeechSynthesis = (onEnd: () => void) => {
     audioRef.current.pause();
   };
 
-  return { isTTSPlaying, getAndPlayTTS, stopTTS };
+  return { isTTSPlaying, getAndPlayTTS, stopTTS, isLoadingAudio };
 };
 
 export default useSpeechSynthesis;

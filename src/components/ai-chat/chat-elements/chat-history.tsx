@@ -15,6 +15,7 @@ import { CHAT_TYPING_OPTIONS } from "../../../consts/chat.consts";
  * @param isTTSPlaying - boolean to check if the TTS is playing
  * @param currentReadMessage - current message being read
  * @param isWaitingForResponse - boolean to check if the response is being waited
+ * @param isLoadingAudio - boolean to check if the audio is loading
  * @description ChatHistory component to render the chat history of the chat window
  * With indication if the message is being read aloud.
  */
@@ -25,6 +26,7 @@ export default function ChatHistory({
   isTTSPlaying,
   currentReadMessage,
   isWaitingForResponse,
+  isLoadingAudio,
 }: {
   messages: ChatMessageType[];
   voiceResponse: boolean;
@@ -32,9 +34,9 @@ export default function ChatHistory({
   isTTSPlaying: boolean;
   currentReadMessage: string;
   isWaitingForResponse: boolean;
+  isLoadingAudio: boolean;
 }) {
   const chatEndRef = React.createRef<HTMLDivElement>();
-
   useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -46,7 +48,7 @@ export default function ChatHistory({
   }, [messages]);
 
   const handleMessageSoundClick = (message: string) => {
-    if (isTTSPlaying && currentReadMessage !== message) {
+    if ((isTTSPlaying && currentReadMessage !== message) || isLoadingAudio) {
       return;
     }
     onMessageSoundClick(message);
@@ -97,7 +99,10 @@ export default function ChatHistory({
             >
               {currentReadMessage === chat.message ? (
                 <StyledToolTip title="Stop">
-                  <StopCircleOutlinedIcon htmlColor="#9CA3AF" />
+                  <StopCircleOutlinedIcon
+                    htmlColor="#9CA3AF"
+                    color={isLoadingAudio ? "disabled" : "inherit"}
+                  />
                 </StyledToolTip>
               ) : (
                 <StyledToolTip title="Read aloud">

@@ -30,31 +30,24 @@ export class AiChatService {
     formContext: string
   ): Promise<CreateNewChatResponse> {
     const language = getStoredLanguage();
-    let response;
-    try {
-      response = await axios.post(
-        process.env.REACT_APP_AI_API_URL + "/chats",
-        {
-          name: "sample",
-          type: "formFill",
-          model: {
-            content: formDescription,
-            appData: formValues,
-            appDescription: formContext,
-          },
+    let response = await axios.post(
+      process.env.REACT_APP_AI_API_URL + "/chats",
+      {
+        name: "sample",
+        type: "formFill",
+        model: {
+          content: formDescription,
+          appData: formValues,
+          appDescription: formContext,
         },
-        {
-          headers: {
-            "Accept-Language": language || "en-US",
-            "Llm-Api-Key": `${getStoredApiKey()}`
-          },
-        }
-      );
-    } catch (e) {
-      console.log("error", e);
-      throw new NetworkError("Unable to reach the network.");
-    }
-
+      },
+      {
+        headers: {
+          "Accept-Language": language || "en-US",
+          "Llm-Api-Key": `${getStoredApiKey()}`,
+        },
+      }
+    );
     return response.data;
   }
   /**
@@ -64,24 +57,17 @@ export class AiChatService {
    * @description Used to send a message to generated chat. If fails it throws a `NetworkError`
    */
   async sendMessage(chatMessage: ChatMessage): Promise<SendMessageResponse> {
-    let response;
-    try {
-      response = await axios.post(
-        process.env.REACT_APP_AI_API_URL + "/ai/form",
-        {
-          ...chatMessage,
+    let response = await axios.post(
+      process.env.REACT_APP_AI_API_URL + "/ai/form",
+      {
+        ...chatMessage,
+      },
+      {
+        headers: {
+          "Llm-Api-Key": `${getStoredApiKey()}`,
         },
-        {
-          headers: {
-            "Llm-Api-Key": `${getStoredApiKey()}`
-          }
-        }
-      );
-    } catch (error) {
-      console.log("error", error);
-      throw new NetworkError("Unable to reach the network.");
-    }
-
+      }
+    );
     return response.data;
   }
 }
