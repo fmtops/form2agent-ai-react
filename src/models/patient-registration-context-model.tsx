@@ -93,6 +93,6 @@ export const PatientRegistrationContext: PatientRegistrationContextFormType = {
     anyAllergies: `radio(${YesNoIDKOptions.join(", ")})`,
     otherAllergies: "optional()",
     medicationAllergies: "optional()",
-    otherHealthProblems: "optional()",
+    otherHealthProblems: "optional(), end of form",
   },
 };
