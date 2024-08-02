@@ -35,7 +35,7 @@ export const Partners: string[] = [
   "Cardiac Innovators Alliance",
   "Advanced Gastro Society",
   "Continental Oncology Group",
-  "Virtual Medicine Institue",
+  "Virtual Medicine Institute",
   "Regenerative Medicine League",
   "Pediatric Holistic Council",
   "Rare Genetics Forum",

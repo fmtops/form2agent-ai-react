@@ -1,9 +1,9 @@
-import { TablePagination } from "@mui/material";
 import OrderCard from "./order-card/order-card";
 import { Order } from "../../types/Ecommerce/Orders";
 import useResolutionCheck from "../../hooks/useResolutionCheck";
 import { useEffect, useRef } from "react";
 import { ORDER_SCROLL_DELAY_MS } from "../../consts/ecommerce.consts";
+import StyledTablePagination from "../common/mui-styled/styled-table-pagination";
 
 export default function OrdersTable({
   orders,
@@ -41,15 +41,13 @@ export default function OrdersTable({
   }, [updatedOrders]);
 
   return orders.length > 0 ? (
-    <div className="flex-1 h-fit border-[1px] border-b-0 border-border-primary-light rounded-lg">
-      <TablePagination
-        component="div"
+    <div className="flex-1 h-fit border-[1px] relative border-b-0 border-border-primary-light rounded-lg w-fit">
+      <StyledTablePagination
         count={orders.length}
         page={page}
         onPageChange={handlePageChange}
         rowsPerPage={rowsPerPage}
         onRowsPerPageChange={handleRowsPerPageChange}
-        className="border-b-border-primary-light border-b-[1px] gap-24"
         labelRowsPerPage={"Orders per page:"}
         slotProps={{
           select: {
@@ -59,7 +57,6 @@ export default function OrdersTable({
           },
         }}
       />
-
       {orders
         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
         .map((order) => {
