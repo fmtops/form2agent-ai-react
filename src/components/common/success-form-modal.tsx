@@ -13,8 +13,15 @@ export default function SuccessFormModal({
       onClose={onClose}
       open={isVisible}
       className="flex items-center justify-center"
+      slotProps={{
+        backdrop: {
+          sx: {
+            backgroundColor: "rgba(31,41,55, 0.8)",
+          },
+        },
+      }}
     >
-      <div className={` p-6 flex flex-col w-96 bg-white`}>
+      <div className={`rounded-[4px] p-6 flex flex-col w-96 bg-white`}>
         <CheckCircleOutlineOutlinedIcon className="text-emerald" />
         <div className="mt-4 mb-8">
           <h2 className={`text-2xl font-medium text-text-primary-light`}>

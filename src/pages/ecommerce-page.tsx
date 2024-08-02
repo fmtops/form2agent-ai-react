@@ -113,7 +113,7 @@ export default function EcommercePage() {
 
   const handleAmountChange = (newAmountFilter: Partial<AmountFilterType>) => {
     setFilters((prev) => {
-      const amountFilter = { ...newAmountFilter, ...prev.amountFilter };
+      const amountFilter = { ...prev.amountFilter, ...newAmountFilter };
       return updateFilters(prev, {
         amountFilter,
       });

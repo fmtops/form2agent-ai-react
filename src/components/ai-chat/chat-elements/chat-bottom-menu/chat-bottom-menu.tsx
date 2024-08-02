@@ -37,6 +37,8 @@ export default function ChatBottomMenu({
   const [wasMicrophoneClicked, setWasMicrophoneClicked] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [fileReadProgress, setFileReadProgress] = useState<number>(0);
+  const [disableMicrophone, setDisableMicrophone] = useState(false);
+
   const handleMessageChange = (e: ChangeEvent<HTMLInputElement>) => {
     setErrorMessage("");
     setMessage(e.target.value);
@@ -62,7 +64,12 @@ export default function ChatBottomMenu({
 
   const toggleListening = async () => {
     setErrorMessage("");
-    if (disabled) return;
+    if (
+      disabled ||
+      (disableMicrophone && audioState === AudioState.Calibration)
+    )
+      return;
+    if (!isListening) setDisableMicrophone(() => true);
 
     if (!wasMicrophoneClicked) {
       setVoiceResponse(true);
@@ -73,6 +80,10 @@ export default function ChatBottomMenu({
       ? await stopListening()
       : await startListening();
   };
+
+  useEffect(() => {
+    if (audioState === AudioState.NoState) setDisableMicrophone(() => false);
+  }, [audioState]);
 
   const onFileChange = (
     event: ChangeEvent<HTMLInputElement> & { target: { files: FileList } }
@@ -171,7 +182,7 @@ export default function ChatBottomMenu({
           <ChatMicrophoneIcon
             isListening={isListening}
             toggleListening={toggleListening}
-            disabledVoice={disabledVoice}
+            disabledVoice={disabledVoice || disableMicrophone}
           />
           <ChatSendIcon handleSend={handleSend} disableSend={disableSend} />
         </div>
