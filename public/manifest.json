@@ -8,6 +8,11 @@
       "type": "image/x-icon"
     },
     {
+      "src": "f2a_favicon.png",
+      "type": "image/png",
+      "sizes": "32x32"
+    },
+    {
       "src": "logo192.png",
       "type": "image/png",
       "sizes": "192x192"
