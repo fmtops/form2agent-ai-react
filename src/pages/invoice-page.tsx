@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import InvoiceForm from "../components/invoice/invoice-form";
 import ChatWindow from "../components/ai-chat/chat-window";
 import { InvoiceAction, InvoiceFormType } from "../models/invoice-model";
-import { AiChatService } from "../services/ai-chat-service";
-import { ChatMessage } from "../types/api/AiChatServiceTypes";
 import { DescriptionContext } from "../models/invoice-context-model";
 import { INVOICE_FORM_VALUES } from "../consts/invoice.consts";
 import FormPageLayout from "../layouts/form-page-layout";
@@ -12,8 +10,6 @@ import { mergeFormData } from "../utils/invoice.utils";
 import { FormikProps } from "formik";
 
 const InvoicePage = () => {
-  const aiChatService = new AiChatService();
-
   const [form, setForm] = useState(INVOICE_FORM_VALUES);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -38,24 +34,14 @@ const InvoicePage = () => {
     }
   };
 
-  const sendMessage = async (chatMessage: ChatMessage) => {
+  const executeFormLogic = async (appData: string) => {
     setForm((prevForm) => ({
       ...prevForm,
       ...formikInvoiceRef.current?.values,
     }));
-    let response;
-    try {
-      response = await aiChatService.sendMessage(chatMessage);
-
-      let responseData = JSON.parse(response.model.appData);
-
-      setForm((prevForm) => mergeFormData(prevForm, responseData));
-      if (responseData.action) performAction(responseData.action);
-    } catch (error) {
-      console.log("error", error);
-    }
-
-    return response;
+    let responseData = JSON.parse(appData);
+    setForm((prevForm) => mergeFormData(prevForm, responseData));
+    if (responseData.action) performAction(responseData.action);
   };
 
   return (
@@ -65,8 +51,7 @@ const InvoicePage = () => {
       onSubmit={handleSubmit}
       chatElement={
         <ChatWindow
-          createNewChat={aiChatService.createNewChat}
-          sendMessage={sendMessage}
+          executeFormLogic={executeFormLogic}
           formDescription="Add a new invoice to the system."
           formValues={stringifyValues(form)}
           formContext={stringifyValues(DescriptionContext)}

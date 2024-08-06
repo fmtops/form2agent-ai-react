@@ -19,8 +19,6 @@ import {
 } from "../models/patient-registration-model";
 import { PatientRegistrationContext } from "../models/patient-registration-context-model";
 import ChatWindow from "../components/ai-chat/chat-window";
-import { AiChatService } from "../services/ai-chat-service";
-import { ChatMessage } from "../types/api/AiChatServiceTypes";
 import { FormikProps } from "formik";
 import FormPageLayout from "../layouts/form-page-layout";
 import { stringifyValues } from "../utils/chat.utilts";
@@ -30,7 +28,6 @@ import {
 } from "../utils/patient-registration.utils";
 
 export const PatientRegistrationPage = () => {
-  const aiChatService = new AiChatService();
   const [patientRegistrationForm, setPatientRegistrationForm] =
     useState(PATIENT_FORM_VALUES);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
@@ -139,28 +136,6 @@ export const PatientRegistrationPage = () => {
         return <></>;
     }
   };
-  const sendMessage = async (chatMessage: ChatMessage) => {
-    updateForm();
-    let response;
-    try {
-      response = await aiChatService.sendMessage(chatMessage);
-
-      let responseData = JSON.parse(
-        response.model.appData
-      ) as PatientRegistrationFormType;
-      setPatientRegistrationForm((prevForm) =>
-        mergeFormData(prevForm, responseData)
-      );
-      moveToEditedSection(responseData);
-
-      if (responseData.action) performAction(responseData.action);
-      if (responseData.pageIndex) goToPage(responseData.pageIndex);
-    } catch (error) {
-      console.log("error", error);
-    }
-
-    return response;
-  };
 
   const performAction = (action: PrAction) => {
     switch (action) {
@@ -172,6 +147,17 @@ export const PatientRegistrationPage = () => {
     }
   };
 
+  const executeFormLogic = async (appData: string) => {
+    updateForm();
+    let responseData = JSON.parse(appData) as PatientRegistrationFormType;
+    setPatientRegistrationForm((prevForm) =>
+      mergeFormData(prevForm, responseData)
+    );
+    moveToEditedSection(responseData);
+    if (responseData.action) performAction(responseData.action);
+    if (responseData.pageIndex) goToPage(responseData.pageIndex);
+  };
+
   return (
     <FormPageLayout
       title="Patient Registration"
@@ -179,8 +165,7 @@ export const PatientRegistrationPage = () => {
       isChatOpen={isChatOpen}
       chatElement={
         <ChatWindow
-          createNewChat={aiChatService.createNewChat}
-          sendMessage={sendMessage}
+          executeFormLogic={executeFormLogic}
           formDescription="Provide detailed health information to assist the doctor in patient's diagnosis and treatment planning."
           formValues={stringifyValues(patientRegistrationForm)}
           formContext={stringifyValues(PatientRegistrationContext)}

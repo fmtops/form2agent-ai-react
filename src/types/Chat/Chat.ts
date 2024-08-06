@@ -1,8 +1,3 @@
-import {
-  CreateNewChatResponse,
-  ChatMessage,
-  SendMessageResponse,
-} from "../api/AiChatServiceTypes";
 import { AudioState } from "./Audio";
 
 export type ChatMessageType = {
@@ -16,18 +11,17 @@ export enum ChatMessageSender {
   AI = "AI",
 }
 
+export enum ResponseState {
+  Waiting, // no characters have been generated yet
+  Generating, // the response is currently being parsed to the chat
+  Completed, // not awaiting any responses
+}
+
 export type ChatPropType = {
-  createNewChat: (
-    formDescription: string,
-    formValues: string,
-    formContext: string
-  ) => Promise<CreateNewChatResponse>;
-  sendMessage: (
-    chatMessage: ChatMessage
-  ) => Promise<SendMessageResponse | undefined>;
   formDescription: string;
   formValues: string;
   formContext?: string;
+  executeFormLogic: (appData: string) => void;
   setIsChatOpen?: (isChatOpen: boolean) => void;
 };
 

@@ -1,7 +1,5 @@
 import { RefObject, useEffect, useRef, useState } from "react";
 import ChatWindow from "../components/ai-chat/chat-window";
-import { AiChatService } from "../services/ai-chat-service";
-import { ChatMessage } from "../types/api/AiChatServiceTypes";
 import HelpdeskForm from "../components/helpdesk/helpdesk-form";
 import { HelpdeskAction, HelpdeskFormType } from "../models/helpdesk-model";
 import { HelpdeskDescriptionContext } from "../models/helpdesk-context-model";
@@ -11,7 +9,6 @@ import FormPageLayout from "../layouts/form-page-layout";
 import { stringifyValues } from "../utils/chat.utilts";
 
 const HelpdeskPage = () => {
-  const aiChatService = new AiChatService();
   const [form, setForm] = useState(HELPDESK_FORM_VALUES);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -33,26 +30,17 @@ const HelpdeskPage = () => {
     }
   };
 
-  const sendMessage = async (chatMessage: ChatMessage) => {
+  const executeFormLogic = async (appData: string) => {
     setForm((prevForm) => ({
       ...prevForm,
       ...formikHelpdeskRef.current?.values,
     }));
-    let response;
-    try {
-      response = await aiChatService.sendMessage(chatMessage);
-      let responseData = JSON.parse(response.model.appData);
-      setForm({
-        ...formikHelpdeskRef.current?.values,
-        ...responseData,
-      } as HelpdeskFormType);
-
-      if (responseData.action) performAction(responseData.action);
-    } catch (error) {
-      console.log("error", error);
-    }
-
-    return response;
+    let responseData = JSON.parse(appData);
+    setForm({
+      ...formikHelpdeskRef.current?.values,
+      ...responseData,
+    } as HelpdeskFormType);
+    if (responseData.action) performAction(responseData.action);
   };
 
   const onSubmit = () => {
@@ -67,8 +55,7 @@ const HelpdeskPage = () => {
       onSubmit={onSubmit}
       chatElement={
         <ChatWindow
-          createNewChat={aiChatService.createNewChat}
-          sendMessage={sendMessage}
+          executeFormLogic={executeFormLogic}
           formDescription="Fill out this form to quickly get assistance from our Helpdesk."
           formValues={stringifyValues(form)}
           formContext={stringifyValues(HelpdeskDescriptionContext)}
