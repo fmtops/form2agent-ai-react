@@ -1,6 +1,8 @@
 # Form2Agent: Your AI-Powered Form Assistant
 
-Form2Agent is a React-based chat application that uses OpenAI's language models to help you fill out forms quickly and efficiently. With Form2Agent, you can simply chat with the AI assistant, and it will intelligently fill in your form fields based on your conversation.
+Form2Agent is a React-based chat application that uses OpenAI's language models to help you fill out forms quickly and efficiently. With Form2Agent, you can simply chat with the AI assistant, and it will intelligently fill in your form fields based on your conversation. 
+
+This repository contains a demo application with the chat widget and examples of how it can be utilized. 
 
 **Demo Video:** https://youtu.be/yToOQGCHikk?si=BfhlPnwvUEnEI9kE
 
@@ -16,11 +18,11 @@ Form2Agent is a React-based chat application that uses OpenAI's language models 
 ## **Disclaimer**
 
 ### Important Information Regarding Data Usage:
-- **Sensitive Data:** Users should **not** use or input any sensitive data (e.g., passwords, personal identification information, or financial information) when interacting with this project.
+- **Sensitive Data:** Users should **NOT** use or input any sensitive data (e.g., passwords, personal identification information, or financial information) when interacting with this project.
 
-- **Data Preservation:** Please be aware that the prompts used in this project are stored to maintain a stateless context. This means that the data is temporary and only used to manage the session state during your interaction with the application.
+- **Data Storage:** Please be aware that the messages sent to the Form2Agent assistant using the chat widget or the API directly are stored to maintain chat context for the assistant. This data is never reused for new chats. 
 
-- **API Keys:** We do **NOT** store any API keys within this project. Form2Agent requires API keys for external services, users are responsible for securely managing their own API keys and ensuring they are not exposed or stored within the repository.
+- **API Keys:** We do **NOT** store any API keys within this project. Form2Agent requires API keys for external services, users are responsible for securely managing their own API keys and ensuring they are not exposed or stored within their repositories if forking the project.
 
 ## **Prerequisites:**
 
