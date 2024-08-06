@@ -2,12 +2,10 @@ import axios from "axios";
 import {
   ChatMessage,
   CreateNewChatResponse,
-  SendMessageResponse,
 } from "../types/api/AiChatServiceTypes";
 import { getStoredLanguage } from "../utils/language.utils";
 import { getStoredApiKey } from "../utils/api-key.utils";
-
-class NetworkError extends Error {}
+import { throwIfAPIResponseNotOk } from "../helpers/api-exception-handler";
 
 /**
  * @description Service class to interact
@@ -22,17 +20,22 @@ export class AiChatService {
    * @param formContext - stringified form fields with additional context as JSON ended with "#####jsonEnd" use `stringifyValues` to stringify the values
    * @returns returns the promise response from the API
    * @description Used to create a new chat with the AI. You will need to replace adjust the structure of
-   * the "appData" object to match the structure expected by your API. If fails it throws a `NetworkError`
+   * the "appData" object to match the structure expected by your API. Throws an error if fails.
    * */
   async createNewChat(
     formDescription: string,
     formValues: string,
     formContext: string
-  ): Promise<CreateNewChatResponse> {
+  ) {
     const language = getStoredLanguage();
-    let response = await axios.post(
-      process.env.REACT_APP_AI_API_URL + "/chats",
-      {
+    let response = await fetch(process.env.REACT_APP_AI_API_URL + "/chats/v2", {
+      method: "POST",
+      headers: {
+        "Accept-Language": language || "en-US",
+        "Content-Type": "application/json",
+        "Llm-Api-Key": `${getStoredApiKey()}`,
+      },
+      body: JSON.stringify({
         name: "sample",
         type: "formFill",
         model: {
@@ -40,34 +43,34 @@ export class AiChatService {
           appData: formValues,
           appDescription: formContext,
         },
-      },
-      {
-        headers: {
-          "Accept-Language": language || "en-US",
-          "Llm-Api-Key": `${getStoredApiKey()}`,
-        },
-      }
-    );
-    return response.data;
+      }),
+    });
+
+    await throwIfAPIResponseNotOk(response);
+    return response.body!.getReader();
   }
   /**
    *
    * @param chatMessage - chat message object
    * @returns the promise response from the API
-   * @description Used to send a message to generated chat. If fails it throws a `NetworkError`
+   * @description Used to send a message to generated chat. If fails Throws an error if fails.
    */
-  async sendMessage(chatMessage: ChatMessage): Promise<SendMessageResponse> {
-    let response = await axios.post(
-      process.env.REACT_APP_AI_API_URL + "/ai/form",
+  async sendMessage(chatMessage: ChatMessage) {
+    let response = await fetch(
+      process.env.REACT_APP_AI_API_URL + "/ai/form/v2",
       {
-        ...chatMessage,
-      },
-      {
+        method: "POST",
         headers: {
+          "Content-Type": "application/json",
           "Llm-Api-Key": `${getStoredApiKey()}`,
         },
+        body: JSON.stringify({
+          ...chatMessage,
+        }),
       }
     );
-    return response.data;
+
+    await throwIfAPIResponseNotOk(response);
+    return response.body!.getReader();
   }
 }

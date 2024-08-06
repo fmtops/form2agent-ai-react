@@ -1,11 +1,18 @@
 import React, { useEffect } from "react";
-import { ChatMessageSender, ChatMessageType } from "../../../types/Chat/Chat";
+import {
+  ChatMessageSender,
+  ChatMessageType,
+  ResponseState,
+} from "../../../types/Chat/Chat";
 import VolumeUpOutlinedIcon from "@mui/icons-material/VolumeUpOutlined";
 import StopCircleOutlinedIcon from "@mui/icons-material/StopCircleOutlined";
 import { StyledToolTip } from "../../common/mui-styled/styled-tooltip";
 import { FileSectionComponent } from "../../common/file-section";
 import Lottie from "react-lottie";
-import { CHAT_TYPING_OPTIONS } from "../../../consts/chat.consts";
+import {
+  CHAT_TYPING_ANIMATION_OPTIONS,
+  CHAT_TYPING_ANIMATION_DIMENSIONS,
+} from "../../../consts/animations";
 
 /**
  *
@@ -14,7 +21,7 @@ import { CHAT_TYPING_OPTIONS } from "../../../consts/chat.consts";
  * @param onMessageSoundClick - function to handle the message sound click
  * @param isTTSPlaying - boolean to check if the TTS is playing
  * @param currentReadMessage - current message being read
- * @param isWaitingForResponse - boolean to check if the response is being waited
+ * @param responseState - enum to check if the response is being awaited or generated
  * @param isLoadingAudio - boolean to check if the audio is loading
  * @description ChatHistory component to render the chat history of the chat window
  * With indication if the message is being read aloud.
@@ -25,7 +32,7 @@ export default function ChatHistory({
   onMessageSoundClick,
   isTTSPlaying,
   currentReadMessage,
-  isWaitingForResponse,
+  responseState,
   isLoadingAudio,
 }: {
   messages: ChatMessageType[];
@@ -33,22 +40,36 @@ export default function ChatHistory({
   onMessageSoundClick: (message: string) => void;
   isTTSPlaying: boolean;
   currentReadMessage: string;
-  isWaitingForResponse: boolean;
+  responseState: ResponseState;
   isLoadingAudio: boolean;
 }) {
   const chatEndRef = React.createRef<HTMLDivElement>();
+
   useEffect(() => {
     if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
-      let lastMessage = messages.at(-1);
-      if (lastMessage?.sender === ChatMessageSender.AI && voiceResponse) {
-        handleMessageSoundClick(lastMessage.message);
-      }
+      chatEndRef.current.scrollIntoView();
+      playLastMessageIfAutoplayable();
     }
-  }, [messages]);
+  }, [messages, responseState]);
+
+  const playLastMessageIfAutoplayable = () => {
+    let lastMessage = messages.at(-1);
+
+    if (
+      lastMessage?.sender === ChatMessageSender.AI &&
+      voiceResponse &&
+      responseState === ResponseState.Completed
+    ) {
+      onMessageSoundClick(lastMessage.message);
+    }
+  };
 
   const handleMessageSoundClick = (message: string) => {
-    if ((isTTSPlaying && currentReadMessage !== message) || isLoadingAudio) {
+    if (
+      responseState !== ResponseState.Completed ||
+      (isTTSPlaying && currentReadMessage !== message) ||
+      isLoadingAudio
+    ) {
       return;
     }
     onMessageSoundClick(message);
@@ -76,16 +97,27 @@ export default function ChatHistory({
           {chat.message !== "" && (
             <div
               className={`
-           px-4 py-2 rounded-lg max-w-[90%] items-end  ${
-             chat.sender === ChatMessageSender.AI
-               ? "bg-gray text-black ml-2 mr-1"
-               : "bg-lightBlue text-white mr-2 ml-auto"
-           }
-        `}
+                px-4 py-2 rounded-lg max-w-[90%] items-end  ${
+                  chat.sender === ChatMessageSender.AI
+                    ? "bg-gray text-black ml-2 mr-1"
+                    : "bg-lightBlue text-white mr-2 ml-auto"
+                }
+              `}
             >
               <div className="flex gap-2 whitespace-pre-wrap">
                 <p className="word-break">{chat.message}</p>
               </div>
+
+              {messages.length - 1 === index &&
+                chat.sender === ChatMessageSender.AI &&
+                responseState === ResponseState.Generating && (
+                  <div className="pt-2">
+                    <Lottie
+                      options={CHAT_TYPING_ANIMATION_OPTIONS}
+                      {...CHAT_TYPING_ANIMATION_DIMENSIONS}
+                    />
+                  </div>
+                )}
             </div>
           )}
           {chat.fileName !== "" && chat.sender === ChatMessageSender.You && (
@@ -116,12 +148,15 @@ export default function ChatHistory({
           )}
         </div>
       ))}
-      {isWaitingForResponse && (
+      {responseState === ResponseState.Waiting && (
         <div
           className={`px-4 py-2 rounded-lg flex items-center max-w-[90%] h-2 bg-gray text-black ml-2`}
         >
           <div>
-            <Lottie options={CHAT_TYPING_OPTIONS} height={8} width={28} />
+            <Lottie
+              options={CHAT_TYPING_ANIMATION_OPTIONS}
+              {...CHAT_TYPING_ANIMATION_DIMENSIONS}
+            />
           </div>
         </div>
       )}

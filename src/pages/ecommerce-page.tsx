@@ -3,8 +3,6 @@ import { DateFilters, Order, OrderStatus } from "../types/Ecommerce/Orders";
 import OrdersTable from "../components/ecommerce/orders-table";
 import useResolutionCheck from "../hooks/useResolutionCheck";
 import ChatWindow from "../components/ai-chat/chat-window";
-import { AiChatService } from "../services/ai-chat-service";
-import { ChatMessage } from "../types/api/AiChatServiceTypes";
 import OrdersFilter from "../components/ecommerce/orders-filter";
 import {
   dateFilterLabelToEnum,
@@ -30,7 +28,6 @@ import OrdersTitle from "../components/ecommerce/orders-title";
 let orders: Order[] = generateOrders();
 
 export default function EcommercePage() {
-  const aiChatService = new AiChatService();
   const { isResHigherThanMobile } = useResolutionCheck();
   const [filteredOrders, setFilteredOrders] = useState<Order[]>(orders);
   const [isFiltersMobileOpen, setIsFiltersMobileOpen] = useState(false);
@@ -48,31 +45,22 @@ export default function EcommercePage() {
     setPage(() => Math.floor(index / rowsPerPage));
   };
 
-  const sendMessage = async (chatMessage: ChatMessage) => {
-    let response;
-    try {
-      response = await aiChatService.sendMessage(chatMessage);
-      let responseData = JSON.parse(response.model.appData);
-
-      if (responseData.filters) {
-        setFilters((prevFilters) => ({
-          ...filters,
-          ...responseData.filters,
-          dateFilter: dateFilterLabelToEnum(responseData.filters.dateFilter),
-          amountFilter: {
-            ...prevFilters.amountFilter,
-            ...responseData.filters.amountFilter,
-          },
-        }));
-      }
-      if (responseData.orders) {
-        handleUpdateOrders(responseData.orders);
-      }
-    } catch (error) {
-      console.log("error", error);
+  const executeFormLogic = async (appData: string) => {
+    let responseData = JSON.parse(appData);
+    if (responseData.filters) {
+      setFilters((prevFilters) => ({
+        ...filters,
+        ...responseData.filters,
+        dateFilter: dateFilterLabelToEnum(responseData.filters.dateFilter),
+        amountFilter: {
+          ...prevFilters.amountFilter,
+          ...responseData.filters.amountFilter,
+        },
+      }));
     }
-
-    return response;
+    if (responseData.orders) {
+      handleUpdateOrders(responseData.orders);
+    }
   };
 
   const handleUpdateOrders = (updatedOrders: Partial<Order>[]) => {
@@ -162,8 +150,7 @@ export default function EcommercePage() {
       }
       chatElement={
         <ChatWindow
-          createNewChat={aiChatService.createNewChat}
-          sendMessage={sendMessage}
+          executeFormLogic={executeFormLogic}
           formDescription={CHAT_ECOMMERCE_DESCRIPTION}
           formValues={stringifyValues({
             filters,
