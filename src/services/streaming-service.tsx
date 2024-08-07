@@ -30,28 +30,6 @@ export class StreamingService {
 
   /**
    *
-   * @param jsonResponses - responses read from the stream in the latest iteration, split into an array
-   * @param json - the JSON response that is currently being processed and needs to be parsed
-   * @returns an object of type "any" based on the JSON structure
-   * @description Parse a json string into an object of type "any".
-   */
-  parseResponseModel(jsonResponses: string[], json: string): any {
-    // Since split won't generate a correct JSON string, fix them manually
-    if (jsonResponses.length > 1) {
-      if (!json.startsWith("{")) {
-        json = "{" + json;
-      }
-      if (!json.endsWith("}")) {
-        json = json + "}";
-      }
-    }
-
-    // Parse the correct JSON string into a model
-    return JSON.parse(json);
-  }
-
-  /**
-   *
    * @param responseModel - the response parsed into a model of any type
    * @param content - full content of the assistant response message received so far
    * @param currChatHistory - chat history excluding the latest assistant response message
@@ -99,35 +77,49 @@ export class StreamingService {
   ) {
     let content = ""; // total content for the message received so far
     let currChatHistory = [...chatHistory]; // history without the latest response
+    let responseBuffer = ""; // buffer for the JSON responses to avoid splitting issues
 
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
 
-      var fullJsonResponse = this._decoder.decode(value);
+      const fullJsonResponse = this._decoder.decode(value);
+      responseBuffer += fullJsonResponse;
 
       // Multiple responses might have been queued up if the frontend cannot keep up with the stream
       // We are dealing with a formatted stream (the actual streams of data are within a consistent JSON structure)
       // Because of this, we need to handle all of the objects containing streamed data correctly
 
       // Split the responses (find the intersections between all of the JSON objects)
-      var jsonResponses = fullJsonResponse.split("}{");
+      // Use positive lookbehind and lookahead to keep the opening & closing curly braces in their respective JSON results
+      const jsonResponses = responseBuffer.split(/(?<=\})(?=\{)/);
 
       // For each response, parse the JSON and execute related logic
-      jsonResponses.forEach((json) => {
-        // Parse the correct JSON string into a model
-        var responseModel = this.parseResponseModel(jsonResponses, json);
+      try {
+        jsonResponses.forEach((json) => {
+          // Parse the correct JSON string into a model
+          const responseModel = JSON.parse(json);
 
-        // Execute each of the response handlers
-        responseHandlers.forEach((handler) => handler(responseModel));
+          // Execute each of the response handlers
+          responseHandlers.forEach((handler) => handler(responseModel));
 
-        // Execute logic for Content (display the message in the UI)
-        content = this.handleAndReturnNewContent(
-          responseModel,
-          content,
-          currChatHistory
-        );
-      });
+          // Execute logic for Content (display the message in the UI)
+          content = this.handleAndReturnNewContent(
+            responseModel,
+            content,
+            currChatHistory
+          );
+
+          // Update the buffer to exclude the handled response
+          responseBuffer = responseBuffer.substring(json.length);
+        });
+      } catch {} // resolve in the next iteration, true error handling after the while loop
+    }
+
+    // As long as the API always returns valid JSON, the responseBuffer will be clear here,
+    // If the buffer is not empty, this means not all of the response was able to be handled, throw an error
+    if (responseBuffer.trim() !== "") {
+      throw new Error("Failed to fully process the response");
     }
   }
 
