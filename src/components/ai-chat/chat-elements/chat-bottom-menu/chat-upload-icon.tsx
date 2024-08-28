@@ -11,7 +11,7 @@ export default function ChatUploadIcon({
   onFileChange: (e: any) => void;
 }) {
   return (
-    <div className="p-2">
+    <div id="chat-upload-button" className="p-2">
       <CloudUploadOutlined
         className={`cursor-pointer text-fg-secondary-light`}
         onClick={handleFileUpload}

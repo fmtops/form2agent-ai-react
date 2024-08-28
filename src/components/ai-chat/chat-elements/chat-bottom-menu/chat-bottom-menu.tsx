@@ -139,6 +139,7 @@ export default function ChatBottomMenu({
         />
       )}
       <TextField
+        id="chat-text-field"
         inputRef={inputRef}
         value={message}
         disabled={disabled}
@@ -163,9 +164,11 @@ export default function ChatBottomMenu({
       <div className={`flex items-center justify-between pt-2`}>
         <FormGroup>
           <FormControlLabel
+            id="chat-voice-response-label"
             className="checkbox-label"
             control={
               <Checkbox
+                id="chat-voice-response-checkbox"
                 checked={voiceResponse}
                 onChange={() => setVoiceResponse(!voiceResponse)}
               />

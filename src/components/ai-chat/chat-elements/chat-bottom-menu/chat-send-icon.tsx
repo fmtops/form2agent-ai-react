@@ -9,6 +9,7 @@ export default function ChatSendIcon({
 }) {
   return (
     <div
+      id="chat-send-button"
       onClick={handleSend}
       className={`rounded p-2 bg-bg-brand-contrast-light ${
         disableSend ? " bg-bg-disabled-primary-light" : " cursor-pointer"

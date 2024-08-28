@@ -1,6 +1,10 @@
 import React from "react";
 import { AiAudioService } from "../services/ai-audio-service";
 
+// Firefox will only return the correct type in ondataavailable event when audio is not empty
+// We need to store it to know what type to use during the onstop event
+let lastDataMimeType: string | undefined = undefined;
+
 export const setupMediaRecorder = (
   mediaStream: MediaStream,
   transcribingQueuesAmountRef: React.MutableRefObject<number>,
@@ -13,6 +17,9 @@ export const setupMediaRecorder = (
   let chunks: Blob[] = [];
 
   mediaRecorder.ondataavailable = (e) => {
+    lastDataMimeType = mediaRecorder.mimeType
+      ? mediaRecorder.mimeType
+      : lastDataMimeType;
     chunks.push(e.data);
   };
 
@@ -20,9 +27,16 @@ export const setupMediaRecorder = (
     transcribingQueuesAmountRef.current += 1;
 
     try {
-      let extension = mediaRecorder.mimeType.split("/")[1].split(";")[0];
+      // Most browsers will have a correct mediaRecorder.mimeType here
+      // In some scenarios, it will be empty, use the last known mime type or the backup
+      let mimeTypeToUse = mediaRecorder.mimeType
+        ? mediaRecorder.mimeType
+        : lastDataMimeType
+          ? lastDataMimeType
+          : "audio/webm";
+      let extension = mimeTypeToUse.split("/")[1].split(";")[0];
       let fileName = `audio.${extension}`;
-      let file = new Blob(chunks, { type: mediaRecorder.mimeType });
+      let file = new Blob(chunks, { type: mimeTypeToUse });
       chunks = [];
       var response = await aiAudioService.transcribe(
         fileName,

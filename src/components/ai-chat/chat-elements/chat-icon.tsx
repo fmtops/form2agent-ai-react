@@ -94,6 +94,7 @@ export default function ChatIcon({
           } `}
         >
           <HoldOrPressButton
+            id="chat-icon-button"
             handleClick={onClick}
             onHold={onHold}
             disabled={isChatBeingCreated}
@@ -101,19 +102,25 @@ export default function ChatIcon({
           >
             <Button className="w-16 h-16" variant="text">
               {isChatBeingCreated ? (
-                <CircularProgress color="inherit" className="text-white p-1" />
+                <CircularProgress
+                  id="chat-hands-free-loading-icon"
+                  color="inherit"
+                  className="text-white p-1"
+                />
               ) : isListening && audioState === AudioState.NoState ? (
-                <div>
+                <div id="chat-hands-free-recording-icon">
                   <Lottie options={VOICE_WAVES_ANIMATION_OPTIONS} />
                 </div>
               ) : audioState !== AudioState.NoState ? (
                 <StyledProgress
+                  id="chat-hands-free-progress-icon"
                   className="w-1/2 rounded-sm"
                   variant="determinate"
                   value={audioStateProgress}
                 />
               ) : (
                 <ChatOutlined
+                  id="chat-icon"
                   className={`fillwhite text-bg-brand-contrast-light`}
                 />
               )}
