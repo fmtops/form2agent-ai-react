@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { AiAudioService } from "../services/ai-audio-service";
 import { DEFAULT_TTS_FILE_FORMAT } from "../consts/audio.consts";
-import { canPlayAudio } from "../utils/setupSpeechRecoginition";
 
 /**
  * @param onEnd - callback function to call when the TTS ends
@@ -37,6 +36,15 @@ const useSpeechSynthesis = (onEnd: () => void) => {
         };
   }, [isTTSPlaying, onEnd]);
 
+  // Cleanup the audio when the component unmounts - can't use the onEnd callback here
+  useEffect(() => {
+    return () => {
+      if (isTTSPlaying) {
+        audioRef.current.pause();
+      }
+    };
+  }, [isTTSPlaying]);
+
   /**
    * @param text - text to convert to speech
    * @returns void
@@ -60,41 +68,8 @@ const useSpeechSynthesis = (onEnd: () => void) => {
         const url = URL.createObjectURL(blob);
         audioRef.current.src = url;
       };
-      const playWithMediaSource = async () => {
-        const mediaSource = new MediaSource();
-        audioRef.current.src = URL.createObjectURL(mediaSource);
 
-        mediaSource.addEventListener("sourceopen", async () => {
-          const sourceBuffer = mediaSource.addSourceBuffer(
-            `audio/${DEFAULT_TTS_FILE_FORMAT}`
-          );
-
-          const appendBuffer = async () => {
-            const { done, value } = await reader.read();
-            if (done) {
-              reader.releaseLock();
-              mediaSource.endOfStream();
-              return;
-            }
-            sourceBuffer.appendBuffer(value);
-          };
-
-          sourceBuffer.addEventListener("updateend", appendBuffer);
-          await appendBuffer();
-        });
-
-        mediaSource.addEventListener("error", (error) => {
-          console.error("Error loading media source:", error);
-        });
-      };
-      const isMediaSourceSupported = typeof MediaSource !== "undefined";
-      if (!isMediaSourceSupported) {
-        await playWithBlob();
-      } else {
-        await playWithMediaSource();
-        const isAllowed = await canPlayAudio(audioRef);
-        if (!isAllowed) throw new Error("Error playing - not allowed");
-      }
+      await playWithBlob();
       setIsTTSPlaying(true);
       audioRef.current.play();
       setIsLoadingAudio(false);

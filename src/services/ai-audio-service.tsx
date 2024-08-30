@@ -3,6 +3,7 @@ import { TranscribeResponse } from "../types/api/AiChatServiceTypes";
 import { DEFAULT_TTS_VOICE_NAME } from "../consts/audio.consts";
 import conf from "../configs/aiconfig.json";
 import { getStoredApiKey } from "../utils/api-key.utils";
+import f2aFetch from "../utils/fetch.utils";
 
 class NetworkError extends Error {}
 
@@ -30,25 +31,22 @@ export class AiAudioService {
     formData.append("file", file);
     if (conf.SPEECH.USE_TRANSCRIPTION_PROMPT) formData.append("prompt", prompt);
 
-    let response: AxiosResponse;
+    let response;
 
     try {
-      response = await axios.post(
-        process.env.REACT_APP_AI_API_URL + "/audio/transcription",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            "Llm-Api-Key": `${getStoredApiKey()}`
-          },
-        }
-      );
+      response = await f2aFetch("/audio/transcription", {
+        method: "POST",
+        body: formData,
+      });
     } catch (e) {
       console.log("error", e);
       throw new NetworkError("Unable to reach the network.");
     }
 
-    return response.data;
+    const value = (await response.body!.getReader().read()).value;
+    const transcriptionText = new TextDecoder().decode(value);
+
+    return JSON.parse(transcriptionText) as TranscribeResponse;
   }
 
   /**
@@ -60,28 +58,21 @@ export class AiAudioService {
     let response: Response;
 
     try {
-      response = await fetch(
-        process.env.REACT_APP_AI_API_URL + "/audio/tts/stream",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Llm-Api-Key": `${getStoredApiKey()}`
-          },
-          body: JSON.stringify({
-            text,
-            voice: DEFAULT_TTS_VOICE_NAME,
-          }),
-        }
-      );
+      response = await f2aFetch("/audio/tts/stream", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text,
+          voice: DEFAULT_TTS_VOICE_NAME,
+        }),
+      });
     } catch (e) {
       console.log("error", e);
       throw new NetworkError("Unable to reach the network.");
     }
 
-    if (response === null || response.body === null)
-      throw new NetworkError("Response or body is null.");
-
-    return response.body.getReader();
+    return response.body!.getReader();
   }
 }

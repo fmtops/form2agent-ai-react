@@ -12,7 +12,11 @@ export default function ChatMicrophoneIcon({
   disabledVoice: boolean;
 }) {
   return isListening ? (
-    <div className={`p-2 cursor-pointer`} onClick={toggleListening}>
+    <div
+      id="chat-microphone-button"
+      className={`p-2 cursor-pointer`}
+      onClick={toggleListening}
+    >
       <StopCircleOutlinedIcon htmlColor={"#EF4444"} />
     </div>
   ) : (

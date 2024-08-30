@@ -6,16 +6,48 @@ import InformationCard from "../components/common/information-card";
 import ListAltOutlinedIcon from "@mui/icons-material/ListAltOutlined";
 
 const HomePage = () => {
+  const logoImgAttributes = {
+    className: "w-8 h-8",
+    src: "./f2a_signet.svg",
+    alt: "Form2Agent logo",
+  };
+  const websiteLinkProps = {
+    href: "https://form2agent.freeportmetrics.com/",
+    target: "_blank",
+  };
+  const contactLinkAttributes = {
+    className: "underline",
+    href: "https://calendar.app.google/6jaKPZD9oa9xHDty5",
+    target: "_blank",
+  };
+
+  const demoAppDescriptionComponent = (
+    <p className="text-textSecondary text-xl">
+      Form2Agent is an open-source React AI accelerator by Freeport Metrics.
+      This demo illustrates a few of the infinite use cases.
+    </p>
+  );
+  const callToActionComponent = (
+    <p className="text-textSecondary text-xl">
+      <a {...contactLinkAttributes}>Book a free AI strategy session</a> to
+      enhance your existing web apps with intelligent, voice-assisted form
+      completion, content management, dataset searching, filtering, and more.
+    </p>
+  );
+
   return (
     <div className={`bg-white p-8`}>
       <div>
-        <h1 className="text-2xl font-medium mb-2">Form2Agent AI Demo</h1>
-        <p className="text-textSecondary text-xl">
-          Enhance your users' experience with intelligent, voice-assisted form
-          completion
-        </p>
+        <h1 className="text-2xl font-medium mb-2 flex items-center gap-2">
+          <img {...logoImgAttributes} /> Form2Agent AI Demo
+        </h1>
+        {demoAppDescriptionComponent}
+        {callToActionComponent}
       </div>
-      <div className="flex gap-4 items-stretch w-full mt-12">
+      <h2 className={`text-lg mt-12 mb-6 font-medium text-text-primary-light`}>
+        Explore use case examples
+      </h2>
+      <div className="flex gap-4 items-stretch w-full">
         <FormCard
           title="Add invoice"
           description="Quickly add a new invoice to the system."
@@ -55,7 +87,7 @@ const HomePage = () => {
           <InformationCard
             title="Learn more about how Form2Agent can transform your form completion process."
             buttonTitle="Visit our website"
-            linkProps={{ href: "https://form2agent.freeportmetrics.com/" }}
+            linkProps={websiteLinkProps}
             image={"./form2agent-microsite.png"}
           />
           <InformationCard

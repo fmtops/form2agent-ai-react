@@ -5,6 +5,7 @@ import BurgerButton from "../../components/sidenav/burger-button";
 import StyledNavDrawer, {
   MainDrawerCont,
 } from "../../components/sidenav/nav-drawer";
+import CookiePopup from "../../components/common/cookie-popup";
 
 type MainLayoutProps = {
   children: ReactNode;
@@ -47,6 +48,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           {children}
         </div>
       </MainDrawerCont>
+      <CookiePopup />
     </div>
   );
 };

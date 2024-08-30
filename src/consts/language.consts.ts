@@ -1,7 +1,8 @@
 // make them as accept langauage header - format: Language-Region
 enum LANGUAGES_VALUES {
   EN = "en-US",
-  ES = "es-Es",
+  ES = "es-ES",
+  FR = "fr-CA",
   PL = "pl-PL",
   RU = "ru-RU",
 }
@@ -16,6 +17,11 @@ const LANGUAGES = [
     value: LANGUAGES_VALUES.ES,
     name: "Español (Latinoamérica)",
     englishName: "Spanish (Latin America)",
+  },
+  {
+    value: LANGUAGES_VALUES.FR,
+    name: "Français (Canada)",
+    englishName: "French (Canada)",
   },
   {
     value: LANGUAGES_VALUES.PL,

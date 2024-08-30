@@ -127,7 +127,7 @@ export default function ChatHistory({
           {chat.sender === ChatMessageSender.AI && (
             <div
               onClick={() => handleMessageSoundClick(chat.message)}
-              className=" cursor-pointer "
+              className=" cursor-pointer chat-read-message-button "
             >
               {currentReadMessage === chat.message ? (
                 <StyledToolTip title="Stop">

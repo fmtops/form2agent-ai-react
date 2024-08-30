@@ -3,6 +3,8 @@ import { SIDE_NAV_LINKS } from "../../consts/sidenav.consts";
 import KeyboardDoubleArrowLeftOutlinedIcon from "@mui/icons-material/KeyboardDoubleArrowLeftOutlined";
 import LanguageSelect from "./language-select";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import ApiKeyConfirmDialog from "../common/api-key-confirm-dialog";
 import { useState } from "react";
 import { SHOULD_SHOW_API_KEY_DIALOG } from "../../consts/api-key.consts";
@@ -19,6 +21,12 @@ const SideNav = ({
 }) => {
   const [isApiKeyDialogVisible, setIsApiKeyDialogVisible] = useState(false);
   const renderApiKeyModal = SHOULD_SHOW_API_KEY_DIALOG && isApiKeyDialogVisible;
+  const githubLinkAttributes = {
+    href: "https://github.com/fmtops/form2agent-ai-react",
+    target: "_blank",
+    className:
+      "flex items-center p-3 justify-between border border-border-primary-light rounded-lg",
+  };
 
   const location = useLocation();
   return (
@@ -64,17 +72,24 @@ const SideNav = ({
         </div>
       </div>
       <div className="p-5 flex flex-col gap-2">
-        <div className="flex items-center  justify-between ">
+        <div className="flex items-center pl-3 justify-between ">
           OpenAI API Key
           <VpnKeyIcon
             onClick={() => setIsApiKeyDialogVisible(true)}
             className="text-3xl cursor-pointer text-text-secondary-light mr-8"
           />
         </div>
-        <div className="flex items-center  justify-between ">
+        <div className="flex items-center pl-3 justify-between ">
           Chat Language
           <LanguageSelect />
         </div>
+        <a {...githubLinkAttributes}>
+          <span className="flex items-center justify-between gap-2">
+            <GitHubIcon />
+            View on GitHub
+          </span>
+          <OpenInNewIcon />
+        </a>
       </div>
       {renderApiKeyModal && (
         <ApiKeyConfirmDialog

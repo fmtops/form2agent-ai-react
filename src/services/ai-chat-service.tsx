@@ -1,11 +1,7 @@
-import axios from "axios";
-import {
-  ChatMessage,
-  CreateNewChatResponse,
-} from "../types/api/AiChatServiceTypes";
+import { ChatMessage } from "../types/api/AiChatServiceTypes";
 import { getStoredLanguage } from "../utils/language.utils";
-import { getStoredApiKey } from "../utils/api-key.utils";
 import { throwIfAPIResponseNotOk } from "../helpers/api-exception-handler";
+import f2aFetch from "../utils/fetch.utils";
 
 /**
  * @description Service class to interact
@@ -27,13 +23,10 @@ export class AiChatService {
     formValues: string,
     formContext: string
   ) {
-    const language = getStoredLanguage();
-    let response = await fetch(process.env.REACT_APP_AI_API_URL + "/chats/v2", {
+    let response = await f2aFetch("/chats/v2", {
       method: "POST",
       headers: {
-        "Accept-Language": language || "en-US",
         "Content-Type": "application/json",
-        "Llm-Api-Key": `${getStoredApiKey()}`,
       },
       body: JSON.stringify({
         name: "sample",
@@ -46,7 +39,6 @@ export class AiChatService {
       }),
     });
 
-    await throwIfAPIResponseNotOk(response);
     return response.body!.getReader();
   }
   /**
@@ -56,21 +48,16 @@ export class AiChatService {
    * @description Used to send a message to generated chat. If fails Throws an error if fails.
    */
   async sendMessage(chatMessage: ChatMessage) {
-    let response = await fetch(
-      process.env.REACT_APP_AI_API_URL + "/ai/form/v2",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Llm-Api-Key": `${getStoredApiKey()}`,
-        },
-        body: JSON.stringify({
-          ...chatMessage,
-        }),
-      }
-    );
+    let response = await f2aFetch("/ai/form/v2", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...chatMessage,
+      }),
+    });
 
-    await throwIfAPIResponseNotOk(response);
     return response.body!.getReader();
   }
 }

@@ -166,6 +166,10 @@ const ChatWindow: React.FC<ChatPropType> = ({
   };
 
   const handleHoldInteraction = async (withVoice: boolean) => {
+    if (!getStoredApiKey()) {
+      setIsApiKeyDialogVisible(true);
+      return;
+    }
     if (withVoice) setVoiceResponse(true);
     if (chatId) {
       isListening ? stopListening() : startListening();

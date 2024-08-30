@@ -10,6 +10,7 @@ export default function ChatNavbar({ onClose }: { onClose: () => void }) {
         <span className="font-bold">Form2agent AI</span>
       </div>
       <RemoveIcon
+        id="chat-close-button"
         onClick={onClose}
         className={`cursor-pointer text-fg-primary-light`}
       />
