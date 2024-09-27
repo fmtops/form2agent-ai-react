@@ -1,12 +1,13 @@
 import { useRef, useEffect, useCallback, useState } from "react";
 import {
-  setupMediaRecorder,
+  setupAudioRecorder,
   setupAudioAnalyser,
-} from "../utils/setupSpeechRecoginition";
+} from "../utils/setup-speech-recognition";
 import { WAVEFORM_MIDPOINT } from "../consts/audio.consts";
 import conf from "../configs/aiconfig.json";
 import { AudioState } from "../types/Chat/Audio";
 import { ChatMessageType } from "../types/Chat/Chat";
+import { AudioRecorder } from "../lib/audio/audio-recorder";
 
 type UseSpeechRecognitionType = {
   startListening: () => void;
@@ -53,15 +54,13 @@ const useSpeechRecognition = (
   sendMessage: () => void
 ): UseSpeechRecognitionType => {
   // Compatibility check
-  if (window.MediaRecorder === undefined || window.AudioContext === undefined) {
-    throw new Error(
-      "Media Recorder or Audio Context API is not supported in this browser."
-    );
+  if (window.AudioContext === undefined) {
+    throw new Error("Audio Context API is not supported in this browser.");
   }
 
   // Refs and state
   const mediaStreamRef = useRef<MediaStream | null>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioRecorderRef = useRef<AudioRecorder | null>(null);
   const noiseDetectionIntervalRef = useRef<NodeJS.Timer | null>(null);
   const isThereAudioToTranscribeRef = useRef(false);
   const transcribingQueuesAmountRef = useRef(0);
@@ -140,8 +139,8 @@ const useSpeechRecognition = (
       return;
     }
 
-    // Setup media recorder and audio analyser
-    mediaRecorderRef.current = setupMediaRecorder(
+    // Setup audio recorder and audio analyser
+    audioRecorderRef.current = setupAudioRecorder(
       mediaStreamRef.current,
       transcribingQueuesAmountRef,
       messageRef,
@@ -197,22 +196,23 @@ const useSpeechRecognition = (
         let silenceStartedAt: number | null = null;
         let soundStartedAt: number | null = null;
 
-        noiseDetectionIntervalRef.current = setInterval(() => {
+        noiseDetectionIntervalRef.current = setInterval(async () => {
+          // Don't do anything if we're not supposed to listen.
           if (!isListeningRef.current) return;
 
+          // Pause the recording if the chat input is disabled.
           if (isDisabledRef.current) {
-            if (mediaRecorderRef.current?.state === "recording") {
-              mediaRecorderRef.current.pause();
-            }
+            await audioRecorderRef.current?.tryPause();
             return;
           }
 
-          if (mediaRecorderRef.current?.state === "inactive") {
-            mediaRecorderRef.current.start(conf.SPEECH.RECORDING_TIMESLICE);
-            mediaRecorderRef.current.pause();
+          // Start a new recording if the previous one was stopped and processed,
+          // pause it so we can resume when the user starts speaking again.
+          if (await audioRecorderRef.current?.tryRestartAndPause()) {
             return; // don't analyse b4 next loop, it can break progress bars
           }
 
+          // Analyse the audio data to get the average noise level (volume)
           audioAnalyser.getByteTimeDomainData(analysedAudioDataArray);
           const avgNoise =
             analysedAudioDataArray.reduce(
@@ -221,12 +221,14 @@ const useSpeechRecognition = (
             ) / analysedAudioDataArray.length;
           const dateNow = Date.now();
 
+          // If the noise level is below the threshold, register another tick/iteration of silence.
+          // Otherwise, break the streak of silence by resetting the counter.
           if (avgNoise < noiseSpeechThreshold) {
             samplesOfSilence++;
           } else samplesOfSilence = 0;
 
-          // If enough samples of silence have been collected,
-          // switch the "timers" to represent no sound
+          // If enough samples of silence have been collected, switch the "timers" to represent no sound.
+          // Otherwise, the timers should count down time since the last sound was detected.
           if (samplesOfSilence >= conf.SPEECH.SAMPLES_TO_BREAK_INTO_SILENCE) {
             soundStartedAt = null;
             // if silence timer has not been started, start the timer and the loop
@@ -252,20 +254,27 @@ const useSpeechRecognition = (
             }
           }
 
+          // Pause the recording if there is no speech for a certain amount of time.
           if (
             silenceStartedAt !== null &&
             dateNow - silenceStartedAt > conf.SPEECH.TIME_TO_PAUSE
           ) {
-            if (mediaRecorderRef.current?.state === "recording") {
-              mediaRecorderRef.current.pause();
-            }
+            await audioRecorderRef.current?.tryPause();
           }
 
+          // Check if we've reached the threshold to confirm the user intended to speak.
+          // Try to resume the recording if it's paused and speech is detected.
           if (
             silenceStartedAt !== null &&
             soundThresholdToConfirmIntentReached
           ) {
+            // If the threshold to transcribe has not been reached yet, update the progress bar with 'ready to transcribe' timer,
+            // stop and process the recording once/if the threshold is reached.
+            // Otherwise, if there is no audio to transcribe and there is a message in the chat,
+            // update the progress bar with 'ready to send' timer, and send it once/if the threshold to send is reached.
+            // If we are not counting down towards either of those actions, clear the progress bar.
             if (!silenceThresholdToTranscribeReached) {
+              // Count down towards transcribing the recording
               progressBarUpdate(
                 AudioState.ReadyToTranscribe,
                 conf.SPEECH.TIME_TO_TRANSCRIBE,
@@ -274,11 +283,12 @@ const useSpeechRecognition = (
                 conf.SPEECH.DISPLAY_PROGRESS_GRACE_PERIOD
               );
 
+              // Transcribe the recording and update flags
               if (dateNow - silenceStartedAt > conf.SPEECH.TIME_TO_TRANSCRIBE) {
                 silenceStartedAt = dateNow; // count from 0 for sending interaction
                 silenceThresholdToTranscribeReached = true;
                 isThereAudioToTranscribeRef.current = false;
-                mediaRecorderRef.current?.stop();
+                await audioRecorderRef.current?.tryStopAndProcess();
               }
             } else if (
               !isThereAudioToTranscribeRef.current &&
@@ -286,6 +296,7 @@ const useSpeechRecognition = (
               silenceThresholdToTranscribeReached &&
               messageRef.current?.trim()
             ) {
+              // Count down towards sending the message
               progressBarUpdate(
                 AudioState.ReadyToSend,
                 conf.SPEECH.TIME_TO_SEND,
@@ -294,37 +305,40 @@ const useSpeechRecognition = (
                 conf.SPEECH.DISPLAY_PROGRESS_GRACE_PERIOD
               );
 
+              // Send the message if ready and update flags
               if (dateNow - silenceStartedAt > conf.SPEECH.TIME_TO_SEND) {
                 silenceStartedAt = null;
                 soundThresholdToConfirmIntentReached = false;
                 sendMessageRef.current();
               }
             } else {
-              progressBarClear();
+              progressBarClear(); // No actions are taking place, clear the progress bar.
             }
           } else if (soundStartedAt !== null) {
-            progressBarClear();
+            progressBarClear(); // No countdowns when the user is speaking - reset the progress.
+            await audioRecorderRef.current?.tryResume(); // Resume the recording immediately to not miss anything.
 
-            if (mediaRecorderRef.current?.state === "paused") {
-              mediaRecorderRef.current.resume();
-            }
+            // If the noise has been detected for long enough, update flags to confirm the user intended to speak.
             if (dateNow - soundStartedAt > conf.SPEECH.TIME_TO_CONFIRM_SPEECH) {
               isThereAudioToTranscribeRef.current = true;
               soundThresholdToConfirmIntentReached = true;
             }
           } else {
+            // Silent, but didn't reach the intent threshold - no progress should be displayed.
             progressBarClear();
           }
         }, conf.SPEECH.DETECTION_INTERVAL);
       },
+      // Set the noise detection timeout delay to the calibration time + 5ms
       conf.SPEECH.CALIBRATION_INTERVAL * conf.SPEECH.CALIBRATION_SAMPLE_COUNT +
         5
     );
 
-    mediaRecorderRef.current.start(conf.SPEECH.RECORDING_TIMESLICE);
+    // Start the first recording
+    await audioRecorderRef.current.tryStart();
   }, [setIsListening, setMessage]);
 
-  const stopListening = useCallback(() => {
+  const stopListening = useCallback(async () => {
     setIsListening(false);
     progressBarClear();
 
@@ -333,8 +347,8 @@ const useSpeechRecognition = (
       noiseDetectionIntervalRef.current = null;
     }
 
-    if (mediaRecorderRef.current !== null) {
-      mediaRecorderRef.current.stop();
+    if (audioRecorderRef.current !== null) {
+      await audioRecorderRef.current?.tryStopAndProcess();
     }
 
     if (mediaStreamRef.current !== null) {

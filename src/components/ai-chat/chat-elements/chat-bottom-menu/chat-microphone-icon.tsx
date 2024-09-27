@@ -13,7 +13,7 @@ export default function ChatMicrophoneIcon({
 }) {
   return isListening ? (
     <div
-      id="chat-microphone-button"
+      id="chat-microphone-stop-button"
       className={`p-2 cursor-pointer`}
       onClick={toggleListening}
     >
@@ -25,6 +25,7 @@ export default function ChatMicrophoneIcon({
       title="To use commands, say “chat” followed by “send”, “clear” or “cancel”"
     >
       <div
+        id="chat-microphone-start-button"
         className={`p-2 cursor-pointer hover:bg-gray text-fg-secondary-light`}
         onClick={toggleListening}
       >

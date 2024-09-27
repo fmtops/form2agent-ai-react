@@ -20,6 +20,7 @@ import { getStoredApiKey } from "../../utils/api-key.utils";
 import { SHOULD_SHOW_API_KEY_DIALOG } from "../../consts/api-key.consts";
 import { AiChatService } from "../../services/ai-chat-service";
 import { StreamingService } from "../../services/streaming-service";
+import { useAudio } from "../../contexts/AudioContext";
 
 /**
  * ChatWindow component
@@ -165,12 +166,20 @@ const ChatWindow: React.FC<ChatPropType> = ({
     handleNewChat();
   };
 
-  const handleHoldInteraction = async (withVoice: boolean) => {
+  const { unlockAudio } = useAudio();
+
+  const setVoiceAndGetPermissions = async (voiceResponse: boolean) => {
+    if (voiceResponse) await unlockAudio();
+    setVoiceResponse(voiceResponse);
+  };
+
+  const handleHoldInteraction = async () => {
     if (!getStoredApiKey()) {
       setIsApiKeyDialogVisible(true);
       return;
     }
-    if (withVoice) setVoiceResponse(true);
+
+    setVoiceAndGetPermissions(true);
     if (chatId) {
       isListening ? stopListening() : startListening();
       return;
@@ -261,7 +270,7 @@ const ChatWindow: React.FC<ChatPropType> = ({
         <ChatBottomMenu
           disabled={disableChat || !chatId}
           disabledVoice={isTTSPlaying}
-          setVoiceResponse={setVoiceResponse}
+          setVoiceResponse={setVoiceAndGetPermissions}
           voiceResponse={voiceResponse}
           message={message}
           setMessage={setMessage}

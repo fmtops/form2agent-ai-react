@@ -7,6 +7,7 @@ import { FormikProps } from "formik";
 import { HELPDESK_FORM_VALUES } from "../consts/helpdesk.consts";
 import FormPageLayout from "../layouts/form-page-layout";
 import { stringifyValues } from "../utils/chat.utilts";
+import { AudioProvider } from "../contexts/AudioContext";
 
 const HelpdeskPage = () => {
   const [form, setForm] = useState(HELPDESK_FORM_VALUES);
@@ -49,29 +50,31 @@ const HelpdeskPage = () => {
   };
 
   return (
-    <FormPageLayout
-      title="Helpdesk Form"
-      subTitle="Fill out this form to quickly get assistance from our Helpdesk. Provide details about your issue to ensure a fast and effective response."
-      onSubmit={onSubmit}
-      chatElement={
-        <ChatWindow
-          executeFormLogic={executeFormLogic}
-          formDescription="Fill out this form to quickly get assistance from our Helpdesk."
-          formValues={stringifyValues(form)}
-          formContext={stringifyValues(HelpdeskDescriptionContext)}
-          setIsChatOpen={setIsChatOpen}
+    <AudioProvider>
+      <FormPageLayout
+        title="Helpdesk Form"
+        subTitle="Explore how Form2Agent AI can assist in submitting a helpdesk request by holding the chat button to speak with the assistant."
+        onSubmit={onSubmit}
+        chatElement={
+          <ChatWindow
+            executeFormLogic={executeFormLogic}
+            formDescription="Fill out this form to quickly get assistance from our Helpdesk."
+            formValues={stringifyValues(form)}
+            formContext={stringifyValues(HelpdeskDescriptionContext)}
+            setIsChatOpen={setIsChatOpen}
+          />
+        }
+        isChatOpen={isChatOpen}
+        isSuccessModalOpen={isSuccessModalOpen}
+        onCloseModal={() => setIsSuccessModalOpen(false)}
+      >
+        <HelpdeskForm
+          form={form}
+          setForm={setForm}
+          formikRef={formikHelpdeskRef}
         />
-      }
-      isChatOpen={isChatOpen}
-      isSuccessModalOpen={isSuccessModalOpen}
-      onCloseModal={() => setIsSuccessModalOpen(false)}
-    >
-      <HelpdeskForm
-        form={form}
-        setForm={setForm}
-        formikRef={formikHelpdeskRef}
-      />
-    </FormPageLayout>
+      </FormPageLayout>
+    </AudioProvider>
   );
 };
 

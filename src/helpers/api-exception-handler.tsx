@@ -1,5 +1,4 @@
-import { AxiosError } from "axios";
-import { APIError } from "../types/api/api-error";
+import { APIError } from "../lib/errors/api-error";
 
 /**
  *
@@ -32,8 +31,6 @@ export const handleAPIError = (error: unknown) => {
 
   if (error instanceof APIError) {
     message = getErrorMessage(error.statusCode) ?? message;
-  } else if (error instanceof AxiosError) {
-    message = getErrorMessage(error.response?.status) ?? message;
   } else if (error instanceof TypeError) {
     message = getErrorMessage(null) ?? message;
   }

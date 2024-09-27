@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { AiAudioService } from "../services/ai-audio-service";
 import { DEFAULT_TTS_FILE_FORMAT } from "../consts/audio.consts";
+import { useAudio } from "../contexts/AudioContext";
 
 /**
  * @param onEnd - callback function to call when the TTS ends
@@ -16,7 +17,7 @@ import { DEFAULT_TTS_FILE_FORMAT } from "../consts/audio.consts";
  */
 const useSpeechSynthesis = (onEnd: () => void) => {
   const aiAudioService = new AiAudioService();
-  const audioRef = useRef(new Audio());
+  const { audioRef } = useAudio();
   const [isTTSPlaying, setIsTTSPlaying] = useState(false);
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
 
