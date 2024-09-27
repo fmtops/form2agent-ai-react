@@ -26,6 +26,7 @@ import {
   createNewFormObject,
   mergeFormData,
 } from "../utils/patient-registration.utils";
+import { AudioProvider } from "../contexts/AudioContext";
 
 export const PatientRegistrationPage = () => {
   const [patientRegistrationForm, setPatientRegistrationForm] =
@@ -159,45 +160,50 @@ export const PatientRegistrationPage = () => {
   };
 
   return (
-    <FormPageLayout
-      title="Patient Registration"
-      subTitle="Please provide detailed health information to assist in your diagnosis and treatment planning."
-      isChatOpen={isChatOpen}
-      chatElement={
-        <ChatWindow
-          executeFormLogic={executeFormLogic}
-          formDescription="Provide detailed health information to assist the doctor in patient's diagnosis and treatment planning."
-          formValues={stringifyValues(patientRegistrationForm)}
-          formContext={stringifyValues(PatientRegistrationContext)}
-          setIsChatOpen={setIsChatOpen}
-        />
-      }
-      isSuccessModalOpen={isSuccessModalOpen}
-      onCloseModal={() => setIsSuccessModalOpen(false)}
-    >
-      <div className="flex flex-col p-4 gap-y-8">
-        <ProgressBar steps={PatientRegistrationSteps} currentStep={pageIndex} />
-        {renderPage()}
-        <div className="flex flex-row-reverse justify-end gap-4">
-          <SubmitButton
-            value={
-              PatientRegistrationSteps.length === pageIndex
-                ? "Submit"
-                : "Next Step"
-            }
-            className="w-24"
-            onClick={handleNextStep}
+    <AudioProvider>
+      <FormPageLayout
+        title="Patient Registration"
+        subTitle="Try Form2Agent AI with a multi-step patient registration form. Hold the button to speak with the assistant, upload a photo of a registration form or paste details into the chat to quickly add the patient information."
+        isChatOpen={isChatOpen}
+        chatElement={
+          <ChatWindow
+            executeFormLogic={executeFormLogic}
+            formDescription="Provide detailed health information to assist the doctor in patient's diagnosis and treatment planning."
+            formValues={stringifyValues(patientRegistrationForm)}
+            formContext={stringifyValues(PatientRegistrationContext)}
+            setIsChatOpen={setIsChatOpen}
           />
-          {pageIndex > 1 && (
-            <button
-              onClick={handleBackStep}
-              className={`py-[10px] mt-4 border rounded shadow-sm w-20 border-border-brand-light text-text-brand-light`}
-            >
-              Back
-            </button>
-          )}
+        }
+        isSuccessModalOpen={isSuccessModalOpen}
+        onCloseModal={() => setIsSuccessModalOpen(false)}
+      >
+        <div className="flex flex-col p-4 gap-y-8">
+          <ProgressBar
+            steps={PatientRegistrationSteps}
+            currentStep={pageIndex}
+          />
+          {renderPage()}
+          <div className="flex flex-row-reverse justify-end gap-4">
+            <SubmitButton
+              value={
+                PatientRegistrationSteps.length === pageIndex
+                  ? "Submit"
+                  : "Next Step"
+              }
+              className="w-24"
+              onClick={handleNextStep}
+            />
+            {pageIndex > 1 && (
+              <button
+                onClick={handleBackStep}
+                className={`py-[10px] mt-4 border rounded shadow-sm w-20 border-border-brand-light text-text-brand-light`}
+              >
+                Back
+              </button>
+            )}
+          </div>
         </div>
-      </div>
-    </FormPageLayout>
+      </FormPageLayout>
+    </AudioProvider>
   );
 };

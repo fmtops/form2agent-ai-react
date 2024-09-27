@@ -1,5 +1,5 @@
 import { throwIfAPIResponseNotOk } from "../helpers/api-exception-handler";
-import { APIError } from "../types/api/api-error";
+import { APIError } from "../lib/errors/api-error";
 
 // Global in-memory CSRF token variable
 let csrfToken: string | null = null;

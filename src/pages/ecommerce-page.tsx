@@ -24,6 +24,7 @@ import { DEFAULT_FILTERS_VALUES } from "../consts/ecommerce.consts";
 import FormPageLayout from "../layouts/form-page-layout";
 import { stringifyValues } from "../utils/chat.utilts";
 import OrdersTitle from "../components/ecommerce/orders-title";
+import { AudioProvider } from "../contexts/AudioContext";
 
 let orders: Order[] = generateOrders();
 
@@ -139,61 +140,66 @@ export default function EcommercePage() {
   };
 
   return (
-    <FormPageLayout
-      containerWidth={
-        isResHigherThanMobile && isChatOpen ? "calc(100% - 387px)" : "100%"
-      }
-      title={
-        <OrdersTitle
-          setIsFiltersMobileOpen={() => setIsFiltersMobileOpen((prev) => !prev)}
-        />
-      }
-      chatElement={
-        <ChatWindow
-          executeFormLogic={executeFormLogic}
-          formDescription={CHAT_ECOMMERCE_DESCRIPTION}
-          formValues={stringifyValues({
-            filters,
-            orders: [],
-          })}
-          formContext={stringifyValues({
-            filters: FiltersDescriptionContext,
-            orders: OrderDescriptionContext,
-          })}
-          setIsChatOpen={setIsChatOpen}
-        />
-      }
-      isChatOpen={isChatOpen}
-    >
-      <div
-        className={`flex h-auto gap-4 w-full ${
-          isFiltersMobileOpen && !isResHigherThanMobile
-            ? "flex-col-reverse"
-            : ""
-        }`}
+    <AudioProvider>
+      <FormPageLayout
+        containerWidth={
+          isResHigherThanMobile && isChatOpen ? "calc(100% - 387px)" : "100%"
+        }
+        title={
+          <OrdersTitle
+            setIsFiltersMobileOpen={() =>
+              setIsFiltersMobileOpen((prev) => !prev)
+            }
+          />
+        }
+        subTitle="Explore how Form2Agent AI manages datasets. Change order details, search, and filter orders by speaking with the AI assistant."
+        chatElement={
+          <ChatWindow
+            executeFormLogic={executeFormLogic}
+            formDescription={CHAT_ECOMMERCE_DESCRIPTION}
+            formValues={stringifyValues({
+              filters,
+              orders: [],
+            })}
+            formContext={stringifyValues({
+              filters: FiltersDescriptionContext,
+              orders: OrderDescriptionContext,
+            })}
+            setIsChatOpen={setIsChatOpen}
+          />
+        }
+        isChatOpen={isChatOpen}
       >
-        <OrdersTable
-          orders={filteredOrders}
-          updatedOrders={updatedOrders}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          handleRowsPerPageChange={handleRowsPerPageChange}
-          handlePageChange={handlePageChange}
-        />
-        <OrdersFilter
-          isVisible={isFiltersMobileOpen || isResHigherThanMobile}
-          dateFilter={filters.dateFilter}
-          onDateFilterChange={onDateFilterChange}
-          statusFilter={filters.statusFilter}
-          onStatusFilterChange={handleStatusFilterChange}
-          resetFilters={resetFilters}
-          querySearch={filters.querySearch}
-          setSearchQuery={handleSearchQueryChange}
-          handleAmountChange={handleAmountChange}
-          amountFilter={filters.amountFilter}
-          onCloseChat={() => setIsFiltersMobileOpen(false)}
-        />
-      </div>
-    </FormPageLayout>
+        <div
+          className={`flex h-auto gap-4 w-full ${
+            isFiltersMobileOpen && !isResHigherThanMobile
+              ? "flex-col-reverse"
+              : ""
+          }`}
+        >
+          <OrdersTable
+            orders={filteredOrders}
+            updatedOrders={updatedOrders}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            handleRowsPerPageChange={handleRowsPerPageChange}
+            handlePageChange={handlePageChange}
+          />
+          <OrdersFilter
+            isVisible={isFiltersMobileOpen || isResHigherThanMobile}
+            dateFilter={filters.dateFilter}
+            onDateFilterChange={onDateFilterChange}
+            statusFilter={filters.statusFilter}
+            onStatusFilterChange={handleStatusFilterChange}
+            resetFilters={resetFilters}
+            querySearch={filters.querySearch}
+            setSearchQuery={handleSearchQueryChange}
+            handleAmountChange={handleAmountChange}
+            amountFilter={filters.amountFilter}
+            onCloseChat={() => setIsFiltersMobileOpen(false)}
+          />
+        </div>
+      </FormPageLayout>
+    </AudioProvider>
   );
 }

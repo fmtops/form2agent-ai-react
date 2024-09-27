@@ -8,6 +8,7 @@ import FormPageLayout from "../layouts/form-page-layout";
 import { stringifyValues } from "../utils/chat.utilts";
 import { mergeFormData } from "../utils/invoice.utils";
 import { FormikProps } from "formik";
+import { AudioProvider } from "../contexts/AudioContext";
 
 const InvoicePage = () => {
   const [form, setForm] = useState(INVOICE_FORM_VALUES);
@@ -45,25 +46,31 @@ const InvoicePage = () => {
   };
 
   return (
-    <FormPageLayout
-      title="Invoice Details"
-      subTitle="Here you can provide more information or display invoice details."
-      onSubmit={handleSubmit}
-      chatElement={
-        <ChatWindow
-          executeFormLogic={executeFormLogic}
-          formDescription="Add a new invoice to the system."
-          formValues={stringifyValues(form)}
-          formContext={stringifyValues(DescriptionContext)}
-          setIsChatOpen={setIsChatOpen}
+    <AudioProvider>
+      <FormPageLayout
+        title="Invoice Details"
+        subTitle="See how Form2Agent AI manages invoice forms with a dynamic number of item inputs. Upload a photo or a PDF file of your invoice or hold the button to speak with the assistant and quickly add your invoice details."
+        onSubmit={handleSubmit}
+        chatElement={
+          <ChatWindow
+            executeFormLogic={executeFormLogic}
+            formDescription="Add a new invoice to the system."
+            formValues={stringifyValues(form)}
+            formContext={stringifyValues(DescriptionContext)}
+            setIsChatOpen={setIsChatOpen}
+          />
+        }
+        isChatOpen={isChatOpen}
+        isSuccessModalOpen={isSuccessModalOpen}
+        onCloseModal={() => setIsSuccessModalOpen(false)}
+      >
+        <InvoiceForm
+          form={form}
+          setForm={setForm}
+          formikRef={formikInvoiceRef}
         />
-      }
-      isChatOpen={isChatOpen}
-      isSuccessModalOpen={isSuccessModalOpen}
-      onCloseModal={() => setIsSuccessModalOpen(false)}
-    >
-      <InvoiceForm form={form} setForm={setForm} formikRef={formikInvoiceRef} />
-    </FormPageLayout>
+      </FormPageLayout>
+    </AudioProvider>
   );
 };
 

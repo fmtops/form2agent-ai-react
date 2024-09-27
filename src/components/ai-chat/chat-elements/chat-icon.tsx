@@ -12,8 +12,6 @@ import {
 } from "../../../consts/chat.consts";
 import HoldOrPressButton from "../../common/hold-press-button";
 import { getTooltipText } from "../../../utils/chat.utilts";
-import ConfirmModal from "../../common/confirm-modal";
-import useResolutionCheck from "../../../hooks/useResolutionCheck";
 
 /**
  * @param onClick - function to handle the click event
@@ -40,16 +38,13 @@ export default function ChatIcon({
   isListening: boolean;
   audioState: AudioState;
   audioStateProgress: number;
-  handleHoldInteraction: (withVoice: boolean) => void;
+  handleHoldInteraction: () => void;
   isChatBeingCreated: boolean;
   isExpanded: boolean;
 }) {
   const firstRenderRef = useRef(true);
   const [showTooltip, setShowTooltip] = useState(false);
   const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const { isLaptopResolution } = useResolutionCheck();
-  const [isAudioConfirmed, setIsAudioConfirmed] = useState(isLaptopResolution);
 
   useEffect(() => {
     if (firstRenderRef.current) {
@@ -62,18 +57,6 @@ export default function ChatIcon({
   }, []);
 
   const tooltipText = getTooltipText(audioState);
-
-  const onHold = () => {
-    if (!isAudioConfirmed) {
-      setShowConfirmationModal(true);
-    } else handleHoldInteraction(isAudioConfirmed);
-  };
-
-  const handleConfirmAudio = () => {
-    setIsAudioConfirmed(true);
-    setShowConfirmationModal(false);
-    handleHoldInteraction(true);
-  };
 
   return (
     <>
@@ -96,7 +79,7 @@ export default function ChatIcon({
           <HoldOrPressButton
             id="chat-icon-button"
             handleClick={onClick}
-            onHold={onHold}
+            onHold={handleHoldInteraction}
             disabled={isChatBeingCreated}
             holdTime={HOLD_TIME_MS}
           >
@@ -128,22 +111,6 @@ export default function ChatIcon({
           </HoldOrPressButton>
         </div>
       </StyledToolTip>
-      {showConfirmationModal && (
-        <ConfirmModal
-          open={showConfirmationModal}
-          onClose={() => setShowConfirmationModal(false)}
-          onConfirm={handleConfirmAudio}
-          onCancel={() => {
-            setShowConfirmationModal(false);
-            handleHoldInteraction(false);
-          }}
-          title="Allow app to play audio?"
-        >
-          <div className="mt-2 mb-8">
-            Enabling this feature lets you hear audio responses in the chat.
-          </div>
-        </ConfirmModal>
-      )}
     </>
   );
 }

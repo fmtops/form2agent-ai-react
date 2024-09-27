@@ -1,8 +1,6 @@
-import axios, { AxiosResponse } from "axios";
 import { TranscribeResponse } from "../types/api/AiChatServiceTypes";
 import { DEFAULT_TTS_VOICE_NAME } from "../consts/audio.consts";
 import conf from "../configs/aiconfig.json";
-import { getStoredApiKey } from "../utils/api-key.utils";
 import f2aFetch from "../utils/fetch.utils";
 
 class NetworkError extends Error {}
