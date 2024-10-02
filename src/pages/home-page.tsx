@@ -4,8 +4,17 @@ import MedicalInformationOutlinedIcon from "@mui/icons-material/MedicalInformati
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import InformationCard from "../components/common/information-card";
 import ListAltOutlinedIcon from "@mui/icons-material/ListAltOutlined";
+import { useLayout } from "../contexts/LayoutContext";
 
 const HomePage = () => {
+  const { isNavbarExpanded } = useLayout();
+
+  const useCaseGridClasses = `gap-4 items-stretch w-full grid grid-cols-1 
+    ${isNavbarExpanded ? "md:grid-cols-2 xl:grid-cols-4" : "sm:grid-cols-2 lg:grid-cols-4"}`;
+
+  const suggestionGridClasses = `w-full gap-4 grid grid-cols-1
+    ${isNavbarExpanded ? "md:grid-cols-2" : "sm:grid-cols-2"}`;
+
   const logoImgAttributes = {
     className: "w-8 h-8",
     src: "./f2a_signet.svg",
@@ -16,7 +25,7 @@ const HomePage = () => {
     target: "_blank",
   };
   const contactLinkAttributes = {
-    className: "underline",
+    className: "text-text-brand-light",
     href: "https://calendar.app.google/6jaKPZD9oa9xHDty5",
     target: "_blank",
   };
@@ -36,18 +45,19 @@ const HomePage = () => {
   );
 
   return (
-    <div className={`bg-white p-8`}>
+    <div className={`bg-white py-8`}>
       <div>
         <h1 className="text-2xl font-medium mb-2 flex items-center gap-2">
           <img {...logoImgAttributes} /> Form2Agent AI Demo
         </h1>
         {demoAppDescriptionComponent}
+        <br />
         {callToActionComponent}
       </div>
       <h2 className={`text-lg mt-12 mb-6 font-medium text-text-primary-light`}>
         Explore use case examples
       </h2>
-      <div className="flex gap-4 items-stretch w-full">
+      <div className={`${useCaseGridClasses}`}>
         <FormCard
           title="Add invoice"
           description="Quickly add a new invoice to the system."
@@ -83,15 +93,15 @@ const HomePage = () => {
         >
           Suggested
         </h2>
-        <div className="flex w-full gap-4">
+        <div className={`${suggestionGridClasses}`}>
           <InformationCard
-            title="Learn more about how Form2Agent can transform your form completion process."
+            title="Learn more about how Form2Agent AI can transform your form completion process."
             buttonTitle="Visit our website"
             linkProps={websiteLinkProps}
             image={"./form2agent-microsite.png"}
           />
           <InformationCard
-            title="Download our PDF to explore Form2Agent's powerful capabilities."
+            title="Download our PDF to explore Form2Agent AI's powerful capabilities."
             buttonTitle="Download PDF"
             linkProps={{ href: "./form2Agent.pdf", download: "form2Agent.pdf" }}
             image={"./form2agent-pdf.png"}

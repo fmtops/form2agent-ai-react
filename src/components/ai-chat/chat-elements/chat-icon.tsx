@@ -12,6 +12,7 @@ import {
 } from "../../../consts/chat.consts";
 import HoldOrPressButton from "../../common/hold-press-button";
 import { getTooltipText } from "../../../utils/chat.utilts";
+import { useLayout } from "../../../contexts/LayoutContext";
 
 /**
  * @param onClick - function to handle the click event
@@ -20,7 +21,6 @@ import { getTooltipText } from "../../../utils/chat.utilts";
  * @param audioStateProgress - progress of the audio state
  * @param handleHoldInteraction - function to handle the hold interaction
  * @param isChatBeingCreated - boolean to check if the chat is being created
- * @param isExpanded - boolean to check if the chat is expanded
  * @returns ChatIcon component
  * @description Chat Icon which opens the chat window, shows the tooltip and state of listening when chat is minimized.
  * When being rendered for the first time, it shows the tooltip for a short time.
@@ -32,7 +32,6 @@ export default function ChatIcon({
   audioStateProgress,
   handleHoldInteraction,
   isChatBeingCreated,
-  isExpanded,
 }: {
   onClick: () => void;
   isListening: boolean;
@@ -40,8 +39,8 @@ export default function ChatIcon({
   audioStateProgress: number;
   handleHoldInteraction: () => void;
   isChatBeingCreated: boolean;
-  isExpanded: boolean;
 }) {
+  const { isChatExpanded } = useLayout();
   const firstRenderRef = useRef(true);
   const [showTooltip, setShowTooltip] = useState(false);
   const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -61,7 +60,7 @@ export default function ChatIcon({
   return (
     <>
       <StyledToolTip
-        className={`${isExpanded ? "invisible" : ""} z-40`}
+        className={`${isChatExpanded ? "invisible" : ""} z-40`}
         disableHoverListener={Boolean(tooltipText)}
         title={showTooltip ? "Long press to start voice chat" : tooltipText}
         placement="left"
@@ -70,7 +69,7 @@ export default function ChatIcon({
         PopperProps={{ style: { zIndex: 40 } }}
       >
         <div
-          className={`fixed right-8 z-40 bottom-8 lg:right-2 lg:bottom-2 rounded shadow-md ${
+          className={`fixed right-8 z-40 bottom-8 rounded shadow-md ${
             isListening && audioState === AudioState.NoState
               ? "bg-[#EF4444]"
               : "bg-bg-brand-contrast-light"

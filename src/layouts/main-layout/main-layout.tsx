@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect } from "react";
 import SideNav from "../../components/sidenav/sidenav";
 import useResolutionCheck from "../../hooks/useResolutionCheck";
 import BurgerButton from "../../components/sidenav/burger-button";
@@ -6,6 +6,7 @@ import StyledNavDrawer, {
   MainDrawerCont,
 } from "../../components/sidenav/nav-drawer";
 import CookiePopup from "../../components/common/cookie-popup";
+import { useLayout } from "../../contexts/LayoutContext";
 
 type MainLayoutProps = {
   children: ReactNode;
@@ -18,32 +19,32 @@ type MainLayoutProps = {
  *
  */
 const MainLayout = ({ children }: MainLayoutProps) => {
-  const { isResHigherThanMobile } = useResolutionCheck();
-  const [isNavbarOpen, setIsNavbarOpen] = useState(isResHigherThanMobile);
+  const { shouldShowContent, isResHigherThanTablet } = useResolutionCheck();
+  const { isNavbarExpanded, setIsNavbarExpanded } = useLayout();
+
+  useEffect(() => {
+    setIsNavbarExpanded(isResHigherThanTablet);
+  }, []);
+
+  const mainLayoutClasses = `flex min-h-screen transition-all duration-500 ease-in-out overflow-y-auto 
+    bg-white text-black ${isNavbarExpanded ? "ml-nav-width max-content-with-nav-bp:ml-0" : ""}`;
 
   return (
-    <div
-      className={
-        "flex min-h-screen transition-all duration-500 ease-in-out overflow-y-auto bg-white text-black"
-      }
-    >
-      <StyledNavDrawer
-        isResHigherThanMobile={isResHigherThanMobile}
-        variant={"persistent"}
-        anchor="left"
-        hideBackdrop
-        open={isNavbarOpen}
-      >
-        <SideNav setIsNavbarOpen={setIsNavbarOpen} />
-      </StyledNavDrawer>
-      <MainDrawerCont
-        isResHigherThanMobile={isResHigherThanMobile}
-        open={isNavbarOpen}
-      >
+    <div className={mainLayoutClasses}>
+      <MainDrawerCont isResHigherThanTablet={isResHigherThanTablet}>
+        <StyledNavDrawer
+          shouldShowContent={shouldShowContent}
+          variant={"persistent"}
+          anchor="left"
+          hideBackdrop
+          open={isNavbarExpanded}
+        >
+          <SideNav setIsNavbarOpen={setIsNavbarExpanded} />
+        </StyledNavDrawer>
         <div className={"flex-grow bg-white"}>
           <BurgerButton
-            isVisible={isNavbarOpen}
-            onClick={() => setIsNavbarOpen(true)}
+            isVisible={isNavbarExpanded}
+            onClick={() => setIsNavbarExpanded(true)}
           />
           {children}
         </div>

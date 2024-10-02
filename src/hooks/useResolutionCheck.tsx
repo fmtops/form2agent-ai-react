@@ -1,12 +1,19 @@
 import { useState, useEffect } from "react";
-import { LAPTOP_WIDTH, TABLET_WIDTH } from "../consts/resolutions.consts";
+import {
+  LAPTOP_WIDTH,
+  TABLET_WIDTH,
+  HIDE_CONTENT_BP,
+} from "../consts/resolutions.consts";
 
 /**
  * @returns returns the resolution check values
  * @description Used to check the resolution of the screen
  */
 const useResolutionCheck = () => {
-  const [isResHigherThanMobile, setIsResHigherThanMobile] = useState(
+  const [shouldShowContent, setShouldShowContent] = useState(
+    window.innerWidth >= HIDE_CONTENT_BP
+  );
+  const [isResHigherThanTablet, setIsResHigherThanTablet] = useState(
     window.innerWidth >= TABLET_WIDTH
   );
   const [isLaptopResolution, setIsLaptopResolution] = useState(
@@ -15,7 +22,8 @@ const useResolutionCheck = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsResHigherThanMobile(window.innerWidth >= TABLET_WIDTH);
+      setShouldShowContent(window.innerWidth >= HIDE_CONTENT_BP);
+      setIsResHigherThanTablet(window.innerWidth >= TABLET_WIDTH);
       setIsLaptopResolution(window.innerWidth >= LAPTOP_WIDTH);
     };
 
@@ -26,7 +34,11 @@ const useResolutionCheck = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  return { isResHigherThanMobile, isLaptopResolution };
+  return {
+    shouldShowContent,
+    isResHigherThanTablet,
+    isLaptopResolution,
+  };
 };
 
 export default useResolutionCheck;

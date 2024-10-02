@@ -32,7 +32,6 @@ export const PatientRegistrationPage = () => {
   const [patientRegistrationForm, setPatientRegistrationForm] =
     useState(PATIENT_FORM_VALUES);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(false);
   const formikPatientDataRef =
     useRef<FormikProps<PatientPersonalDataFormType>>(null);
   const formikParentGuardianInformationRef =
@@ -164,20 +163,18 @@ export const PatientRegistrationPage = () => {
       <FormPageLayout
         title="Patient Registration"
         subTitle="Try Form2Agent AI with a multi-step patient registration form. Hold the button to speak with the assistant, upload a photo of a registration form or paste details into the chat to quickly add the patient information."
-        isChatOpen={isChatOpen}
         chatElement={
           <ChatWindow
             executeFormLogic={executeFormLogic}
             formDescription="Provide detailed health information to assist the doctor in patient's diagnosis and treatment planning."
             formValues={stringifyValues(patientRegistrationForm)}
             formContext={stringifyValues(PatientRegistrationContext)}
-            setIsChatOpen={setIsChatOpen}
           />
         }
         isSuccessModalOpen={isSuccessModalOpen}
         onCloseModal={() => setIsSuccessModalOpen(false)}
       >
-        <div className="flex flex-col p-4 gap-y-8">
+        <div className="flex flex-col gap-y-8">
           <ProgressBar
             steps={PatientRegistrationSteps}
             currentStep={pageIndex}

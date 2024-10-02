@@ -8,7 +8,7 @@ export default function BurgerButton({
 }) {
   return (
     <button
-      className={`w-full py-6 md:p-6 md:pb-0 flex items-start ${
+      className={`w-full pt-6 flex items-start ${
         isVisible ? "hidden" : "block"
       }`}
       onClick={onClick}

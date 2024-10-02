@@ -129,7 +129,7 @@ export default function ChatBottomMenu({
 
   return (
     <div
-      className={`flex flex-col mt-auto mb-4 lg:mb-0 p-4 border-t-2 border-t-border-primary-light`}
+      className={`flex flex-col mt-auto p-4 border-t-2 border-t-border-primary-light`}
     >
       {fileName !== "" && (
         <FileSectionComponent

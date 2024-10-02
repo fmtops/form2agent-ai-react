@@ -13,7 +13,6 @@ import { AudioProvider } from "../contexts/AudioContext";
 const InvoicePage = () => {
   const [form, setForm] = useState(INVOICE_FORM_VALUES);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(false);
   useEffect(() => {
     setForm(INVOICE_FORM_VALUES);
   }, []);
@@ -57,10 +56,8 @@ const InvoicePage = () => {
             formDescription="Add a new invoice to the system."
             formValues={stringifyValues(form)}
             formContext={stringifyValues(DescriptionContext)}
-            setIsChatOpen={setIsChatOpen}
           />
         }
-        isChatOpen={isChatOpen}
         isSuccessModalOpen={isSuccessModalOpen}
         onCloseModal={() => setIsSuccessModalOpen(false)}
       >

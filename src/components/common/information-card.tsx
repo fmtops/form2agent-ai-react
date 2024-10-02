@@ -13,7 +13,7 @@ export default function InformationCard({
 }) {
   return (
     <div
-      className={`flex flex-col pt-8 px-6 rounded border-[1px] w-full border-border-primary-light text-text-primary-light`}
+      className={`flex flex-col py-8 px-6 rounded border-[1px] w-full border-border-primary-light text-text-primary-light`}
     >
       <div className="flex-1 flex flex-col">
         <h2 className={`text-lg min-h-14 font-medium text-text-primary-light`}>
@@ -23,7 +23,7 @@ export default function InformationCard({
           {buttonTitle}
         </StyledLink>
       </div>
-      <img src={image} alt={title} className="w-full h-60 object-contain" />
+      <img src={image} alt={title} className="w-full object-contain" />
     </div>
   );
 }
