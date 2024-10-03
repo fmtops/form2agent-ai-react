@@ -15,6 +15,7 @@ import {
   surgeryOptions,
 } from "../../consts/patient-registration.consts";
 import { CheckboxGroupComponent } from "../common/form/checkbox-group";
+import { useLayout } from "../../contexts/LayoutContext";
 
 export interface DiagnosisComponentProps {
   form: DiagnosisFormType;
@@ -259,24 +260,45 @@ const FormComponent = ({
   handleAnyAllergiesChange,
   handleAbnormalitiesChange,
 }: FormComponentProps) => {
+  const { isChatExpanded, isNavbarExpanded } = useLayout();
+
   useEffect(() => {
     setValues(form);
   }, [form, setValues]);
 
+  const textFieldGridRespClasses =
+    isChatExpanded && isNavbarExpanded
+      ? "md-chat:grid-cols-2"
+      : isChatExpanded
+        ? "sm-chat:grid-cols-2"
+        : isNavbarExpanded
+          ? "md:grid-cols-2"
+          : "sm:grid-cols-2";
+
+  const radioGridRespClasses =
+    isChatExpanded && isNavbarExpanded
+      ? "md-chat:grid-cols-2"
+      : isChatExpanded
+        ? "sm-chat:grid-cols-2"
+        : isNavbarExpanded
+          ? "md:grid-cols-2"
+          : "sm:grid-cols-2";
+
+  const textFieldGridClasses = `gap-4 grid grid-cols-1 ${textFieldGridRespClasses}`;
+  const radioGridClasses = `gap-4 max-w-2xl grid grid-cols-1 ${radioGridRespClasses}`;
+
   return (
-    <>
+    <div className="flex flex-col gap-y-4">
       <div className="text-md font-medium">Diagnosis</div>
       <Form className="flex flex-col gap-y-4">
-        <div className={`flex gap-4`}>
+        <div className={textFieldGridClasses}>
           <StyledField
-            className={`w-1/2`}
             name="weight"
             type="text"
             placeholder="Weight (lb 1.00-400.00)"
             onBlur={handleBlur}
           />
           <StyledField
-            className={`w-1/2`}
             name="height"
             type="text"
             placeholder="Height/Length (ft 1.00-8.00)"
@@ -309,7 +331,7 @@ const FormComponent = ({
           surgeries)
         </span>
         <span className="font-medium text-sm">Lip - Type of Cleft Lip</span>
-        <div className="flex gap-x-36">
+        <div className={radioGridClasses}>
           <div className={`py-2`}>
             <RadioGroupComponent
               options={cleftLipTypeOptions}
@@ -332,7 +354,7 @@ const FormComponent = ({
         <span className="font-medium text-sm">
           Alveolus - Type of Cleft Lip
         </span>
-        <div className="flex gap-x-36">
+        <div className={radioGridClasses}>
           <div className={`py-2`}>
             <RadioGroupComponent
               options={cleftLipTypeOptions}
@@ -355,7 +377,7 @@ const FormComponent = ({
         <span className="font-medium text-sm">
           Hard Palete - Type of Cleft Palete
         </span>
-        <div className="flex gap-x-36">
+        <div className={radioGridClasses}>
           <div className={`py-2`}>
             <RadioGroupComponent
               options={cleftPalateTypeOptions}
@@ -409,13 +431,14 @@ const FormComponent = ({
         </div>
         <div className={`py-2`}>
           <CheckboxGroupComponent
+            isChatExpanded={isChatExpanded}
+            isNavbarExpanded={isNavbarExpanded}
             options={abnormalitiesAreas}
             label={
               "Does this patient have any abnormalities in any of the following areas? (check all that may apply)"
             }
             onChange={handleAbnormalitiesChange}
             values={form.abnormalities || []}
-            variant="horizontal"
           />
         </div>
         <div className={`py-2`}>
@@ -427,16 +450,14 @@ const FormComponent = ({
             variant="horizontal"
           />
         </div>
-        <div className="flex gap-4">
+        <div className={textFieldGridClasses}>
           <StyledField
-            className={`w-1/2`}
             name="otherAllergies"
             type="text"
             placeholder={"Other Allergies (Optional)"}
             onBlur={handleBlur}
           />
           <StyledField
-            className={`w-1/2`}
             name="medicationAllergies"
             type="text"
             placeholder={"Medication Allergies (Optional)"}
@@ -453,6 +474,6 @@ const FormComponent = ({
           />
         </div>
       </Form>
-    </>
+    </div>
   );
 };

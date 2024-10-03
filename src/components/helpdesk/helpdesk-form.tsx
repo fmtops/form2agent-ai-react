@@ -94,6 +94,7 @@ export default function HelpdeskForm({
         <h2 className={` font-medium mt-8 text-black`}>Request Details</h2>
         <div className="flex gap-4">
           <SelectComponent
+            className="w-1/2"
             options={Object.values(DepartmentOptions)}
             name="department"
             placeholder="Department"

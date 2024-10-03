@@ -12,7 +12,6 @@ import { AudioProvider } from "../contexts/AudioContext";
 const HelpdeskPage = () => {
   const [form, setForm] = useState(HELPDESK_FORM_VALUES);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(false);
   const formikHelpdeskRef = useRef() as unknown as RefObject<
     FormikProps<HelpdeskFormType>
   >;
@@ -61,10 +60,8 @@ const HelpdeskPage = () => {
             formDescription="Fill out this form to quickly get assistance from our Helpdesk."
             formValues={stringifyValues(form)}
             formContext={stringifyValues(HelpdeskDescriptionContext)}
-            setIsChatOpen={setIsChatOpen}
           />
         }
-        isChatOpen={isChatOpen}
         isSuccessModalOpen={isSuccessModalOpen}
         onCloseModal={() => setIsSuccessModalOpen(false)}
       >

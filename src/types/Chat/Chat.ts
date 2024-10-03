@@ -22,7 +22,6 @@ export type ChatPropType = {
   formValues: string;
   formContext?: string;
   executeFormLogic: (appData: string) => void;
-  setIsChatOpen?: (isChatOpen: boolean) => void;
 };
 
 export type ChatBottomMenuPropType = {

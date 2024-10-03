@@ -1,54 +1,42 @@
 import { Drawer, DrawerProps } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { MAX_CONTENT_WIDTH } from "../../consts/resolutions.consts";
 import { NAV_DRAWER_WIDTH } from "../../consts/sidenav.consts";
 
 type StyledNavDrawerProps = {
-  isResHigherThanMobile: boolean;
+  shouldShowContent: boolean;
 };
 
 const StyledNavDrawer = styled(
-  ({ isResHigherThanMobile, ...rest }: DrawerProps & StyledNavDrawerProps) => (
-    <Drawer {...rest} />
-  )
-)(({ isResHigherThanMobile }) => ({
+  ({
+    shouldShowContent: isResHigherThanMobile,
+    ...rest
+  }: DrawerProps & StyledNavDrawerProps) => <Drawer {...rest} />
+)(({ shouldShowContent }) => ({
   width: NAV_DRAWER_WIDTH,
   flexShrink: 0,
   "& .MuiDrawer-paper": {
-    width: isResHigherThanMobile ? NAV_DRAWER_WIDTH : "100%",
+    width: shouldShowContent ? NAV_DRAWER_WIDTH : "100%",
     boxSizing: "border-box",
   },
 }));
 
 const MainDrawerCont = styled(
   ({
-    isResHigherThanMobile,
+    isResHigherThanTablet,
     children,
     ...rest
   }: {
-    isResHigherThanMobile: boolean;
+    isResHigherThanTablet: boolean;
     children: any;
-  }) => <main {...rest}>{children}</main>,
-  {
-    shouldForwardProp: (prop) => prop !== "open",
-  }
+  }) => <main {...rest}>{children}</main>
 )<{
-  open?: boolean;
-  isResHigherThanMobile: boolean;
-}>(({ theme, open, isResHigherThanMobile }) => ({
+  isResHigherThanTablet: boolean;
+}>(({ isResHigherThanTablet }) => ({
+  maxWidth: MAX_CONTENT_WIDTH,
+  margin: "0 auto",
   flexGrow: 1,
-  padding: isResHigherThanMobile ? 24 : 16,
-  transition: theme.transitions.create("margin", {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  marginLeft: `-${NAV_DRAWER_WIDTH}px`,
-  ...(open && {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginLeft: 0,
-  }),
+  padding: isResHigherThanTablet ? 32 : 24,
 }));
 
 export default StyledNavDrawer;

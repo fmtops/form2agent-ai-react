@@ -7,6 +7,7 @@ import {
 import StyledLabel from "./input-label";
 
 export interface SelectComponentProps {
+  className?: string;
   options: string[];
   name: string;
   placeholder: string;
@@ -15,6 +16,7 @@ export interface SelectComponentProps {
 }
 
 export const SelectComponent = ({
+  className,
   options,
   name,
   placeholder,
@@ -23,7 +25,7 @@ export const SelectComponent = ({
 }: SelectComponentProps) => {
   return (
     <FormControl
-      className={`w-1/2 px-3 rounded-md border-[#C1C6CF] border-[1px] bg-white text-black`}
+      className={`px-3 rounded-md border-[#C1C6CF] border-[1px] bg-white text-black ${className}`}
     >
       <StyledLabel>{placeholder}</StyledLabel>
       <Select

@@ -1,6 +1,5 @@
 import OrderCard from "./order-card/order-card";
 import { Order } from "../../types/Ecommerce/Orders";
-import useResolutionCheck from "../../hooks/useResolutionCheck";
 import { useEffect, useRef } from "react";
 import { ORDER_SCROLL_DELAY_MS } from "../../consts/ecommerce.consts";
 import StyledTablePagination from "../common/mui-styled/styled-table-pagination";
@@ -23,7 +22,6 @@ export default function OrdersTable({
     newPage: number
   ) => void;
 }) {
-  const { isResHigherThanMobile } = useResolutionCheck();
   const firstUpdatedOrderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -40,21 +38,25 @@ export default function OrdersTable({
     };
   }, [updatedOrders]);
 
+  const ordersDivClasses =
+    "flex-1 h-fit border-[1px] relative border-b-0 border-border-primary-light rounded-lg w-full";
+
   return orders.length > 0 ? (
-    <div className="flex-1 h-fit border-[1px] relative border-b-0 border-border-primary-light rounded-lg w-fit">
+    <div className={ordersDivClasses}>
       <StyledTablePagination
+        className="!min-w-[350px]" // 350px is the approx. max width with no padding overlap
         count={orders.length}
         page={page}
         onPageChange={handlePageChange}
         rowsPerPage={rowsPerPage}
         onRowsPerPageChange={handleRowsPerPageChange}
         labelRowsPerPage={"Orders per page:"}
-        slotProps={{
-          select: {
-            sx: {
-              margin: isResHigherThanMobile ? "0px 16px" : 0,
-            },
-          },
+        classes={{
+          toolbar: "!pl-2",
+          select: "!mx-0",
+          input: "!mx-2",
+          actions: "!ml-2",
+          selectLabel: `!block`, // the label would get hidden by default, but it fits just fine
         }}
       />
       {orders

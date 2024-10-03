@@ -3,15 +3,18 @@ import "./App.css";
 import CoreRouter from "./routes/core-router";
 import { BrowserRouter } from "react-router-dom";
 import MainLayout from "./layouts/main-layout/main-layout";
+import { LayoutProvider } from "./contexts/LayoutContext";
 
 function App() {
   return (
     <StrictMode>
-      <BrowserRouter>
-        <MainLayout>
-          <CoreRouter />
-        </MainLayout>
-      </BrowserRouter>
+      <LayoutProvider>
+        <BrowserRouter>
+          <MainLayout>
+            <CoreRouter />
+          </MainLayout>
+        </BrowserRouter>
+      </LayoutProvider>
     </StrictMode>
   );
 }

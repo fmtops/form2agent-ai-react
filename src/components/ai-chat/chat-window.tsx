@@ -21,6 +21,7 @@ import { SHOULD_SHOW_API_KEY_DIALOG } from "../../consts/api-key.consts";
 import { AiChatService } from "../../services/ai-chat-service";
 import { StreamingService } from "../../services/streaming-service";
 import { useAudio } from "../../contexts/AudioContext";
+import { useLayout } from "../../contexts/LayoutContext";
 
 /**
  * ChatWindow component
@@ -28,7 +29,6 @@ import { useAudio } from "../../contexts/AudioContext";
  * @param formValues - values of the form stringified with Stringified value with a delimiter at the end use `stringifyValues` to stringify the values
  * @param formContext - context of the form stringified with Stringified value with a delimiter at the end use `stringifyValues` to stringify the values
  * @param sendMessage - function to send message
- * @param setIsChatOpen - function to set the chat open state
  * @returns ChatWindow component
  * @description ChatWindow component to render the chat window
  * @example
@@ -39,7 +39,6 @@ import { useAudio } from "../../contexts/AudioContext";
       formDescription="Add a new invoice to the system."
       formValues={stringifyValues(form)}
       formContext={stringifyValues(DescriptionContext)}
-      setIsChatOpen={setIsChatOpen}
     />
    ```
  * */
@@ -48,10 +47,9 @@ const ChatWindow: React.FC<ChatPropType> = ({
   formValues,
   formContext,
   executeFormLogic,
-  setIsChatOpen,
 }) => {
   const [chatHistory, setChatHistory] = useState<ChatMessageType[]>([]);
-  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const { isNavbarExpanded, isChatExpanded, setIsChatExpanded } = useLayout();
   const [chatId, setChatId] = useState<number | null>(null);
   const [disableChat, setDisableChat] = useState<boolean>(false);
   const [voiceResponse, setVoiceResponse] = useState(false);
@@ -69,12 +67,6 @@ const ChatWindow: React.FC<ChatPropType> = ({
     setChatHistory,
     setResponseState
   );
-
-  useEffect(() => {
-    if (setIsChatOpen) {
-      setIsChatOpen(isExpanded);
-    }
-  }, [isExpanded]);
 
   // Execute logic on ChatId (store the chat id)
   const handleNewChatId = (responseModel: any) => {
@@ -162,7 +154,7 @@ const ChatWindow: React.FC<ChatPropType> = ({
       setIsApiKeyDialogVisible(true);
       return;
     }
-    setIsExpanded(true);
+    setIsChatExpanded(true);
     handleNewChat();
   };
 
@@ -232,7 +224,7 @@ const ChatWindow: React.FC<ChatPropType> = ({
     }
   };
 
-  const { isResHigherThanMobile } = useResolutionCheck();
+  const { isResHigherThanTablet } = useResolutionCheck();
   const renderApiKeyModal = SHOULD_SHOW_API_KEY_DIALOG && isApiKeyDialogVisible;
 
   return (
@@ -244,20 +236,20 @@ const ChatWindow: React.FC<ChatPropType> = ({
         audioStateProgress={audioStateProgress}
         handleHoldInteraction={handleHoldInteraction}
         isChatBeingCreated={isChatBeingCreated}
-        isExpanded={isExpanded}
       />
-      <ChatOverlay isExpanded={isExpanded} />
+      <ChatOverlay />
       <StyledChatDrawer
-        variant={isResHigherThanMobile ? "persistent" : "temporary"}
+        isNavbarExpanded={isNavbarExpanded}
+        variant={isResHigherThanTablet ? "persistent" : "temporary"}
         hideBackdrop
-        anchor={isResHigherThanMobile ? "right" : "bottom"}
-        open={isExpanded}
-        onClose={() => setIsExpanded(false)}
-        onOpen={() => setIsExpanded(true)}
+        anchor={isResHigherThanTablet ? "right" : "bottom"}
+        open={isChatExpanded}
+        onClose={() => setIsChatExpanded(false)}
+        onOpen={() => setIsChatExpanded(true)}
         swipeAreaWidth={CHAT_WIDTH / 2}
         disableSwipeToOpen
       >
-        <ChatNavbar onClose={() => setIsExpanded(false)} />
+        <ChatNavbar onClose={() => setIsChatExpanded(false)} />
         <ChatHistory
           messages={chatHistory}
           voiceResponse={voiceResponse}

@@ -18,3 +18,11 @@ code {
 .mac-os-input input::-webkit-date-and-time-value {
   text-align: left;
 }
+
+.ml-nav-width {
+  margin-left: 280px;
+}
+
+.mr-chat-width {
+  margin-right: 387px;
+}

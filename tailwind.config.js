@@ -100,7 +100,19 @@ module.exports = {
       },
     },
     screens: {
+      xs: "220px",
+      "xs-chat": "610px",
+      sm: "500px",
+      "sm-chat": "890px",
       md: "780px",
+      "md-chat": "1170px",
+      lg: "1060px",
+      "lg-chat": "1450px",
+      xl: "1340px",
+      "xl-chat": "1730px",
+
+      "max-content-with-nav-bp": "1656px",
+      "max-content-with-chat-bp": "1870px",
     },
   },
   variants: {

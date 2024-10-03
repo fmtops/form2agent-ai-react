@@ -17,6 +17,7 @@ import {
   HearAboutTCSourceValues,
   RelationshipOptions,
 } from "../../consts/patient-registration.consts";
+import { useLayout } from "../../contexts/LayoutContext";
 
 export interface ParentGuardianInformationComponentProps {
   form: ParentGuardianInformationFormType;
@@ -115,6 +116,8 @@ const FormComponent = ({
   setHearAboutTCSourcePlaceholderValue,
   handleBlur,
 }: FormComponentProps) => {
+  const { isChatExpanded, isNavbarExpanded } = useLayout();
+
   useEffect(() => {
     setValues(form);
     setHearAboutTCSourcePlaceholderValue(
@@ -122,20 +125,39 @@ const FormComponent = ({
     );
   }, [form, setValues]);
 
+  const nameGridRespClasses =
+    isChatExpanded && isNavbarExpanded
+      ? "md-chat:grid-cols-2"
+      : isChatExpanded
+        ? "sm-chat:grid-cols-2"
+        : isNavbarExpanded
+          ? "md:grid-cols-2"
+          : "sm:grid-cols-2";
+
+  const otherFieldRespClasses =
+    isChatExpanded && isNavbarExpanded
+      ? "md-chat:w-1/2"
+      : isChatExpanded
+        ? "sm-chat:w-1/2"
+        : isNavbarExpanded
+          ? "md:w-1/2"
+          : "sm:w-1/2";
+
+  const nameGridClasses = `gap-4 grid grid-cols-1 ${nameGridRespClasses}`;
+  const otherFieldClasses = `w-full ${otherFieldRespClasses}`;
+
   return (
-    <>
+    <div className="flex flex-col gap-y-4">
       <div className="text-md font-medium">Parent/Guardian Information</div>
       <Form className="flex flex-col gap-y-4">
-        <div className={`flex gap-4`}>
+        <div className={nameGridClasses}>
           <StyledField
-            className={`w-1/2`}
             name="parentGuardianFirstName"
             type="text"
             placeholder="First Name"
             onBlur={handleBlur}
           />
           <StyledField
-            className={`w-1/2`}
             name="parentGuardianLastName"
             type="text"
             placeholder="Last Name"
@@ -154,13 +176,12 @@ const FormComponent = ({
         {form.relationship === "Other" && (
           <div className="flex gap-4">
             <StyledField
-              className={`w-1/2`}
+              className={otherFieldClasses}
               name="otherRelationship"
               type="text"
               placeholder="Relationship with Patient"
               onBlur={handleBlur}
             />
-            <span className="w-1/2"></span>
           </div>
         )}
         <div className={`py-2`}>
@@ -174,15 +195,14 @@ const FormComponent = ({
         </div>
         <div className="flex gap-4">
           <StyledField
-            className={`w-1/2`}
+            className={otherFieldClasses}
             name="hearAboutTCSource"
             type="text"
             onBlur={handleBlur}
             placeholder={hearAboutTCSourcePlaceholderValue}
           />
-          <span className="w-1/2"></span>
         </div>
       </Form>
-    </>
+    </div>
   );
 };

@@ -8,6 +8,7 @@ import StyledField from "../common/form/styled-field";
 import { RadioGroupComponent } from "../common/form/radio-group";
 import { Checkbox, FormControlLabel, FormGroup } from "@mui/material";
 import { YesNoIDKOptions } from "../../consts/patient-registration.consts";
+import { useLayout } from "../../contexts/LayoutContext";
 
 export interface FamilyHistoryComponentProps {
   form: FamilyHistoryFormType;
@@ -170,17 +171,30 @@ const FormComponent = ({
   handleCleftInFurtherFamilyChange,
   handleBlur,
 }: FormComponentProps) => {
+  const { isChatExpanded, isNavbarExpanded } = useLayout();
+
   useEffect(() => {
     setValues(form);
   }, [form, setValues]);
 
+  const pregnancyGridRespClasses =
+    isChatExpanded && isNavbarExpanded
+      ? "md-chat:flex"
+      : isChatExpanded
+        ? "sm-chat:flex"
+        : isNavbarExpanded
+          ? "md:flex"
+          : "sm:flex";
+
+  const pregnancyGridClasses = `gap-4 grid grid-cols-1 ${pregnancyGridRespClasses}`;
+
   return (
-    <>
+    <div className="flex flex-col gap-y-4">
       <div className="text-md font-medium">Family History</div>
       <Form className="flex flex-col gap-y-4">
-        <div className="flex gap-4">
+        <div className={pregnancyGridClasses}>
           <StyledField
-            className={`w-1/2`}
+            className="w-full max-w-96"
             name="lengthOfPregnancy"
             type="text"
             placeholder="Length of Pregnancy (0.0 month)"
@@ -258,6 +272,6 @@ const FormComponent = ({
           />
         </div>
       </Form>
-    </>
+    </div>
   );
 };

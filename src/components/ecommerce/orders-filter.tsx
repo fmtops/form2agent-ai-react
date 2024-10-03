@@ -6,9 +6,10 @@ import DateFilter from "./order-filters/date-filter";
 import CloseIcon from "@mui/icons-material/Close";
 import AmountFilter from "./order-filters/amount-filter";
 import { AmountFilterType } from "../../models/ecommerce-model";
+import { useLayout } from "../../contexts/LayoutContext";
 
 export default function OrdersFilter({
-  isVisible,
+  areFiltersOpenOnMobile,
   statusFilter,
   onStatusFilterChange,
   dateFilter,
@@ -20,7 +21,7 @@ export default function OrdersFilter({
   amountFilter,
   onCloseChat,
 }: {
-  isVisible: boolean;
+  areFiltersOpenOnMobile: boolean;
   statusFilter: OrderStatus[];
   onStatusFilterChange: (status: OrderStatus[]) => void;
   dateFilter: DateFilters;
@@ -32,18 +33,49 @@ export default function OrdersFilter({
   onCloseChat: () => void;
   amountFilter: Partial<AmountFilterType>;
 }) {
+  const { isChatExpanded, isNavbarExpanded } = useLayout();
+
+  // when displayed next to orders, filters should take w-80 of space
+  const filtersWidthRespClass =
+    isChatExpanded && isNavbarExpanded
+      ? "lg-chat:w-80"
+      : isChatExpanded
+        ? "md-chat:w-80"
+        : isNavbarExpanded
+          ? "lg:w-80"
+          : "md:w-80";
+
+  // filters should only be always visible on larger screens
+  // on smaller screens, hide them unless toggled with a button
+  const filtersRespClasses =
+    isChatExpanded && isNavbarExpanded
+      ? "lg-chat:flex"
+      : isChatExpanded
+        ? "md-chat:flex"
+        : isNavbarExpanded
+          ? "lg:flex"
+          : "md:flex";
+
+  // the button for closing filters (x) should only be visible when you can hide the filters
+  const closeButtonRespClasses =
+    isChatExpanded && isNavbarExpanded
+      ? "lg-chat:hidden"
+      : isChatExpanded
+        ? "md-chat:hidden"
+        : isNavbarExpanded
+          ? "lg:hidden"
+          : "md:hidden";
+
+  const filtersClasses = `w-full ${filtersWidthRespClass} h-fit flex-col border-border-primary-light text-text-primary-light gap-7 p-4 pb-8 border-[1px] rounded-lg ${areFiltersOpenOnMobile ? "flex" : `hidden ${filtersRespClasses}`}`;
+
   return (
-    <div
-      className={`flex w-full md:w-80 h-fit flex-col border-border-primary-light text-text-primary-light gap-7 p-4 pb-8 border-[1px] rounded-lg ${
-        isVisible ? "" : "hidden"
-      }`}
-    >
+    <div className={filtersClasses}>
       <div className="flex justify-between">
         <h2 className="text-lg font-medium">Filters</h2>
-        {isVisible && (
+        {areFiltersOpenOnMobile && (
           <div
             onClick={onCloseChat}
-            className="md:hidden text-fg-primary-light"
+            className={`text-fg-primary-light ${closeButtonRespClasses}`}
           >
             <CloseIcon className="w-6 h-6" />
           </div>

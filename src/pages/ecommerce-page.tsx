@@ -25,14 +25,14 @@ import FormPageLayout from "../layouts/form-page-layout";
 import { stringifyValues } from "../utils/chat.utilts";
 import OrdersTitle from "../components/ecommerce/orders-title";
 import { AudioProvider } from "../contexts/AudioContext";
+import { useLayout } from "../contexts/LayoutContext";
 
 let orders: Order[] = generateOrders();
 
 export default function EcommercePage() {
-  const { isResHigherThanMobile } = useResolutionCheck();
+  const { isChatExpanded, isNavbarExpanded } = useLayout();
   const [filteredOrders, setFilteredOrders] = useState<Order[]>(orders);
-  const [isFiltersMobileOpen, setIsFiltersMobileOpen] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [areFiltersOpenOnMobile, setAreFiltersOpenOnMobile] = useState(false);
   const [filters, setFilters] = useState<FiltersType>(DEFAULT_FILTERS_VALUES);
   const [updatedOrders, setUpdatedOrders] = useState<Partial<Order>[]>([]);
   const [page, setPage] = useState(0);
@@ -139,16 +139,26 @@ export default function EcommercePage() {
     setPage(newPage);
   };
 
+  // On larger screens, show filters to the right of the orders table
+  const ordersAndFiltersRespClasses =
+    isChatExpanded && isNavbarExpanded
+      ? "lg-chat:flex-row"
+      : isChatExpanded
+        ? "md-chat:flex-row"
+        : isNavbarExpanded
+          ? "lg:flex-row"
+          : "md:flex-row";
+
+  // On smaller screens, filters should show on top of the orders table
+  const ordersAndFiltersClasses = `flex h-auto gap-4 w-full flex-col-reverse ${ordersAndFiltersRespClasses}`;
+
   return (
     <AudioProvider>
       <FormPageLayout
-        containerWidth={
-          isResHigherThanMobile && isChatOpen ? "calc(100% - 387px)" : "100%"
-        }
         title={
           <OrdersTitle
-            setIsFiltersMobileOpen={() =>
-              setIsFiltersMobileOpen((prev) => !prev)
+            setAreFiltersOpenOnMobile={() =>
+              setAreFiltersOpenOnMobile((prev) => !prev)
             }
           />
         }
@@ -165,18 +175,10 @@ export default function EcommercePage() {
               filters: FiltersDescriptionContext,
               orders: OrderDescriptionContext,
             })}
-            setIsChatOpen={setIsChatOpen}
           />
         }
-        isChatOpen={isChatOpen}
       >
-        <div
-          className={`flex h-auto gap-4 w-full ${
-            isFiltersMobileOpen && !isResHigherThanMobile
-              ? "flex-col-reverse"
-              : ""
-          }`}
-        >
+        <div className={ordersAndFiltersClasses}>
           <OrdersTable
             orders={filteredOrders}
             updatedOrders={updatedOrders}
@@ -186,7 +188,7 @@ export default function EcommercePage() {
             handlePageChange={handlePageChange}
           />
           <OrdersFilter
-            isVisible={isFiltersMobileOpen || isResHigherThanMobile}
+            areFiltersOpenOnMobile={areFiltersOpenOnMobile}
             dateFilter={filters.dateFilter}
             onDateFilterChange={onDateFilterChange}
             statusFilter={filters.statusFilter}
@@ -196,7 +198,7 @@ export default function EcommercePage() {
             setSearchQuery={handleSearchQueryChange}
             handleAmountChange={handleAmountChange}
             amountFilter={filters.amountFilter}
-            onCloseChat={() => setIsFiltersMobileOpen(false)}
+            onCloseChat={() => setAreFiltersOpenOnMobile(false)}
           />
         </div>
       </FormPageLayout>

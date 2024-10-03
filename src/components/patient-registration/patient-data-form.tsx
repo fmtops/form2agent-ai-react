@@ -17,6 +17,7 @@ import {
   PatientRegistrationFormType,
 } from "../../models/patient-registration-model";
 import useDetectDevice from "../../hooks/useDetectDevice";
+import { useLayout } from "../../contexts/LayoutContext";
 export interface PatientDataComponentProps {
   form: PatientPersonalDataFormType;
   setForm: Dispatch<SetStateAction<PatientRegistrationFormType>>;
@@ -146,6 +147,7 @@ const FormComponent = ({
     setValues(form);
   }, [form, setValues]);
   const { isAndroid, isIOS } = useDetectDevice();
+  const { isChatExpanded, isNavbarExpanded } = useLayout();
 
   const iPadLabelVisible =
     !isAndroid() &&
@@ -154,12 +156,32 @@ const FormComponent = ({
       ? "block"
       : "none";
 
+  const pdGridRespClasses =
+    isChatExpanded && isNavbarExpanded
+      ? "md-chat:grid-cols-2"
+      : isChatExpanded
+        ? "sm-chat:grid-cols-2"
+        : isNavbarExpanded
+          ? "md:grid-cols-2"
+          : "sm:grid-cols-2";
+  const bdGridRespClasses =
+    isChatExpanded && isNavbarExpanded
+      ? "lg-chat:grid-cols-2"
+      : isChatExpanded
+        ? "md-chat:grid-cols-2"
+        : isNavbarExpanded
+          ? "lg:grid-cols-2"
+          : "md:grid-cols-2";
+
+  const personalDataGridClasses = `gap-4 grid grid-cols-1 ${pdGridRespClasses}`;
+  const birthdateGridClasses = `gap-4 items-end grid grid-cols-1 ${bdGridRespClasses}`;
+
   return (
-    <>
+    <div className="flex flex-col gap-y-4">
       <div className="text-md font-medium">Personal Data</div>
       <Form className="flex flex-col gap-y-4">
-        <div className="flex gap-4">
-          <div className="w-full md:w-1/2 relative mac-os-input">
+        <div className={personalDataGridClasses}>
+          <div className="relative mac-os-input">
             <div
               className="text-sm"
               style={{
@@ -186,8 +208,6 @@ const FormComponent = ({
               </div>
             )}
           </div>
-        </div>
-        <div className={`flex gap-4`}>
           <SelectComponent
             options={Partners}
             name={"partner"}
@@ -202,42 +222,31 @@ const FormComponent = ({
             value={form.treatmentCenter}
             onChange={handleTreatmentCenterChange}
           />
-        </div>
-        <div className={`flex gap-4`}>
           <StyledField
-            className={`w-1/2`}
             name="patientRecordNumber"
             type="text"
             placeholder="Patient Record Number"
             onBlur={handleBlur}
           />
           <StyledField
-            className={`w-1/2`}
             name="patientRecordNumberLocal"
             type="text"
             placeholder="Patient Record Number in Local Records"
             onBlur={handleBlur}
           />
-        </div>
-        <div className={`flex gap-4`}>
           <StyledField
-            className={`w-1/2`}
             name="firstName"
             type="text"
             placeholder="First Name"
             onBlur={handleBlur}
           />
           <StyledField
-            className={`w-1/2`}
             name="lastName"
             type="text"
             placeholder="Last Name"
             onBlur={handleBlur}
           />
-        </div>
-        <div className="flex gap-4">
           <StyledField
-            className={`w-1/2`}
             name="middleName"
             type="text"
             placeholder="Middle Name (Optional)"
@@ -254,10 +263,10 @@ const FormComponent = ({
             variant="horizontal"
           />
         </div>
-        <div className="flex gap-4 items-end">
-          <div className="relative w-1/2 h-fit mac-os-input">
+        <div className={birthdateGridClasses}>
+          <div className="relative h-fit mac-os-input">
             <div
-              className="text-sm "
+              className="text-sm"
               style={{
                 display: iPadLabelVisible,
               }}
@@ -283,7 +292,7 @@ const FormComponent = ({
             )}
           </div>
 
-          <FormGroup className=" w-1/2">
+          <FormGroup>
             <FormControlLabel
               className="checkbox-label"
               control={
@@ -305,48 +314,38 @@ const FormComponent = ({
             variant="horizontal"
           />
         </div>
-        <div className={`flex gap-4`}>
+        <div className={personalDataGridClasses}>
           <StyledField
-            className={`w-1/2`}
             name="address"
             type="text"
             placeholder="Address"
             onBlur={handleBlur}
           />
           <StyledField
-            className={`w-1/2`}
             name="postalCode"
             type="text"
             placeholder="Postal Code"
             onBlur={handleBlur}
           />
-        </div>
-        <div className={`flex gap-4`}>
           <StyledField
-            className={`w-1/2`}
             name="city"
             type="text"
             placeholder="City"
             onBlur={handleBlur}
           />
           <StyledField
-            className={`w-1/2`}
             name="state"
             type="text"
             placeholder="State"
             onBlur={handleBlur}
           />
-        </div>
-        <div className={`flex gap-4`}>
           <StyledField
-            className={`w-1/2`}
             name="phone"
             type="text"
             placeholder="Phone 1 (+1-222-222-2222)"
             onBlur={handleBlur}
           />
           <StyledField
-            className={`w-1/2`}
             name="phoneSecondary"
             type="text"
             placeholder="Phone 2 (+1-222-222-2222) (Optional)"
@@ -354,6 +353,6 @@ const FormComponent = ({
           />
         </div>
       </Form>
-    </>
+    </div>
   );
 };
