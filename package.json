@@ -8,6 +8,8 @@
     "@mui/icons-material": "^5.15.15",
     "@mui/material": "^5.15.15",
     "@mui/styled-engine-sc": "^6.0.0-alpha.18",
+    "@mui/system": "^6.1.4",
+    "@mui/x-date-pickers": "^7.21.0",
     "@types/dom-speech-recognition": "^0.0.4",
     "@types/node": "^16.18.96",
     "@types/react": "^18.2.78",
@@ -15,6 +17,8 @@
     "@types/react-router-dom": "^5.3.3",
     "autoprefixer": "^10.4.19",
     "formik": "^2.4.5",
+    "formik-mui-x-date-pickers": "^2.0.0-alpha.0",
+    "http-status-codes": "^2.3.0",
     "postcss": "^8.4.38",
     "react": "^18.3.1",
     "react-datepicker": "^6.9.0",
@@ -56,6 +60,7 @@
     "@types/react-lottie": "^1.2.10",
     "@types/recordrtc": "^5.6.14",
     "prettier": "^3.3.2",
+    "react-inject-env": "^2.1.0",
     "react-scripts": "5.0.1"
   }
 }

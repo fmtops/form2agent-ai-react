@@ -6,6 +6,21 @@ import HomePage from "../pages/home-page";
 import HelpdeskPage from "../pages/helpdesk-page";
 import { PatientRegistrationPage } from "../pages/patient-registration-page";
 import EcommercePage from "../pages/ecommerce-page";
+import KitchenPage from "../pages/kitchen-page";
+import PrivacyPolicyPage from "../pages/privacy-policy-page";
+import ScheduleDemoPage from "../pages/schedule-demo-page";
+import FrontDeskPage from "../pages/frontdesk-page";
+import CheckInPage from "../pages/checkin-page";
+import CustomerFilterPage from "../pages/customer-filter-page";
+import DealPage from "../pages/deal-page";
+import { MerchantRegistrationPage } from "../pages/merchant-registration-page";
+import AddProductPage from "../pages/add-product-page";
+import CarAccidentPage from "../pages/car-accident-page";
+import HouseInspectionPage from "../pages/house-inspection-page";
+import TravelReimbursementPage from "../pages/travel-reimbursement-page";
+import { SurgeryClaimPage } from "../pages/surgery-claim-page";
+import SpeechAssessmentPage from "../pages/speech-assessment-page";
+import { NoSurgeryClaimPage } from "../pages/no-surgery-claim-page";
 
 /**
  *
@@ -30,6 +45,10 @@ const CoreRouter = () => {
         element={renderRoute(<HomePage />)}
       />
       <Route
+        path={RoutingPath.PrivacyPage}
+        element={renderRoute(<PrivacyPolicyPage />)}
+      />
+      <Route
         path={RoutingPath.InvoicePage}
         element={renderRoute(<InvoicePage />)}
       />
@@ -44,6 +63,59 @@ const CoreRouter = () => {
       <Route
         path={RoutingPath.EcommercePage}
         element={renderRoute(<EcommercePage />)}
+      />
+      <Route
+        path={RoutingPath.KitchenViewPage}
+        element={renderRoute(<KitchenPage />)}
+      />
+      <Route
+        path={RoutingPath.CustomerFilterPage}
+        element={renderRoute(<CustomerFilterPage />)}
+      />
+      <Route
+        path={RoutingPath.FrontdeskPage}
+        element={renderRoute(<FrontDeskPage />)}
+      />
+      <Route
+        path={RoutingPath.ScheduleDemoPage}
+        element={renderRoute(<ScheduleDemoPage />)}
+      />
+      <Route
+        path={RoutingPath.CheckInPage}
+        element={renderRoute(<CheckInPage />)}
+      />
+      <Route path={RoutingPath.AddDeal} element={renderRoute(<DealPage />)} />
+      <Route
+        path={RoutingPath.MerchantRegistration}
+        element={renderRoute(<MerchantRegistrationPage />)}
+      />
+      <Route
+        path={RoutingPath.AddProduct}
+        element={renderRoute(<AddProductPage />)}
+      />
+      <Route
+        path={RoutingPath.CarAccidentPage}
+        element={renderRoute(<CarAccidentPage />)}
+      />
+      <Route
+        path={RoutingPath.HouseInspectionPage}
+        element={renderRoute(<HouseInspectionPage />)}
+      />
+      <Route
+        path={RoutingPath.TravelReimbursementPage}
+        element={renderRoute(<TravelReimbursementPage />)}
+      />
+      <Route
+        path={RoutingPath.SurgeryClaimPage}
+        element={renderRoute(<SurgeryClaimPage />)}
+      />
+      <Route
+        path={RoutingPath.SpeechAssessmentPage}
+        element={renderRoute(<SpeechAssessmentPage />)}
+      />
+      <Route
+        path={RoutingPath.NoSurgeryClaimPage}
+        element={renderRoute(<NoSurgeryClaimPage />)}
       />
     </Routes>
   );

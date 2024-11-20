@@ -3,8 +3,10 @@ import { useLayout } from "../../contexts/LayoutContext";
 
 export default function OrdersTitle({
   setAreFiltersOpenOnMobile,
+  title,
 }: {
   setAreFiltersOpenOnMobile: () => void;
+  title?: string;
 }) {
   const { isChatExpanded, isNavbarExpanded } = useLayout();
 
@@ -22,7 +24,7 @@ export default function OrdersTitle({
 
   return (
     <div className="flex flex-row justify-between">
-      Orders
+      {title ?? "Orders"}
       <button
         onClick={setAreFiltersOpenOnMobile}
         className={filtersButtonClasses}

@@ -1,8 +1,5 @@
 import { Form, Formik, FormikHelpers, FormikProps, FormikValues } from "formik";
 import {
-  GenderOptions,
-  IPAD_LABEL_HIDE,
-  IPAD_LABEL_SHOW,
   Partners,
   Race,
   TreatmentCenters,
@@ -18,6 +15,11 @@ import {
 } from "../../models/patient-registration-model";
 import useDetectDevice from "../../hooks/useDetectDevice";
 import { useLayout } from "../../contexts/LayoutContext";
+import {
+  IPAD_LABEL_HIDE,
+  IPAD_LABEL_SHOW,
+} from "../../consts/resolutions.consts";
+import { GenderOptions } from "../../consts/general-fields.consts";
 export interface PatientDataComponentProps {
   form: PatientPersonalDataFormType;
   setForm: Dispatch<SetStateAction<PatientRegistrationFormType>>;
@@ -191,8 +193,7 @@ const FormComponent = ({
               Evaluation Date
             </div>
             <StyledField
-              className={`w-full`}
-              style={{ height: "44px", minWidth: "calc(100% - 26px)" }}
+              className={`w-full h-11 dateInputCalc-1`}
               name="evaluationDate"
               type="date"
               onBlur={handleBlur}
@@ -274,8 +275,7 @@ const FormComponent = ({
               Date of birth
             </div>
             <StyledField
-              className={`w-full`}
-              style={{ height: "44px", minWidth: "calc(100% - 26px)" }}
+              className={`w-full h-11 dateInputCalc-1`}
               name="dateOfBirth"
               type="date"
               placeholder="dd/mm/yyyy"

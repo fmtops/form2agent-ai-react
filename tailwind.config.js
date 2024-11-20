@@ -14,6 +14,8 @@ module.exports = {
         "text-primary-dark": "#000000",
         "text-secondary-light": "#6B7280",
         "text-secondary-dark": "#9CA3AF",
+        "text-button-light": "#DD3522",
+        "text-btuoon-dark": "#DD3522",
         "text-placeholder-light": "#9CA3AF",
         "text-placeholder-dark": "#6B7280",
         "text-disabled-light": "#9CA3AF",
@@ -72,6 +74,8 @@ module.exports = {
         "bg-error-primary-hover-dark": "#F87171",
         "bg-error-secondary-light": "#FEF2F2",
         "bg-error-secondary-dark": "#450A0A",
+        "border-secondary-light": "#C1C6CF",
+        "border-secondary-dark": "#C1C6CF",
       },
       fontSize: {
         "9xl": "128px",
@@ -87,6 +91,9 @@ module.exports = {
         md: "16px",
         sm: "14px",
         xs: "12px",
+      },
+      minWidth: {
+        160: "320px",
       },
       fontWeight: {
         light: 300,

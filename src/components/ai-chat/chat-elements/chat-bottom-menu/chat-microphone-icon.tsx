@@ -20,19 +20,14 @@ export default function ChatMicrophoneIcon({
       <StopCircleOutlinedIcon htmlColor={"#EF4444"} />
     </div>
   ) : (
-    <StyledToolTip
-      className="text-center"
-      title="To use commands, say “chat” followed by “send”, “clear” or “cancel”"
+    <div
+      id="chat-microphone-start-button"
+      className={`p-2 cursor-pointer hover:bg-gray text-fg-secondary-light`}
+      onClick={toggleListening}
     >
-      <div
-        id="chat-microphone-start-button"
-        className={`p-2 cursor-pointer hover:bg-gray text-fg-secondary-light`}
-        onClick={toggleListening}
-      >
-        <KeyboardVoiceOutlinedIcon
-          color={disabledVoice ? "disabled" : "inherit"}
-        />
-      </div>
-    </StyledToolTip>
+      <KeyboardVoiceOutlinedIcon
+        color={disabledVoice ? "disabled" : "inherit"}
+      />
+    </div>
   );
 }

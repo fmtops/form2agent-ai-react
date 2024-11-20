@@ -1,3 +1,5 @@
+import { FormAction } from "../consts/general-fields.consts";
+
 export type InvoiceBaseFormType = {
   invoiceNumber: string;
   invoiceDate: string;
@@ -25,9 +27,5 @@ export type InvoiceBaseFormType = {
 };
 
 export type InvoiceFormType = {
-  action: null | InvoiceAction;
+  action: null | FormAction;
 } & InvoiceBaseFormType;
-
-export enum InvoiceAction {
-  Submit = "Submit",
-}

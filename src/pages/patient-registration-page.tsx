@@ -10,7 +10,6 @@ import { ProgressBar } from "../components/common/progress-bar";
 import SubmitButton from "../components/common/form/submit-button";
 import { FamilyHistoryComponent } from "../components/patient-registration/family-history";
 import {
-  PrAction,
   DiagnosisFormType,
   FamilyHistoryFormType,
   ParentGuardianInformationFormType,
@@ -27,6 +26,7 @@ import {
   mergeFormData,
 } from "../utils/patient-registration.utils";
 import { AudioProvider } from "../contexts/AudioContext";
+import { FormAction } from "../consts/general-fields.consts";
 
 export const PatientRegistrationPage = () => {
   const [patientRegistrationForm, setPatientRegistrationForm] =
@@ -40,6 +40,13 @@ export const PatientRegistrationPage = () => {
     useRef<FormikProps<FamilyHistoryFormType>>(null);
   const formikDiagnosisRef = useRef<FormikProps<DiagnosisFormType>>(null);
   const { pageIndex } = patientRegistrationForm;
+
+  enum PatientRegistrationSection {
+    Patient = 1,
+    ParentGuardian = 2,
+    FamilyHistory = 3,
+    Diagnosis = 4,
+  }
 
   const handleSubmit = () => {
     setPatientRegistrationForm(PATIENT_FORM_VALUES);
@@ -88,19 +95,19 @@ export const PatientRegistrationPage = () => {
 
   const moveToEditedSection = (responseData: PatientRegistrationFormType) => {
     if (responseData.personalData) {
-      goToPage(1);
+      goToPage(PatientRegistrationSection.Patient);
     } else if (responseData.parentGuardianInformation) {
-      goToPage(2);
+      goToPage(PatientRegistrationSection.ParentGuardian);
     } else if (responseData.familyHistory) {
-      goToPage(3);
+      goToPage(PatientRegistrationSection.FamilyHistory);
     } else if (responseData.diagnosis) {
-      goToPage(4);
+      goToPage(PatientRegistrationSection.Diagnosis);
     }
   };
 
   const renderPage = () => {
     switch (pageIndex) {
-      case 1:
+      case PatientRegistrationSection.Patient:
         return (
           <PatientDataComponent
             form={patientRegistrationForm.personalData}
@@ -108,7 +115,7 @@ export const PatientRegistrationPage = () => {
             formikRef={formikPatientDataRef}
           />
         );
-      case 2:
+      case PatientRegistrationSection.ParentGuardian:
         return (
           <ParentGuardianInformationComponent
             form={patientRegistrationForm.parentGuardianInformation}
@@ -116,7 +123,7 @@ export const PatientRegistrationPage = () => {
             formikRef={formikParentGuardianInformationRef}
           />
         );
-      case 3:
+      case PatientRegistrationSection.FamilyHistory:
         return (
           <FamilyHistoryComponent
             form={patientRegistrationForm.familyHistory}
@@ -124,7 +131,7 @@ export const PatientRegistrationPage = () => {
             formikRef={formikFamilyHistoryRef}
           />
         );
-      case 4:
+      case PatientRegistrationSection.Diagnosis:
         return (
           <DiagnosisComponent
             form={patientRegistrationForm.diagnosis}
@@ -137,9 +144,9 @@ export const PatientRegistrationPage = () => {
     }
   };
 
-  const performAction = (action: PrAction) => {
+  const performAction = (action: FormAction) => {
     switch (action) {
-      case PrAction.Submit:
+      case FormAction.Submit:
         handleSubmit();
         break;
       default:
@@ -187,7 +194,7 @@ export const PatientRegistrationPage = () => {
                   ? "Submit"
                   : "Next Step"
               }
-              className="w-24"
+              className="w-24 mt-4"
               onClick={handleNextStep}
             />
             {pageIndex > 1 && (

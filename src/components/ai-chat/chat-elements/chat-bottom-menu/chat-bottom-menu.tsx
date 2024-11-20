@@ -17,7 +17,6 @@ import { ChatBottomMenuPropType } from "../../../../types/Chat/Chat";
 
 export default function ChatBottomMenu({
   disabled,
-  disabledVoice,
   setVoiceResponse,
   voiceResponse,
   isListening,
@@ -76,9 +75,7 @@ export default function ChatBottomMenu({
       setWasMicrophoneClicked(true);
     }
 
-    isListening || disabledVoice
-      ? await stopListening()
-      : await startListening();
+    isListening ? await stopListening() : await startListening();
   };
 
   useEffect(() => {
@@ -185,7 +182,7 @@ export default function ChatBottomMenu({
           <ChatMicrophoneIcon
             isListening={isListening}
             toggleListening={toggleListening}
-            disabledVoice={disabledVoice || disableMicrophone}
+            disabledVoice={disableMicrophone}
           />
           <ChatSendIcon handleSend={handleSend} disableSend={disableSend} />
         </div>

@@ -4,14 +4,18 @@ import { AmountFilterType } from "../../../models/ecommerce-model";
 export default function AmountFilter({
   value,
   handleAmountChange,
+  name,
+  shouldRenderDollarSign = true,
 }: {
   value: Partial<AmountFilterType>;
   handleAmountChange: ({ min, max }: { min?: number; max?: number }) => void;
+  name?: string;
+  shouldRenderDollarSign?: boolean;
 }) {
   // TODO add validation to ensure min is less than max
   return (
     <div className="font-medium text-md">
-      Total Amount
+      {name ?? "Total Amount"}
       <div className="flex gap-4 mt-3">
         <TextField
           placeholder="Min"
@@ -21,7 +25,9 @@ export default function AmountFilter({
           value={value.min || ""}
           type="number"
           InputProps={{
-            startAdornment: <InputAdornment position="start">$</InputAdornment>,
+            startAdornment: shouldRenderDollarSign && (
+              <InputAdornment position="start">$</InputAdornment>
+            ),
           }}
           onChange={(e) => {
             handleAmountChange({
@@ -37,7 +43,9 @@ export default function AmountFilter({
           type="number"
           value={value.max || ""}
           InputProps={{
-            startAdornment: <InputAdornment position="start">$</InputAdornment>,
+            startAdornment: shouldRenderDollarSign && (
+              <InputAdornment position="start">$</InputAdornment>
+            ),
           }}
           onChange={(e) => {
             handleAmountChange({

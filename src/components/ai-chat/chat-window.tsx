@@ -15,13 +15,21 @@ import useResolutionCheck from "../../hooks/useResolutionCheck";
 import ChatOverlay from "./chat-elements/chat-overlay";
 import { CHAT_WIDTH } from "../../consts/chat.consts";
 import StyledChatDrawer from "../common/mui-styled/styled-chat-drawer";
-import ApiKeyConfirmDialog from "../common/api-key-confirm-dialog";
-import { getStoredApiKey } from "../../utils/api-key.utils";
+import {
+  getStoredApiKey,
+  getStoredProxyKey,
+  getStoredProxyKeyExpiration,
+} from "../../utils/api-key.utils";
 import { SHOULD_SHOW_API_KEY_DIALOG } from "../../consts/api-key.consts";
 import { AiChatService } from "../../services/ai-chat-service";
 import { StreamingService } from "../../services/streaming-service";
 import { useAudio } from "../../contexts/AudioContext";
 import { useLayout } from "../../contexts/LayoutContext";
+import TrialOptionsDialog from "../trial/trial-options-dialog";
+import { getMinutesLeft } from "../../utils/dates.utils";
+import InfoPopup from "../common/info-popup";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import { TrialExpiredError } from "../../lib/errors/trial-expired-error";
 
 /**
  * ChatWindow component
@@ -61,12 +69,56 @@ const ChatWindow: React.FC<ChatPropType> = ({
   const [isChatBeingCreated, setIsChatBeingCreated] = useState(false);
   const [message, setMessage] = useState("");
   const [isApiKeyDialogVisible, setIsApiKeyDialogVisible] = useState(false);
+  const [isTrialExpiredDialogVisible, setIsTrialExpiredDialogVisible] =
+    useState(false);
 
   const aiChatService = new AiChatService();
   const streamingService = new StreamingService(
     setChatHistory,
     setResponseState
   );
+
+  // Close the chat window when the component unmounts
+  useEffect(() => {
+    return () => {
+      if (isChatExpanded) {
+        setIsChatExpanded(false);
+      }
+    };
+  }, [isChatExpanded]);
+
+  const isAValidApiKeyAvailable = () => {
+    var openAiApiKey = getStoredApiKey();
+    if (!openAiApiKey) {
+      var proxyApiKey = getStoredProxyKey();
+      var proxyApiKeyExpiration = getStoredProxyKeyExpiration();
+      if (!proxyApiKey || !proxyApiKeyExpiration) {
+        setIsApiKeyDialogVisible(true);
+        return false;
+      }
+
+      var minutesLeft = getMinutesLeft(proxyApiKeyExpiration);
+      if (minutesLeft <= 0) {
+        setIsTrialExpiredDialogVisible(true);
+        return false;
+      }
+    }
+
+    setIsApiKeyDialogVisible(false);
+    setIsTrialExpiredDialogVisible(false);
+    return true;
+  };
+
+  const handleTrialExpiredAction = () => {
+    setIsTrialExpiredDialogVisible(false);
+    setIsApiKeyDialogVisible(true);
+  };
+
+  const handleTrialExpiredError = (e: unknown) => {
+    if (e instanceof TrialExpiredError) {
+      setIsTrialExpiredDialogVisible(true);
+    }
+  };
 
   // Execute logic on ChatId (store the chat id)
   const handleNewChatId = (responseModel: any) => {
@@ -115,6 +167,7 @@ const ChatWindow: React.FC<ChatPropType> = ({
         handleNewAppData,
       ]);
     } catch (e) {
+      handleTrialExpiredError(e);
       streamingService.handleReadAndExecuteException(e);
     }
 
@@ -140,6 +193,7 @@ const ChatWindow: React.FC<ChatPropType> = ({
         handleNewChatId,
       ]);
     } catch (e) {
+      handleTrialExpiredError(e);
       streamingService.handleReadAndExecuteException(e);
     }
 
@@ -150,24 +204,18 @@ const ChatWindow: React.FC<ChatPropType> = ({
   };
 
   const handleOpenChat = async () => {
-    if (!getStoredApiKey()) {
-      setIsApiKeyDialogVisible(true);
+    if (!isAValidApiKeyAvailable()) {
       return;
     }
     setIsChatExpanded(true);
     handleNewChat();
   };
-
-  const { unlockAudio } = useAudio();
-
   const setVoiceAndGetPermissions = async (voiceResponse: boolean) => {
-    if (voiceResponse) await unlockAudio();
     setVoiceResponse(voiceResponse);
   };
 
   const handleHoldInteraction = async () => {
-    if (!getStoredApiKey()) {
-      setIsApiKeyDialogVisible(true);
+    if (!isAValidApiKeyAvailable()) {
       return;
     }
 
@@ -181,20 +229,33 @@ const ChatWindow: React.FC<ChatPropType> = ({
     startListening();
   };
 
+  // Clear the current message for TTS set from ChatHistory
   const handleReadFinish = () => {
     setCurrentReadMessage("");
   };
 
+  // Setup TTS with handleReadFinish as the onEnd handler
   const { isTTSPlaying, getAndPlayTTS, stopTTS, isLoadingAudio } =
     useSpeechSynthesis(handleReadFinish);
 
-  const handleMessageRead = (message: string) => {
+  // Check if the audio is playing, if so, handle finish and stop the playback
+  const tryStopAudioResponse = () => {
     if (isTTSPlaying) {
-      setCurrentReadMessage("");
       stopTTS();
-    } else {
-      setCurrentReadMessage(message);
-      getAndPlayTTS(message);
+    }
+  };
+
+  const handleMessageRead = async (message: string) => {
+    try {
+      if (isTTSPlaying) {
+        stopTTS();
+      } else {
+        setCurrentReadMessage(message);
+        await getAndPlayTTS(message);
+      }
+    } catch (e) {
+      handleTrialExpiredError(e);
+      // Ignore other errors for now, as previously
     }
   };
 
@@ -214,18 +275,21 @@ const ChatWindow: React.FC<ChatPropType> = ({
       message,
       setMessage,
       chatHistory,
-      handleSubmit
+      handleSubmit,
+      handleTrialExpiredError,
+      tryStopAudioResponse
     );
 
   const handleConfirmApiKey = () => {
-    if (getStoredApiKey()) {
-      setIsApiKeyDialogVisible(false);
+    if (isAValidApiKeyAvailable()) {
       handleOpenChat();
     }
   };
 
   const { isResHigherThanTablet } = useResolutionCheck();
   const renderApiKeyModal = SHOULD_SHOW_API_KEY_DIALOG && isApiKeyDialogVisible;
+  const renderTrialExpiredModal =
+    SHOULD_SHOW_API_KEY_DIALOG && isTrialExpiredDialogVisible;
 
   return (
     <>
@@ -261,7 +325,6 @@ const ChatWindow: React.FC<ChatPropType> = ({
         />
         <ChatBottomMenu
           disabled={disableChat || !chatId}
-          disabledVoice={isTTSPlaying}
           setVoiceResponse={setVoiceAndGetPermissions}
           voiceResponse={voiceResponse}
           message={message}
@@ -278,12 +341,39 @@ const ChatWindow: React.FC<ChatPropType> = ({
         />
       </StyledChatDrawer>
       {renderApiKeyModal && (
-        <ApiKeyConfirmDialog
+        <TrialOptionsDialog
           open={isApiKeyDialogVisible}
           onClose={() => setIsApiKeyDialogVisible(false)}
           id="api-key-dialog"
-          onConfirm={handleConfirmApiKey}
+          onConfirmApiKey={handleConfirmApiKey}
         />
+      )}
+      {renderTrialExpiredModal && (
+        <InfoPopup
+          title="Time’s up!"
+          onClose={() => setIsTrialExpiredDialogVisible(false)}
+          onConfirm="https://calendar.app.google/6jaKPZD9oa9xHDty5"
+          confirmText="Schedule a meeting"
+          open={isTrialExpiredDialogVisible}
+          icon={
+            <div className="flex flex-row gap-2">
+              <AccessTimeIcon className="!fill-text-brand-light" />
+              <span className="text-text-brand-light font-medium">00:00</span>
+            </div>
+          }
+        >
+          <>
+            Your free trial has ended! Interested in learning more about
+            implementation or pricing? Schedule a meeting with us, or{" "}
+            <a
+              className="text-text-brand-light cursor-pointer"
+              onClick={handleTrialExpiredAction}
+            >
+              enter your OpenAI key
+            </a>{" "}
+            to continue right away.
+          </>
+        </InfoPopup>
       )}
     </>
   );

@@ -20,21 +20,13 @@ export function createNewFormObject(
   return {
     ...prevForm,
     personalData:
-      formikPatientDataRef.current?.values !== undefined
-        ? { ...formikPatientDataRef.current?.values }
-        : { ...prevForm.personalData },
+      formikPatientDataRef.current?.values ?? { ...prevForm.personalData },
     parentGuardianInformation:
-      formikParentGuardianInformationRef.current?.values !== undefined
-        ? { ...formikParentGuardianInformationRef.current?.values }
-        : { ...prevForm.parentGuardianInformation },
+      formikParentGuardianInformationRef.current?.values ?? { ...prevForm.parentGuardianInformation },
     familyHistory:
-      formikFamilyHistoryRef.current?.values !== undefined
-        ? { ...formikFamilyHistoryRef.current?.values }
-        : { ...prevForm.familyHistory },
+      formikFamilyHistoryRef.current?.values ?? { ...prevForm.familyHistory },
     diagnosis:
-      formikDiagnosisRef.current?.values !== undefined
-        ? { ...formikDiagnosisRef.current?.values }
-        : { ...prevForm.diagnosis },
+      formikDiagnosisRef.current?.values !?? { ...prevForm.diagnosis },
   };
 }
 

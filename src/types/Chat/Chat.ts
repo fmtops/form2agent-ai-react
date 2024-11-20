@@ -17,6 +17,16 @@ export enum ResponseState {
   Completed, // not awaiting any responses
 }
 
+/**
+ * @description The requested user-facing AI assistant (and their sub-agents) by task.
+ *
+ * Can be used to determine various details about the request, such as the TTS voice, etc.
+ */
+export enum AssistantType {
+  /** The default Form2Agent assistant used for form filling, Evie. */
+  FormFilling,
+}
+
 export type ChatPropType = {
   formDescription: string;
   formValues: string;
@@ -26,7 +36,6 @@ export type ChatPropType = {
 
 export type ChatBottomMenuPropType = {
   disabled: boolean;
-  disabledVoice: boolean;
   setVoiceResponse: (value: boolean) => void;
   voiceResponse: boolean;
   isListening: boolean;

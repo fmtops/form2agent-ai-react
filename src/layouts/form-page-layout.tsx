@@ -42,7 +42,7 @@ export default function FormPageLayout({
         <h1 className="text-2xl mb-2">{title}</h1>
         <p className="mb-8 text-textSecondary">{subTitle}</p>
         {children}
-        {onSubmit && <SubmitButton onClick={onSubmit} />}
+        {onSubmit && <SubmitButton className="mt-4" onClick={onSubmit} />}
       </div>
       {chatElement}
       <SuccessFormModal

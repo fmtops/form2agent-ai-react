@@ -1,3 +1,4 @@
+import { env } from "../env";
 import { throwIfAPIResponseNotOk } from "../helpers/api-exception-handler";
 import { APIError } from "../lib/errors/api-error";
 
@@ -11,7 +12,7 @@ let csrfToken: string | null = null;
  *  */
 async function fetchCsrfToken(): Promise<string> {
   const response = await fetch(
-    process.env.REACT_APP_AI_API_URL + "/security/csrf-token",
+    env.REACT_APP_AI_API_URL + "/security/csrf-token",
     {
       method: "GET",
       credentials: "include", // get and set the antiforgery cookie

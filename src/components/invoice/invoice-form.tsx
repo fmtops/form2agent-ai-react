@@ -32,10 +32,12 @@ const InvoiceForm = ({ form, setForm, formikRef }: InvoiceFormProps) => {
         ...formikRef.current?.values,
       }));
     };
-    
+
     return (
       <Form className="flex flex-col gap-y-4">
-        <h2 className={`text-[#1E2023] font-medium`}>Invoice Information</h2>
+        <h2 className={`text-text-primary-light font-medium`}>
+          Invoice Information
+        </h2>
         <div className="flex gap-4">
           <StyledField
             className={`w-1/2`}
@@ -49,11 +51,13 @@ const InvoiceForm = ({ form, setForm, formikRef }: InvoiceFormProps) => {
             className={`w-1/2`}
             name="invoiceDate"
             type="date"
-            aria-label="Invoice Date"            
+            aria-label="Invoice Date"
             onBlur={handleBlur}
           />
         </div>
-        <h2 className={`text-[#1E2023] font-medium mt-4`}>Sender Details</h2>
+        <h2 className={`text-text-primary-light font-medium mt-4`}>
+          Sender Details
+        </h2>
         <StyledField
           name="from.companyName"
           type="text"
@@ -107,7 +111,9 @@ const InvoiceForm = ({ form, setForm, formikRef }: InvoiceFormProps) => {
           </div>
         </div>
 
-        <h2 className={`text-[#1E2023] font-medium mt-4`}>Recipient Details</h2>
+        <h2 className={`text-text-primary-light font-medium mt-4`}>
+          Recipient Details
+        </h2>
         <StyledField
           name="to.companyName"
           type="text"
@@ -158,7 +164,7 @@ const InvoiceForm = ({ form, setForm, formikRef }: InvoiceFormProps) => {
             onBlur={handleBlur}
           />
         </div>
-        <h2 className={`text-[#1E2023] font-medium mt-4`}>Products</h2>
+        <h2 className={`text-text-primary-light font-medium mt-4`}>Products</h2>
         <FieldArray name="items">
           {({ remove, push }) => (
             <div>
@@ -197,7 +203,8 @@ const InvoiceForm = ({ form, setForm, formikRef }: InvoiceFormProps) => {
                       </span>
                     </div>
                     <button
-                      className={` p-2 text-[#DD3522]`}
+                      type="button"
+                      className={` p-2  text-button-light`}
                       onClick={() => remove(index)}
                     >
                       <DeleteOutline />

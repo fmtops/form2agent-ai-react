@@ -1,13 +1,14 @@
 import { RefObject, useEffect, useRef, useState } from "react";
 import ChatWindow from "../components/ai-chat/chat-window";
 import HelpdeskForm from "../components/helpdesk/helpdesk-form";
-import { HelpdeskAction, HelpdeskFormType } from "../models/helpdesk-model";
+import { HelpdeskFormType } from "../models/helpdesk-model";
 import { HelpdeskDescriptionContext } from "../models/helpdesk-context-model";
 import { FormikProps } from "formik";
 import { HELPDESK_FORM_VALUES } from "../consts/helpdesk.consts";
 import FormPageLayout from "../layouts/form-page-layout";
 import { stringifyValues } from "../utils/chat.utilts";
 import { AudioProvider } from "../contexts/AudioContext";
+import { FormAction } from "../consts/general-fields.consts";
 
 const HelpdeskPage = () => {
   const [form, setForm] = useState(HELPDESK_FORM_VALUES);
@@ -20,9 +21,9 @@ const HelpdeskPage = () => {
     setForm(HELPDESK_FORM_VALUES);
   }, []);
 
-  const performAction = (action: HelpdeskAction) => {
+  const performAction = (action: FormAction) => {
     switch (action) {
-      case HelpdeskAction.Submit:
+      case FormAction.Submit:
         onSubmit();
         break;
       default:

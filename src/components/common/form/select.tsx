@@ -3,7 +3,9 @@ import {
   MenuItem,
   FormControl,
   SelectChangeEvent,
+  InputLabel,
 } from "@mui/material";
+import { styled } from "@mui/system";
 import StyledLabel from "./input-label";
 
 export interface SelectComponentProps {
@@ -13,7 +15,16 @@ export interface SelectComponentProps {
   placeholder: string;
   value?: string;
   onChange?: (value: SelectChangeEvent) => void;
+  isBigInput?: boolean;
 }
+
+const StyledFormControl = styled(FormControl)(({ theme }) => ({
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      borderColor: "transparent",
+    },
+  },
+}));
 
 export const SelectComponent = ({
   className,
@@ -22,14 +33,19 @@ export const SelectComponent = ({
   placeholder,
   onChange,
   value,
+  isBigInput,
 }: SelectComponentProps) => {
   return (
-    <FormControl
-      className={`px-3 rounded-md border-[#C1C6CF] border-[1px] bg-white text-black ${className}`}
+    <StyledFormControl
+      className={`!rounded-md !border !border-solid !border-bg-active-light ${className}`}
     >
-      <StyledLabel>{placeholder}</StyledLabel>
+      {isBigInput ? (
+        <InputLabel>{placeholder}</InputLabel>
+      ) : (
+        <StyledLabel>{placeholder}</StyledLabel>
+      )}
       <Select
-        className="h-12"
+        className={isBigInput ? "h-14" : "h-12"}
         name={name}
         label={placeholder}
         value={value}
@@ -41,6 +57,6 @@ export const SelectComponent = ({
           </MenuItem>
         ))}
       </Select>
-    </FormControl>
+    </StyledFormControl>
   );
 };

@@ -7,8 +7,6 @@ export const PatientRegistrationSteps: string[] = [
   "Diagnosis",
 ];
 
-export const GenderOptions: string[] = ["Female", "Male"];
-
 export const Race: string[] = [
   "Asian",
   "Caucasian (White)",
@@ -74,10 +72,6 @@ export const HearAboutTCSourceValues: Record<string, string> = {
   Other: "Please Specify the Source (Optional)",
 };
 
-export const YesNoIDKOptions: string[] = ["Yes", "No", "Don't know"];
-
-export const YesNoOptions: string[] = ["Yes", "No"];
-
 export const surgeryOptions: string[] = [
   "Cleft Lip Surgery",
   "Cleft Palate Surgery",
@@ -113,9 +107,6 @@ export const abnormalitiesAreas: string[] = [
   "Skin",
   "Speech",
 ];
-
-export const IPAD_LABEL_SHOW = 780;
-export const IPAD_LABEL_HIDE = 1380;
 
 export const PATIENT_FORM_VALUES: PatientRegistrationFormType = {
   action: null,
