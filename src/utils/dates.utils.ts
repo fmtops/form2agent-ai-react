@@ -53,4 +53,37 @@ const isWithin30Days = (dateToCompare: string) => {
   return date >= lastMonth;
 };
 
-export { formatDate, isToday, isYesterday, isWithinLastWeek, isWithin30Days };
+const getMinutesLeft = (expirationDate: string): number => {
+  const date = new Date(expirationDate);
+  const currentTime = new Date();
+  const timeDifference = date.getTime() - currentTime.getTime();
+  const minutesLeft = Math.floor(timeDifference / (1000 * 60));
+  return minutesLeft;
+};
+
+const getTimeAsString = (minutes: number): string => {
+  const fullHours = Math.floor(minutes / 60);
+  const fullMinutes = minutes % 60;
+  const timeLeftString =
+    fullHours > 0
+      ? `${fullHours} hour${fullHours > 1 ? "s" : ""}${fullMinutes > 0 ? ` ${fullMinutes} minute${fullMinutes > 1 ? "s" : ""}` : ""}`
+      : `${fullMinutes} minute${fullMinutes > 1 ? "s" : ""}`;
+  return timeLeftString;
+};
+
+const getTimeAsClockValue = (minutes: number): string => {
+  const fullHours = Math.floor(minutes / 60);
+  const fullMinutes = minutes % 60;
+  return `${fullHours.toString().padStart(2, "0")}:${fullMinutes.toString().padStart(2, "0")}`;
+};
+
+export {
+  formatDate,
+  isToday,
+  isYesterday,
+  isWithinLastWeek,
+  isWithin30Days,
+  getMinutesLeft,
+  getTimeAsString,
+  getTimeAsClockValue,
+};

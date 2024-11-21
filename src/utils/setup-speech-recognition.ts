@@ -7,7 +7,8 @@ export const setupAudioRecorder = (
   transcribingQueuesAmountRef: React.MutableRefObject<number>,
   messageRef: React.MutableRefObject<string>,
   setMessage: React.Dispatch<React.SetStateAction<string>>,
-  lastMessageRef: React.MutableRefObject<string>
+  lastMessageRef: React.MutableRefObject<string>,
+  handleRecognitionError: (error: unknown) => void
 ) => {
   const aiAudioService = new AiAudioService();
   const onStop = async (file: Blob) => {
@@ -27,7 +28,7 @@ export const setupAudioRecorder = (
       let text = response.transcription.trim();
       if (text !== "") setMessage((prev) => (prev ? prev + " " + text : text));
     } catch (error) {
-      console.error("Transcription error:", error);
+      handleRecognitionError(error);
     } finally {
       transcribingQueuesAmountRef.current -= 1;
     }

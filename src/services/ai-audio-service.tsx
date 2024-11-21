@@ -1,7 +1,8 @@
 import { TranscribeResponse } from "../types/api/AiChatServiceTypes";
-import { DEFAULT_TTS_VOICE_NAME } from "../consts/audio.consts";
-import conf from "../configs/aiconfig.json";
+import { aiConfig } from "../configs/configs";
 import f2aFetch from "../utils/fetch.utils";
+import { TTSProvider } from "../types/Chat/Audio";
+import { AssistantType } from "../types/Chat/Chat";
 
 class NetworkError extends Error {}
 
@@ -27,49 +28,39 @@ export class AiAudioService {
     const formData = new FormData();
     formData.append("fileName", fileName);
     formData.append("file", file);
-    if (conf.SPEECH.USE_TRANSCRIPTION_PROMPT) formData.append("prompt", prompt);
+    if (aiConfig.SPEECH.USE_TRANSCRIPTION_PROMPT)
+      formData.append("prompt", prompt);
 
     let response;
 
-    try {
-      response = await f2aFetch("/audio/transcription", {
-        method: "POST",
-        body: formData,
-      });
-    } catch (e) {
-      console.log("error", e);
-      throw new NetworkError("Unable to reach the network.");
-    }
+    response = await f2aFetch("/audio/transcription", {
+      method: "POST",
+      body: formData,
+    });
 
-    const value = (await response.body!.getReader().read()).value;
-    const transcriptionText = new TextDecoder().decode(value);
-
-    return JSON.parse(transcriptionText) as TranscribeResponse;
+    const data = await response.json();
+    return data as TranscribeResponse;
   }
 
   /**
    * @param text - text to convert to speech
    * @returns returns the readable stream of the audio
-   * @description Used to convert the text to speech. If fails it throws a `NetworkError`
+   * @description Used to convert the text to speech.
    *  */
   async textToSpeech(text: string) {
     let response: Response;
 
-    try {
-      response = await f2aFetch("/audio/tts/stream", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text,
-          voice: DEFAULT_TTS_VOICE_NAME,
-        }),
-      });
-    } catch (e) {
-      console.log("error", e);
-      throw new NetworkError("Unable to reach the network.");
-    }
+    response = await f2aFetch("/audio/tts/stream/v2", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        Text: text,
+        Provider: TTSProvider.GoogleCloud,
+        Assistant: AssistantType.FormFilling,
+      }),
+    });
 
     return response.body!.getReader();
   }

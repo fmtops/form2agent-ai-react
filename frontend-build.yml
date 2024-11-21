@@ -8,6 +8,12 @@ steps:
   - script: npm install
     displayName: "Install npm packages"
 
+  - script: |
+      touch .env.production
+
+      printenv | grep '^REACT_APP_' >> .env.production || echo "No REACT_APP_ variables found."
+    displayName: "Inject environment variables"
+
   - script: npm run build
     displayName: "Build react app"
 

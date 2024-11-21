@@ -4,9 +4,13 @@ import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutli
 export default function SuccessFormModal({
   isVisible,
   onClose,
+  topText,
+  bottomText,
 }: {
   isVisible: boolean;
   onClose: () => void;
+  topText?: string;
+  bottomText?: string;
 }) {
   return (
     <Modal
@@ -25,10 +29,10 @@ export default function SuccessFormModal({
         <CheckCircleOutlineOutlinedIcon className="text-emerald" />
         <div className="mt-4 mb-8">
           <h2 className={`text-2xl font-medium text-text-primary-light`}>
-            Thank You!
+            {topText ?? "Thank You!"}
           </h2>
           <span className={`text-text-secondary-light`}>
-            Your information has been successfully submitted.
+            {bottomText ?? "Your information has been successfully submitted."}
           </span>
         </div>
         <a

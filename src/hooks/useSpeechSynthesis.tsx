@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { AiAudioService } from "../services/ai-audio-service";
-import { DEFAULT_TTS_FILE_FORMAT } from "../consts/audio.consts";
+import { TrialExpiredError } from "../lib/errors/trial-expired-error";
 import { useAudio } from "../contexts/AudioContext";
 
 /**
@@ -17,34 +17,17 @@ import { useAudio } from "../contexts/AudioContext";
  */
 const useSpeechSynthesis = (onEnd: () => void) => {
   const aiAudioService = new AiAudioService();
-  const { audioRef } = useAudio();
-  const [isTTSPlaying, setIsTTSPlaying] = useState(false);
+  const { isAudioPlaying, playAudioStream, stopAudioStream } = useAudio();
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
-
-  useEffect(() => {
-    audioRef.current.onplay = () => {
-      setIsTTSPlaying(true);
-    };
-
-    audioRef.current.onpause =
-      audioRef.current.onended =
-      audioRef.current.onerror =
-        () => {
-          if (!isTTSPlaying) return;
-          audioRef.current.currentTime = 0;
-          setIsTTSPlaying(false);
-          onEnd();
-        };
-  }, [isTTSPlaying, onEnd]);
 
   // Cleanup the audio when the component unmounts - can't use the onEnd callback here
   useEffect(() => {
     return () => {
-      if (isTTSPlaying) {
-        audioRef.current.pause();
+      if (isAudioPlaying) {
+        stopTTS();
       }
     };
-  }, [isTTSPlaying]);
+  }, [isAudioPlaying]);
 
   /**
    * @param text - text to convert to speech
@@ -52,40 +35,31 @@ const useSpeechSynthesis = (onEnd: () => void) => {
    * @description Get and play the text-to-speech audio
    * */
   const getAndPlayTTS = async (text: string) => {
-    if (isTTSPlaying) return;
+    if (isAudioPlaying) return;
     setIsLoadingAudio(true);
     try {
       const reader = await aiAudioService.textToSpeech(text);
-      const playWithBlob = async () => {
-        let chunks = [];
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          chunks.push(value);
-        }
-        const blob = new Blob(chunks, {
-          type: `audio/${DEFAULT_TTS_FILE_FORMAT}`,
-        });
-        const url = URL.createObjectURL(blob);
-        audioRef.current.src = url;
-      };
-
-      await playWithBlob();
-      setIsTTSPlaying(true);
-      audioRef.current.play();
+      playAudioStream(reader);
       setIsLoadingAudio(false);
     } catch (error) {
       console.error("Error fetching or playing TTS data:", error);
-      audioRef.current.pause();
+      stopTTS();
       setIsLoadingAudio(false);
+      if (error instanceof TrialExpiredError) throw error; // let the caller handle an expired trial
     }
   };
 
   const stopTTS = () => {
-    audioRef.current.pause();
+    stopAudioStream();
+    onEnd();
   };
 
-  return { isTTSPlaying, getAndPlayTTS, stopTTS, isLoadingAudio };
+  return {
+    isTTSPlaying: isAudioPlaying,
+    getAndPlayTTS,
+    stopTTS,
+    isLoadingAudio,
+  };
 };
 
 export default useSpeechSynthesis;

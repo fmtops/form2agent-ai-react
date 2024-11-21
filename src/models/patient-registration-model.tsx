@@ -1,3 +1,5 @@
+import { FormAction } from "../consts/general-fields.consts";
+
 export type PatientRegistrationBaseFormType = {
   personalData: PatientPersonalDataFormType;
   parentGuardianInformation: ParentGuardianInformationFormType;
@@ -6,13 +8,9 @@ export type PatientRegistrationBaseFormType = {
 };
 
 export type PatientRegistrationFormType = {
-  action: PrAction | null;
+  action: FormAction | null;
   pageIndex: number;
 } & PatientRegistrationBaseFormType;
-
-export enum PrAction {
-  Submit = "Submit",
-}
 
 export enum PageIndex {
   PersonalData = "PersonalData",

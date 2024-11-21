@@ -1,13 +1,22 @@
 import FormCard from "../components/common/form-card";
-import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
-import MedicalInformationOutlinedIcon from "@mui/icons-material/MedicalInformationOutlined";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import InformationCard from "../components/common/information-card";
-import ListAltOutlinedIcon from "@mui/icons-material/ListAltOutlined";
 import { useLayout } from "../contexts/LayoutContext";
+import { useSearchParams } from "react-router-dom";
+import OptOutPopup from "../components/trial/optout-popup";
+import TrialPopup from "../components/trial/trial-popup";
+import { UrlPopupType as UrlPopupType, UrlParam } from "../consts/url.consts";
+import { SIDE_NAV_LINKS } from "../consts/sidenav.consts";
 
 const HomePage = () => {
   const { isNavbarExpanded } = useLayout();
+  const [params] = useSearchParams();
+  const popupToShow = params.get(UrlParam.Popup);
+
+  const footerGridResponsiveClasses = `grid grid-cols-1 gap-2
+    ${isNavbarExpanded ? "md:flex lg:gap-3 xl:gap-6" : "sm:flex md:gap-3 lg:gap-6"}`;
+
+  const footerSubgridResponsiveClasses = `grid grid-cols-1 gap-2 content-start
+    ${isNavbarExpanded ? "lg:flex lg:gap-3 xl:gap-6" : "md:flex md:gap-3 lg:gap-6"}`;
 
   const useCaseGridClasses = `gap-4 items-stretch w-full grid grid-cols-1 
     ${isNavbarExpanded ? "md:grid-cols-2 xl:grid-cols-4" : "sm:grid-cols-2 lg:grid-cols-4"}`;
@@ -45,70 +54,96 @@ const HomePage = () => {
   );
 
   return (
-    <div className={`bg-white py-8`}>
-      <div>
-        <h1 className="text-2xl font-medium mb-2 flex items-center gap-2">
-          <img {...logoImgAttributes} /> Form2Agent AI Demo
-        </h1>
-        {demoAppDescriptionComponent}
-        <br />
-        {callToActionComponent}
-      </div>
-      <h2 className={`text-lg mt-12 mb-6 font-medium text-text-primary-light`}>
-        Explore use case examples
-      </h2>
-      <div className={`${useCaseGridClasses}`}>
-        <FormCard
-          title="Add invoice"
-          description="Quickly add a new invoice to the system."
-          icon={<ArticleOutlinedIcon />}
-          buttonTitle="Add invoice"
-          linkProps={{ href: "/invoice" }}
-        />
-        <FormCard
-          title="Patient registration"
-          description="Register a new patient and their details."
-          icon={<MedicalInformationOutlinedIcon />}
-          buttonTitle="Register patient"
-          linkProps={{ href: "/patient-registration" }}
-        />
-        <FormCard
-          title="Helpdesk"
-          description="Get assistance or report an issue."
-          icon={<HelpOutlineIcon />}
-          buttonTitle="Helpdesk"
-          linkProps={{ href: "/helpdesk" }}
-        />
-        <FormCard
-          title="Orders"
-          description="Make changes to existing orders."
-          icon={<ListAltOutlinedIcon />}
-          buttonTitle="Update orders"
-          linkProps={{ href: "/ecommerce" }}
-        />
-      </div>
-      <div className="mt-12">
+    <>
+      <div className={`bg-white py-8`}>
+        <div>
+          <h1 className="text-2xl font-medium mb-2 flex items-center gap-2">
+            <img {...logoImgAttributes} /> Form2Agent AI Demo
+          </h1>
+          {demoAppDescriptionComponent}
+          <br />
+          {callToActionComponent}
+        </div>
         <h2
           className={`text-lg mt-12 mb-6 font-medium text-text-primary-light`}
         >
-          Suggested
+          Explore use case examples
         </h2>
-        <div className={`${suggestionGridClasses}`}>
-          <InformationCard
-            title="Learn more about how Form2Agent AI can transform your form completion process."
-            buttonTitle="Visit our website"
-            linkProps={websiteLinkProps}
-            image={"./form2agent-microsite.png"}
-          />
-          <InformationCard
-            title="Download our PDF to explore Form2Agent AI's powerful capabilities."
-            buttonTitle="Download PDF"
-            linkProps={{ href: "./form2Agent.pdf", download: "form2Agent.pdf" }}
-            image={"./form2agent-pdf.png"}
-          />
+        {popupToShow === UrlPopupType.NewTrial && <TrialPopup />}
+        {popupToShow === UrlPopupType.OptOut && <OptOutPopup />}
+        <div className={`${useCaseGridClasses}`}>
+          {SIDE_NAV_LINKS.map(
+            (link) =>
+              !link.isHidden &&
+              !link.isDisabled && (
+                <FormCard
+                  key={link.path}
+                  title={link.text}
+                  description={link.description ?? ""}
+                  Icon={link.icon}
+                  buttonTitle={link.buttonTitle ?? ""}
+                  linkProps={{ href: link.path }}
+                />
+              )
+          )}
+        </div>
+        <div className="mt-12">
+          <h2
+            className={`text-lg mt-12 mb-6 font-medium text-text-primary-light`}
+          >
+            Suggested
+          </h2>
+          <div className={`${suggestionGridClasses}`}>
+            <InformationCard
+              title="Learn more about how Form2Agent AI can transform your form completion process."
+              buttonTitle="Visit our website"
+              linkProps={websiteLinkProps}
+              image={"./form2agent-microsite.png"}
+            />
+            <InformationCard
+              title="Download our PDF to explore Form2Agent AI's powerful capabilities."
+              buttonTitle="Download PDF"
+              linkProps={{
+                href: "./form2Agent.pdf",
+                download: "form2Agent.pdf",
+              }}
+              image={"./form2agent-pdf.png"}
+            />
+          </div>
         </div>
       </div>
-    </div>
+      <footer
+        className={`${footerGridResponsiveClasses} justify-between text-[#A7A7AB] px-4 py-0`}
+      >
+        <div className={footerSubgridResponsiveClasses}>
+          <span>© 2024 Freeport Metrics</span>
+          <a href="/privacy-policy">Privacy Policy</a>
+        </div>
+        <div className={footerSubgridResponsiveClasses}>
+          <a
+            href="https://www.freeportmetrics.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Freeport Metrics
+          </a>
+          <a
+            href="https://www.fmventures.io/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            FM Ventures
+          </a>
+          <a
+            href="https://ddd.freeportmetrics.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            DDD Methodology
+          </a>
+        </div>
+      </footer>
+    </>
   );
 };
 

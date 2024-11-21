@@ -12,9 +12,11 @@ const DATE_FILTERS = [
 export default function DateFilter({
   onDateFilterChange,
   dateFilter,
+  name,
 }: {
   onDateFilterChange: (date: DateFilters) => void;
   dateFilter: DateFilters;
+  name?: string;
 }) {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onDateFilterChange(event.target.value as DateFilters);
@@ -22,7 +24,7 @@ export default function DateFilter({
 
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-md font-medium mb-1">Date</span>
+      <span className="text-md font-medium mb-1">{name ?? "Date"}</span>
       <RadioGroup
         defaultValue={DATE_FILTERS[0].value}
         className="flex flex-col gap-2"

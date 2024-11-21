@@ -79,7 +79,7 @@ export default function OrdersTable({
         })}
     </div>
   ) : (
-    <div className="p-4 h-fit text-lg font-medium text-text-primary-light flex gap-2 flex-col border-[1px] border-border-primary-light rounded-lg">
+    <div className="p-4 h-fit text-lg font-medium text-text-primary-light flex gap-2 flex-col  w-full border-[1px] border-border-primary-light rounded-lg">
       No Results Found
       <span className=" text-md font-normal">
         We couldn't find any orders matching your criteria. Please adjust your

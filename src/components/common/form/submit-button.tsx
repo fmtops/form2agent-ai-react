@@ -6,7 +6,7 @@ export default function SubmitButton({
 }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
-      className={`py-[10px] mt-4 border rounded shadow-sm text-white w-24 bg-lightBlue
+      className={`py-[10px] border rounded shadow-sm text-white w-32 bg-lightBlue
        hover:bg-lightBlue
        ${className}`}
       type="submit"

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import InvoiceForm from "../components/invoice/invoice-form";
 import ChatWindow from "../components/ai-chat/chat-window";
-import { InvoiceAction, InvoiceFormType } from "../models/invoice-model";
+import { InvoiceFormType } from "../models/invoice-model";
 import { DescriptionContext } from "../models/invoice-context-model";
 import { INVOICE_FORM_VALUES } from "../consts/invoice.consts";
 import FormPageLayout from "../layouts/form-page-layout";
@@ -9,6 +9,7 @@ import { stringifyValues } from "../utils/chat.utilts";
 import { mergeFormData } from "../utils/invoice.utils";
 import { FormikProps } from "formik";
 import { AudioProvider } from "../contexts/AudioContext";
+import { FormAction } from "../consts/general-fields.consts";
 
 const InvoicePage = () => {
   const [form, setForm] = useState(INVOICE_FORM_VALUES);
@@ -24,9 +25,9 @@ const InvoicePage = () => {
 
   const formikInvoiceRef = useRef<FormikProps<InvoiceFormType>>(null);
 
-  const performAction = (action: InvoiceAction) => {
+  const performAction = (action: FormAction) => {
     switch (action) {
-      case InvoiceAction.Submit:
+      case FormAction.Submit:
         handleSubmit();
         break;
       default:

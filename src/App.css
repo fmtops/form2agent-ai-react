@@ -101,3 +101,21 @@
 .word-break {
   word-break: break-word;
 }
+
+.MuiTextField-root > label {
+  color: inherit;
+}
+
+.dateInputCalc-1 {
+  min-width: calc(100% - 19px);
+}
+
+.dateInputCalc-2 {
+  min-width: calc(50% - 24px);
+}
+.dateInputCalc-3 {
+  min-width: calc(33% - 24px);
+}
+.dateInputCalc-4 {
+  min-width: calc(25% - 24px);
+}

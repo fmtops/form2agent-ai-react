@@ -66,7 +66,7 @@ export default function OrdersFilter({
           ? "lg:hidden"
           : "md:hidden";
 
-  const filtersClasses = `w-full ${filtersWidthRespClass} h-fit flex-col border-border-primary-light text-text-primary-light gap-7 p-4 pb-8 border-[1px] rounded-lg ${areFiltersOpenOnMobile ? "flex" : `hidden ${filtersRespClasses}`}`;
+  const filtersClasses = `w-full ${filtersWidthRespClass} min-w-160  h-fit flex-col border-border-primary-light text-text-primary-light gap-7 p-4 pb-8 border-[1px] rounded-lg ${areFiltersOpenOnMobile ? "flex" : `hidden ${filtersRespClasses}`}`;
 
   return (
     <div className={filtersClasses}>

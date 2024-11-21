@@ -1,4 +1,10 @@
+import { StatusCodes } from "http-status-codes";
 import { APIError } from "../lib/errors/api-error";
+import { emailConfig } from "../configs/configs";
+import {
+  TrialExpiredBackendMessage,
+  TrialExpiredError,
+} from "../lib/errors/trial-expired-error";
 
 /**
  *
@@ -11,7 +17,7 @@ const getErrorMessage = (statusCode: number | undefined | null) => {
     return "I'm unable to reach the network. Please check your connection or try again later.";
   } else {
     switch (statusCode) {
-      case 401: // Unauthorized
+      case StatusCodes.UNAUTHORIZED:
         return "I'm sorry, you're unauthorized. Please update your OpenAI API Key.";
       default:
         return null;
@@ -29,6 +35,9 @@ export const handleAPIError = (error: unknown) => {
   console.log(error);
   let message = "An unknown error has occured. Please try again later.";
 
+  if (error instanceof TrialExpiredError) {
+    message = `I'm sorry, your trial has expired. You can reach out to us at ${emailConfig.SUPPORT_EMAIL} to schedule a meeting or to receive a new key.`;
+  }
   if (error instanceof APIError) {
     message = getErrorMessage(error.statusCode) ?? message;
   } else if (error instanceof TypeError) {
@@ -41,11 +50,16 @@ export const handleAPIError = (error: unknown) => {
 /**
  *
  * @param response - the response from the API
- * @description Throw an APIError if the response is null, has no body or is not ok.
+ * @description Throw an error if the response is null, has no body or is not ok.
  */
 export const throwIfAPIResponseNotOk = async (response: Response | null) => {
   if (response === null || response.body === null)
     throw new APIError("Response or body is null.", null);
 
-  if (!response.ok) throw new APIError(await response.text(), response.status);
+  if (!response.ok) {
+    const responseText = await response.text();
+    if (responseText.toLowerCase() === TrialExpiredBackendMessage)
+      throw new TrialExpiredError();
+    else throw new APIError(responseText, response.status);
+  }
 };

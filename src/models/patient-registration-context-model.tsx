@@ -1,19 +1,16 @@
+import { FormAction, GenderOptions, YesNoIDKOptions, YesNoOptions } from "../consts/general-fields.consts";
 import {
-  GenderOptions,
   HearAboutTCOptions,
   Partners,
   Race,
   RelationshipOptions,
   TreatmentCenters,
-  YesNoIDKOptions,
-  YesNoOptions,
   abnormalitiesAreas,
   cleftLipTypeOptions,
   cleftPalateTypeOptions,
   surgeryOptions,
 } from "../consts/patient-registration.consts";
 import {
-  PrAction,
   DiagnosisFormType,
   FamilyHistoryFormType,
   PageIndex,
@@ -31,7 +28,7 @@ export type PatientRegistrationContextFormType = {
 };
 
 export const PatientRegistrationContext: PatientRegistrationContextFormType = {
-  action: `Invisible field. Fill only when user says one of the following: ${Object.keys(PrAction).join(", ")} or null.`,
+  action: `Invisible field. Fill only when user says one of the following: ${Object.keys(FormAction).join(", ")} or null.`,
   pageIndex: `Page number. Set according to currently reached section: 
     ${Object.keys(PageIndex)
       .map((key, index) => `${index + 1} = ${key}`)

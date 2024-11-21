@@ -1,4 +1,4 @@
-import { InvoiceAction } from "./invoice-model";
+import { FormAction } from "../consts/general-fields.consts";
 
 export type DescriptionContextType = {
   action: string;
@@ -28,7 +28,7 @@ export type DescriptionContextType = {
 };
 
 export const DescriptionContext: DescriptionContextType = {
-  action: `Allowed actions are ${Object.keys(InvoiceAction).join(", ")} or null`,
+  action: `Allowed actions are ${Object.keys(FormAction).join(", ")} or null`,
   invoiceNumber: "",
   invoiceDate: `format(ISO date) confirmOrUpdate()`,
   from: {

@@ -5,9 +5,11 @@ import LanguageSelect from "./language-select";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import ApiKeyConfirmDialog from "../common/api-key-confirm-dialog";
 import { useState } from "react";
 import { SHOULD_SHOW_API_KEY_DIALOG } from "../../consts/api-key.consts";
+import TrialOptionsDialog from "../trial/trial-options-dialog";
+import StyledLink from "../common/styled-link";
+import { Box } from "@mui/material";
 
 /**
  * SideNav component
@@ -51,12 +53,13 @@ const SideNav = ({
         <div
           className={`px-5 py-5 space-y-2 transition duration-500 bg-white text-black`}
         >
-          {SIDE_NAV_LINKS.map((link, index) => (
-            <Link
-              key={index}
-              onClick={() => setIsNavbarOpen(false)}
-              to={link.path}
-              className={`flex items-center space-x-2 text-sm p-2 rounded-md transition duration-500 
+          <div style={{ overflowY: "auto", maxHeight: "calc(100vh - 450px)" }}>
+            {SIDE_NAV_LINKS.filter((x) => !x.isDisabled).map((link, index) => (
+              <Link
+                key={link.path}
+                onClick={() => setIsNavbarOpen(false)}
+                to={link.path}
+                className={`flex items-center space-x-2 text-sm p-2 rounded-md transition duration-500 
                  hover:bg-gray-300
                     ${
                       location.pathname === link.path
@@ -64,16 +67,30 @@ const SideNav = ({
                         : ""
                     }
                 `}
+              >
+                <link.icon />
+                <p>{link.text}</p>
+              </Link>
+            ))}
+          </div>
+          <div className="bg-bg-active-light border rounded p-3 pb-6 border-border-primary-light !mt-6">
+            <p className="mb-6">
+              Ready to add a friendly AI agent to your app?
+            </p>
+            <StyledLink
+              className="px-6 w-fit mt-6 font-medium"
+              href="https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ0FO3B2ymP66im56xjAY33k26aIr4IvDRmByfCKyoHAl3gA-4ylFEfgT0pD8OP2MqF5UdezeNZu"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              <link.icon />
-              <p>{link.text}</p>
-            </Link>
-          ))}
+              Book a call
+            </StyledLink>
+          </div>
         </div>
       </div>
       <div className="p-5 flex flex-col gap-2">
         <div className="flex items-center pl-3 justify-between ">
-          OpenAI API Key
+          Demo Key
           <VpnKeyIcon
             onClick={() => setIsApiKeyDialogVisible(true)}
             className="text-3xl cursor-pointer text-text-secondary-light mr-8"
@@ -92,7 +109,7 @@ const SideNav = ({
         </a>
       </div>
       {renderApiKeyModal && (
-        <ApiKeyConfirmDialog
+        <TrialOptionsDialog
           open={isApiKeyDialogVisible}
           onClose={() => setIsApiKeyDialogVisible(false)}
           id="api-key-dialog"

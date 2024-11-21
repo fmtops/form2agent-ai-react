@@ -1,6 +1,7 @@
+import { env } from "../env";
 import { throwIfAPIResponseNotOk } from "../helpers/api-exception-handler";
 import { getStoredLanguage } from "../utils/language.utils";
-import { getStoredApiKey } from "./api-key.utils";
+import { getStoredApiKey, getStoredProxyKey } from "./api-key.utils";
 import getCsrfTokenHeader from "./csrf.utils";
 
 /**
@@ -16,19 +17,20 @@ export default async function f2aFetch(
 ) {
   const csrfTokenHeader = await getCsrfTokenHeader();
   const language = getStoredLanguage();
+  const apiKey = getStoredApiKey() ?? getStoredProxyKey();
 
   const options: RequestInit = {
     credentials: "include", // include the antiforgery cookie
     ...additionalOptions,
     headers: {
       ...csrfTokenHeader, // the f2a csrf header
-      "Llm-Api-Key": `${getStoredApiKey()}`,
+      "Llm-Api-Key": apiKey || "",
       "Accept-Language": language || "en-US",
       ...additionalOptions.headers,
     },
   };
 
-  const url = `${process.env.REACT_APP_AI_API_URL}${path}`;
+  const url = `${env.REACT_APP_AI_API_URL}${path}`;
   let fetchResponse = await fetch(url, options);
   await throwIfAPIResponseNotOk(fetchResponse);
 

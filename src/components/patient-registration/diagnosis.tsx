@@ -7,8 +7,6 @@ import StyledField from "../common/form/styled-field";
 import { Form, Formik, FormikHelpers, FormikProps, FormikValues } from "formik";
 import { RadioGroupComponent } from "../common/form/radio-group";
 import {
-  YesNoIDKOptions,
-  YesNoOptions,
   abnormalitiesAreas,
   cleftLipTypeOptions,
   cleftPalateTypeOptions,
@@ -16,6 +14,7 @@ import {
 } from "../../consts/patient-registration.consts";
 import { CheckboxGroupComponent } from "../common/form/checkbox-group";
 import { useLayout } from "../../contexts/LayoutContext";
+import { YesNoOptions, YesNoIDKOptions } from "../../consts/general-fields.consts";
 
 export interface DiagnosisComponentProps {
   form: DiagnosisFormType;

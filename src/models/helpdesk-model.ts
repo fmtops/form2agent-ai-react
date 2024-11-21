@@ -1,3 +1,5 @@
+import { FormAction } from "../consts/general-fields.consts";
+
 export type HelpdeskBaseFormType = {
   firstName?: string;
   lastName?: string;
@@ -12,7 +14,7 @@ export type HelpdeskBaseFormType = {
 };
 
 export type HelpdeskFormType = {
-  action?: null | HelpdeskAction;
+  action?: null | FormAction;
 } & HelpdeskBaseFormType;
 
 export enum DepartmentOptions {
@@ -31,8 +33,4 @@ export enum HelpdeskPriority {
   MEDIUM = "Medium",
   HIGH = "High",
   URGENT = "Urgent",
-}
-
-export enum HelpdeskAction {
-  Submit = "Submit",
 }

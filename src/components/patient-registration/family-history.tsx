@@ -7,8 +7,8 @@ import { Form, Formik, FormikHelpers, FormikProps, FormikValues } from "formik";
 import StyledField from "../common/form/styled-field";
 import { RadioGroupComponent } from "../common/form/radio-group";
 import { Checkbox, FormControlLabel, FormGroup } from "@mui/material";
-import { YesNoIDKOptions } from "../../consts/patient-registration.consts";
 import { useLayout } from "../../contexts/LayoutContext";
+import { YesNoIDKOptions } from "../../consts/general-fields.consts";
 
 export interface FamilyHistoryComponentProps {
   form: FamilyHistoryFormType;

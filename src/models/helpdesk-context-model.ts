@@ -1,11 +1,11 @@
+import { FormAction } from "../consts/general-fields.consts";
 import {
   HelpdeskPriority,
   DepartmentOptions,
-  HelpdeskAction,
 } from "./helpdesk-model";
 
 export const HelpdeskDescriptionContext = {
-  action: `Allowed actions are ${Object.keys(HelpdeskAction).join(", ")} or null`,
+  action: `Allowed actions are ${Object.keys(FormAction).join(", ")} or null`,
   firstName: "",
   lastName: "",
   email: "",

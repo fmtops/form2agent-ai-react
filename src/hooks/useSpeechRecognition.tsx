@@ -4,7 +4,7 @@ import {
   setupAudioAnalyser,
 } from "../utils/setup-speech-recognition";
 import { WAVEFORM_MIDPOINT } from "../consts/audio.consts";
-import conf from "../configs/aiconfig.json";
+import { aiConfig } from "../configs/configs";
 import { AudioState } from "../types/Chat/Audio";
 import { ChatMessageType } from "../types/Chat/Chat";
 import { AudioRecorder } from "../lib/audio/audio-recorder";
@@ -25,6 +25,8 @@ type UseSpeechRecognitionType = {
  * @param setMessage - function to set the message
  * @param chatHistory - array of chat messages
  * @param sendMessage - function to send the message
+ * @param handleRecognitionError - function to handle a speech recognition error and update the UI
+ * @param tryStopAudioResponse - optional, function to try interrupt the audio response, triggered by speech
  * @returns the speech recognition state and functions to start and stop listening
  * `startListening` - function to start listening
  * `stopListening` - function to stop listening
@@ -39,7 +41,8 @@ type UseSpeechRecognitionType = {
  * message,
  * setMessage,
  * chatHistory,
- * sendMessage
+ * sendMessage,
+ * handleRecognitionError
  * );
  * ```
  * @description Used to manage the speech recognition
@@ -51,7 +54,9 @@ const useSpeechRecognition = (
   message: string,
   setMessage: React.Dispatch<React.SetStateAction<string>>,
   chatHistory: ChatMessageType[],
-  sendMessage: () => void
+  sendMessage: () => void,
+  handleRecognitionError: (error: unknown) => void,
+  tryStopAudioResponse: (() => void) | undefined = undefined
 ): UseSpeechRecognitionType => {
   // Compatibility check
   if (window.AudioContext === undefined) {
@@ -69,6 +74,7 @@ const useSpeechRecognition = (
   const messageRef = useRef(message);
   const lastMessageRef = useRef("");
   const sendMessageRef = useRef(sendMessage);
+  const tryStopAudioResponseRef = useRef(tryStopAudioResponse);
   const [audioState, setAudioState] = useState(AudioState.NoState);
   const [audioStateProgress, setAudioStateProgress] = useState(0);
 
@@ -126,6 +132,10 @@ const useSpeechRecognition = (
     sendMessageRef.current = sendMessage;
   }, [sendMessage]);
 
+  useEffect(() => {
+    tryStopAudioResponseRef.current = tryStopAudioResponse;
+  }, [tryStopAudioResponse]);
+
   // Main listening function
   const startListening = useCallback(async () => {
     setIsListening(true);
@@ -145,7 +155,8 @@ const useSpeechRecognition = (
       transcribingQueuesAmountRef,
       messageRef,
       setMessage,
-      lastMessageRef
+      lastMessageRef,
+      handleRecognitionError
     );
 
     const { audioAnalyser, analysedAudioDataArray } = setupAudioAnalyser(
@@ -155,7 +166,8 @@ const useSpeechRecognition = (
     // Calibration loop
     const noiseValues: number[] = [];
     const calibrationTotalTime =
-      conf.SPEECH.CALIBRATION_INTERVAL * conf.SPEECH.CALIBRATION_SAMPLE_COUNT;
+      aiConfig.SPEECH.CALIBRATION_INTERVAL *
+      aiConfig.SPEECH.CALIBRATION_SAMPLE_COUNT;
     const calibrationStartTime = Date.now();
 
     const calibrationIntervalId = setInterval(() => {
@@ -173,7 +185,7 @@ const useSpeechRecognition = (
         Date.now(),
         calibrationStartTime
       );
-    }, conf.SPEECH.CALIBRATION_INTERVAL);
+    }, aiConfig.SPEECH.CALIBRATION_INTERVAL);
 
     // Noise detection loop
     setTimeout(
@@ -181,15 +193,15 @@ const useSpeechRecognition = (
         clearInterval(calibrationIntervalId);
 
         const noiseSpeechThreshold =
-          conf.SPEECH.NOISE_THRESH_BASE +
-          Math.max(...noiseValues) * conf.SPEECH.NOISE_THRESH_MOD;
+          aiConfig.SPEECH.NOISE_THRESH_BASE +
+          Math.max(...noiseValues) * aiConfig.SPEECH.NOISE_THRESH_MOD;
 
         progressBarClear();
 
         // We should allow for very brief periods of silence during speech
         // Don't break out of speech until we've had a few samples of silence
         // Start with silence by default, reset when we detect noise
-        let samplesOfSilence = conf.SPEECH.SAMPLES_TO_BREAK_INTO_SILENCE;
+        let samplesOfSilence = aiConfig.SPEECH.SAMPLES_TO_BREAK_INTO_SILENCE;
 
         let silenceThresholdToTranscribeReached = false;
         let soundThresholdToConfirmIntentReached = false;
@@ -229,7 +241,9 @@ const useSpeechRecognition = (
 
           // If enough samples of silence have been collected, switch the "timers" to represent no sound.
           // Otherwise, the timers should count down time since the last sound was detected.
-          if (samplesOfSilence >= conf.SPEECH.SAMPLES_TO_BREAK_INTO_SILENCE) {
+          if (
+            samplesOfSilence >= aiConfig.SPEECH.SAMPLES_TO_BREAK_INTO_SILENCE
+          ) {
             soundStartedAt = null;
             // if silence timer has not been started, start the timer and the loop
             // by setting silenceThresholdToTranscribeReached to false
@@ -257,7 +271,7 @@ const useSpeechRecognition = (
           // Pause the recording if there is no speech for a certain amount of time.
           if (
             silenceStartedAt !== null &&
-            dateNow - silenceStartedAt > conf.SPEECH.TIME_TO_PAUSE
+            dateNow - silenceStartedAt > aiConfig.SPEECH.TIME_TO_PAUSE
           ) {
             await audioRecorderRef.current?.tryPause();
           }
@@ -277,14 +291,17 @@ const useSpeechRecognition = (
               // Count down towards transcribing the recording
               progressBarUpdate(
                 AudioState.ReadyToTranscribe,
-                conf.SPEECH.TIME_TO_TRANSCRIBE,
+                aiConfig.SPEECH.TIME_TO_TRANSCRIBE,
                 dateNow,
                 silenceStartedAt,
-                conf.SPEECH.DISPLAY_PROGRESS_GRACE_PERIOD
+                aiConfig.SPEECH.DISPLAY_PROGRESS_GRACE_PERIOD
               );
 
               // Transcribe the recording and update flags
-              if (dateNow - silenceStartedAt > conf.SPEECH.TIME_TO_TRANSCRIBE) {
+              if (
+                dateNow - silenceStartedAt >
+                aiConfig.SPEECH.TIME_TO_TRANSCRIBE
+              ) {
                 silenceStartedAt = dateNow; // count from 0 for sending interaction
                 silenceThresholdToTranscribeReached = true;
                 isThereAudioToTranscribeRef.current = false;
@@ -299,14 +316,14 @@ const useSpeechRecognition = (
               // Count down towards sending the message
               progressBarUpdate(
                 AudioState.ReadyToSend,
-                conf.SPEECH.TIME_TO_SEND,
+                aiConfig.SPEECH.TIME_TO_SEND,
                 dateNow,
                 silenceStartedAt,
-                conf.SPEECH.DISPLAY_PROGRESS_GRACE_PERIOD
+                aiConfig.SPEECH.DISPLAY_PROGRESS_GRACE_PERIOD
               );
 
               // Send the message if ready and update flags
-              if (dateNow - silenceStartedAt > conf.SPEECH.TIME_TO_SEND) {
+              if (dateNow - silenceStartedAt > aiConfig.SPEECH.TIME_TO_SEND) {
                 silenceStartedAt = null;
                 soundThresholdToConfirmIntentReached = false;
                 sendMessageRef.current();
@@ -319,7 +336,10 @@ const useSpeechRecognition = (
             await audioRecorderRef.current?.tryResume(); // Resume the recording immediately to not miss anything.
 
             // If the noise has been detected for long enough, update flags to confirm the user intended to speak.
-            if (dateNow - soundStartedAt > conf.SPEECH.TIME_TO_CONFIRM_SPEECH) {
+            if (
+              dateNow - soundStartedAt >
+              aiConfig.SPEECH.TIME_TO_CONFIRM_SPEECH
+            ) {
               isThereAudioToTranscribeRef.current = true;
               soundThresholdToConfirmIntentReached = true;
             }
@@ -327,10 +347,20 @@ const useSpeechRecognition = (
             // Silent, but didn't reach the intent threshold - no progress should be displayed.
             progressBarClear();
           }
-        }, conf.SPEECH.DETECTION_INTERVAL);
+
+          // Try to interrupt the TTS playback if the user is speaking over it
+          if (
+            tryStopAudioResponseRef.current &&
+            soundStartedAt !== null &&
+            dateNow - soundStartedAt > aiConfig.SPEECH.TIME_TO_INTERRUPT_TTS
+          ) {
+            tryStopAudioResponseRef.current();
+          }
+        }, aiConfig.SPEECH.DETECTION_INTERVAL);
       },
       // Set the noise detection timeout delay to the calibration time + 5ms
-      conf.SPEECH.CALIBRATION_INTERVAL * conf.SPEECH.CALIBRATION_SAMPLE_COUNT +
+      aiConfig.SPEECH.CALIBRATION_INTERVAL *
+        aiConfig.SPEECH.CALIBRATION_SAMPLE_COUNT +
         5
     );
 

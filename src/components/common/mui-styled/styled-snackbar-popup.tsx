@@ -27,8 +27,11 @@ const snackbarActionButton = (onClick: () => void) => (
 );
 
 const snackbarPopupStyles = {
-  width: "407px",
-  height: "52px",
+  zIndex: 9999,
+  width: "100%",
+  maxWidth: "407px",
+  minHeight: "52px",
+  flexWrap: "nowrap",
   position: "fixed",
   bottom: "16px",
   left: "50%",

@@ -7,9 +7,7 @@ const unorderedListStyles = {
   pl: 3,
   "& .MuiListItem-root": {
     display: "list-item",
-    px: 0,
-    pt: 0,
-    pb: 1,
+    p: 0,
   },
 };
 

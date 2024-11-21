@@ -1,8 +1,11 @@
-import React, { createContext, useRef, useState, ReactNode } from "react";
+import React, { createContext, ReactNode } from "react";
+import { DEFAULT_SAMPLE_RATE } from "../consts/audio.consts";
+import useAudioStreamPlayer from "../utils/audio-stream-player";
 
 interface AudioContextType {
-  audioRef: React.MutableRefObject<HTMLAudioElement>;
-  unlockAudio: () => void;
+  isAudioPlaying: boolean;
+  playAudioStream: (reader: ReadableStreamDefaultReader<Uint8Array>) => void;
+  stopAudioStream: () => void;
 }
 
 // Create the context with a default value
@@ -14,8 +17,7 @@ interface AudioProviderProps {
 
 /**
  * @param children - ReactNode to wrap the context over
- * @returns AudioProvider component that provides the audio context to the application
- * @description Provides a new context with a global audio ref and a function to unlock audio play
+ * @returns AudioProvider component that provides audio player functionality to the application
  * @example
  * ```tsx
     <AudioProvider>
@@ -28,34 +30,15 @@ interface AudioProviderProps {
    ```
  * */
 export const AudioProvider: React.FC<AudioProviderProps> = ({ children }) => {
-  let audioRef = useRef(new Audio());
-  const [isUnlocked, setIsUnlocked] = useState<boolean>(false);
-
-  // We can get permissions for the audioRef from the user by playing any audio on it.
-  // When we intend to allow the user to enable autoplay via a checkbox or by holding a button,
-  // we can play a brief audio file of silence to make it unnoticable.
-  const unlockAudioContext = async () => {
-    try {
-      if (!isUnlocked) {
-        // Only play when the audio ref is not currently playing anything.
-        // If the user manually played some audio, we can skip this step.
-        if (audioRef.current.paused) {
-          audioRef.current.src = `${process.env.PUBLIC_URL}/silence.mp3`;
-          await audioRef.current.play(); // start playing
-          await audioRef.current.pause(); // pause immediately
-        }
-        setIsUnlocked(true);
-      }
-    } catch (e) {
-      console.error("Failed to unlock audio:", e);
-    }
-  };
+  const { isAudioPlaying, playAudioStream, stopAudioStream } =
+    useAudioStreamPlayer(DEFAULT_SAMPLE_RATE);
 
   return (
     <AudioContext.Provider
       value={{
-        audioRef: audioRef,
-        unlockAudio: unlockAudioContext,
+        isAudioPlaying,
+        playAudioStream,
+        stopAudioStream,
       }}
     >
       {children}
@@ -64,8 +47,7 @@ export const AudioProvider: React.FC<AudioProviderProps> = ({ children }) => {
 };
 
 /**
- * @returns the audio context including the global audio ref and unlock audio function
- * @description Used to get a global audio ref and unlock audio play permissions on it
+ * @returns the audio context including audio player functions and audio state
  */
 export const useAudio = (): AudioContextType => {
   const context = React.useContext(AudioContext);
