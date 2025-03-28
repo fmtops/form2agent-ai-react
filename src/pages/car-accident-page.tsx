@@ -10,6 +10,7 @@ import { AudioProvider } from "../contexts/AudioContext";
 import { FormAction } from "../consts/general-fields.consts";
 import CarAccidentForm from "../components/car-accident/car-accident-form";
 import { useLayout } from "../contexts/LayoutContext";
+import { Helmet } from "react-helmet-async";
 
 const CarAccidentPage = () => {
   const [form, setForm] = useState(CAR_ACCIDENT_FORM_VALUES);
@@ -52,31 +53,40 @@ const CarAccidentPage = () => {
   };
 
   return (
-    <AudioProvider>
-      <FormPageLayout
-        title="Car Accident Report"
-        subTitle="Explore how Form2Agent AI can help you in submitting a car accident report by holding the chat button to speak with the assistant."
-        onSubmit={onSubmit}
-        chatElement={
-          <ChatWindow
-            executeFormLogic={executeFormLogic}
-            formDescription="Fill out this form to quickly get assistance regarding your car accident."
-            formValues={stringifyValues(form)}
-            formContext={stringifyValues(CarAccidentDescriptionContext)}
-          />
-        }
-        isSuccessModalOpen={isSuccessModalOpen}
-        onCloseModal={() => setIsSuccessModalOpen(false)}
-      >
-        <CarAccidentForm
-          isChatExpanded={isChatExpanded}
-          isNavbarExpanded={isNavbarExpanded}
-          form={form}
-          setForm={setForm}
-          formikRef={formikCarAccidentRef}
+    <>
+      <Helmet>
+        <title>Effortless Car Accident Reporting with Form2Agent AI</title>
+        <meta
+          name="description"
+          content="Simplify the submission of car accident reports using Form2Agent AI. Just hold the chat button to converse with the assistant and streamline the reporting process for quick and accurate documentation."
         />
-      </FormPageLayout>
-    </AudioProvider>
+      </Helmet>
+      <AudioProvider>
+        <FormPageLayout
+          title="Car Accident Report"
+          subTitle="Explore how Form2Agent AI can help you in submitting a car accident report by holding the chat button to speak with the assistant."
+          onSubmit={onSubmit}
+          chatElement={
+            <ChatWindow
+              executeFormLogic={executeFormLogic}
+              formDescription="Fill out this form to quickly get assistance regarding your car accident."
+              formValues={stringifyValues(form)}
+              formContext={stringifyValues(CarAccidentDescriptionContext)}
+            />
+          }
+          isSuccessModalOpen={isSuccessModalOpen}
+          onCloseModal={() => setIsSuccessModalOpen(false)}
+        >
+          <CarAccidentForm
+            isChatExpanded={isChatExpanded}
+            isNavbarExpanded={isNavbarExpanded}
+            form={form}
+            setForm={setForm}
+            formikRef={formikCarAccidentRef}
+          />
+        </FormPageLayout>
+      </AudioProvider>
+    </>
   );
 };
 

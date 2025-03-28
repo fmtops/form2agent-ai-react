@@ -15,7 +15,7 @@ export default function ImageUpload({
   previewText: string;
   uploadText: string;
   setImage: (image: string) => void;
-  image?: string;
+  image?: string | null;
 }) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 

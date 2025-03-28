@@ -1,5 +1,8 @@
-const formatDate = (dateStr: string): string | null => {
+const formatDate = (dateStr: string | undefined): string | null => {
   // Try parsing the date string
+  if (dateStr === undefined) {
+    return null;
+  }
   const date = new Date(dateStr);
 
   // Check if parsing was successful (returns Invalid Date for invalid formats)

@@ -10,6 +10,7 @@ import { mergeFormData } from "../utils/invoice.utils";
 import { FormikProps } from "formik";
 import { AudioProvider } from "../contexts/AudioContext";
 import { FormAction } from "../consts/general-fields.consts";
+import { Helmet } from "react-helmet-async";
 
 const InvoicePage = () => {
   const [form, setForm] = useState(INVOICE_FORM_VALUES);
@@ -46,29 +47,38 @@ const InvoicePage = () => {
   };
 
   return (
-    <AudioProvider>
-      <FormPageLayout
-        title="Invoice Details"
-        subTitle="See how Form2Agent AI manages invoice forms with a dynamic number of item inputs. Upload a photo or a PDF file of your invoice or hold the button to speak with the assistant and quickly add your invoice details."
-        onSubmit={handleSubmit}
-        chatElement={
-          <ChatWindow
-            executeFormLogic={executeFormLogic}
-            formDescription="Add a new invoice to the system."
-            formValues={stringifyValues(form)}
-            formContext={stringifyValues(DescriptionContext)}
-          />
-        }
-        isSuccessModalOpen={isSuccessModalOpen}
-        onCloseModal={() => setIsSuccessModalOpen(false)}
-      >
-        <InvoiceForm
-          form={form}
-          setForm={setForm}
-          formikRef={formikInvoiceRef}
+    <>
+      <Helmet>
+        <title>Transform Invoice Management with Form2Agent AI</title>
+        <meta
+          name="description"
+          content="Discover how Form2Agent AI simplifies invoice management with flexible item inputs. Easily upload a photo or PDF of your invoice, or use voice input to quickly add and organize your invoice details."
         />
-      </FormPageLayout>
-    </AudioProvider>
+      </Helmet>
+      <AudioProvider>
+        <FormPageLayout
+          title="Invoice Details"
+          subTitle="See how Form2Agent AI manages invoice forms with a dynamic number of item inputs. Upload a photo or a PDF file of your invoice or hold the button to speak with the assistant and quickly add your invoice details."
+          onSubmit={handleSubmit}
+          chatElement={
+            <ChatWindow
+              executeFormLogic={executeFormLogic}
+              formDescription="Add a new invoice to the system."
+              formValues={stringifyValues(form)}
+              formContext={stringifyValues(DescriptionContext)}
+            />
+          }
+          isSuccessModalOpen={isSuccessModalOpen}
+          onCloseModal={() => setIsSuccessModalOpen(false)}
+        >
+          <InvoiceForm
+            form={form}
+            setForm={setForm}
+            formikRef={formikInvoiceRef}
+          />
+        </FormPageLayout>
+      </AudioProvider>
+    </>
   );
 };
 

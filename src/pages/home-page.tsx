@@ -5,7 +5,11 @@ import { useSearchParams } from "react-router-dom";
 import OptOutPopup from "../components/trial/optout-popup";
 import TrialPopup from "../components/trial/trial-popup";
 import { UrlPopupType as UrlPopupType, UrlParam } from "../consts/url.consts";
-import { SIDE_NAV_LINKS } from "../consts/sidenav.consts";
+import {
+  CategoriesOrdered,
+  Route,
+  SIDE_NAV_LINKS,
+} from "../consts/sidenav.consts";
 
 const HomePage = () => {
   const { isNavbarExpanded } = useLayout();
@@ -53,6 +57,10 @@ const HomePage = () => {
     </p>
   );
 
+  const cleanedRoutes = SIDE_NAV_LINKS.filter(
+    (link) => !link.isHidden && !link.isDisabled && link.category !== "None"
+  );
+
   return (
     <>
       <div className={`bg-white py-8`}>
@@ -64,29 +72,34 @@ const HomePage = () => {
           <br />
           {callToActionComponent}
         </div>
-        <h2
-          className={`text-lg mt-12 mb-6 font-medium text-text-primary-light`}
-        >
-          Explore use case examples
-        </h2>
+
         {popupToShow === UrlPopupType.NewTrial && <TrialPopup />}
         {popupToShow === UrlPopupType.OptOut && <OptOutPopup />}
-        <div className={`${useCaseGridClasses}`}>
-          {SIDE_NAV_LINKS.map(
-            (link) =>
-              !link.isHidden &&
-              !link.isDisabled && (
-                <FormCard
-                  key={link.path}
-                  title={link.text}
-                  description={link.description ?? ""}
-                  Icon={link.icon}
-                  buttonTitle={link.buttonTitle ?? ""}
-                  linkProps={{ href: link.path }}
-                />
-              )
-          )}
-        </div>
+        {CategoriesOrdered.map((category) => (
+          <div>
+            <h2
+              className={`text-lg mt-12 mb-6 font-medium text-text-primary-light`}
+            >
+              {category}
+            </h2>
+            <div className={`${useCaseGridClasses}`}>
+              {cleanedRoutes
+                .filter((x) => x.category === category)
+                .sort((a, b) => a.order - b.order)
+                .map((link) => (
+                  <FormCard
+                    key={link.path}
+                    title={link.text}
+                    description={link.description ?? ""}
+                    Icon={link.icon}
+                    buttonTitle={link.buttonTitle ?? ""}
+                    linkProps={{ href: link.path }}
+                  />
+                ))}
+            </div>
+          </div>
+        ))}
+
         <div className="mt-12">
           <h2
             className={`text-lg mt-12 mb-6 font-medium text-text-primary-light`}

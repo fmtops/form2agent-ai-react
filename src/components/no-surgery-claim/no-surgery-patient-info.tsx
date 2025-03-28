@@ -13,6 +13,7 @@ import {
   NoSurgeryClaimContextFormType,
 } from "../../models/no-surgery-claim-context-model";
 import { NoSurgeryPatientPersonalDataFormType } from "../../models/no-surgery-claim-model";
+import { DatepickerComponent } from "../common/form/datepicker";
 
 export interface NoSurgeryPatientInfoComponentProps {
   form: NoSurgeryPatientPersonalDataFormType;
@@ -99,12 +100,21 @@ const FormComponent = ({
   handleGenderChange,
   handleCountryChange,
 }: FormComponentProps) => {
-  const { isAndroid, isIOS } = useDetectDevice();
-  const mobileDatePicker = isAndroid() || isIOS() ? "h-11 dateInputCalc-1" : "";
   useEffect(() => {
     setValues(form);
   }, [form, setValues]);
 
+  const handleDateChange = (date: Date | null) => {
+    try {
+      const dateStr = date?.toISOString();
+      setValues(() => ({
+        ...form,
+        dateOfBirth: dateStr ?? "",
+      }));
+    } catch (e) {
+      console.error(e);
+    }
+  };
   return (
     <div className="flex flex-col gap-y-4">
       <div className="text-md font-medium">Patient</div>
@@ -132,15 +142,10 @@ const FormComponent = ({
                 <div> </div>
               </div>
               <div className="grid gap-4 grid-cols-2">
-                <StyledField
-                  className={`text-text-placeholder-light ${mobileDatePicker}`}
-                  name={nameof<NoSurgeryPatientPersonalDataFormType>(
-                    "dateOfBirth"
-                  )}
-                  label="Date of birth"
-                  type="date"
-                  placeholder="Date of birth"
-                  onBlur={handleBlur}
+                <DatepickerComponent
+                  label="Date of Birth"
+                  value={form?.dateOfBirth}
+                  handleDateChange={handleDateChange}
                 />
                 <SelectComponent
                   options={Countries}

@@ -22,6 +22,7 @@ import {
 } from "../../models/house-inspection-model";
 import { Divider } from "@mui/material";
 import AddAPhotoOutlinedIcon from "@mui/icons-material/AddAPhotoOutlined";
+import { BasicRoom } from "../../consts/house-inspection.consts";
 
 export interface HouseInspectionProps {
   form: HouseInspectionFormType;
@@ -68,6 +69,22 @@ const HouseInspectionForm = ({
       }
     };
 
+    const addRoom = () => {
+      setForm((values: HouseInspectionFormType) => {
+        const newValues = { ...values };
+        newValues.rooms = [...values.rooms, BasicRoom];
+        return newValues;
+      });
+    };
+
+    const removeRoom = (id: string) => {
+      setForm((values: HouseInspectionFormType) => {
+        const newValues = { ...values };
+        newValues.rooms = values.rooms.filter((item) => item.id !== id);
+        return newValues;
+      });
+    };
+
     return (
       <Form className="flex flex-col gap-y-4">
         <h2 className={`text-text-primary-light font-medium mt-4`}>Rooms</h2>
@@ -76,21 +93,21 @@ const HouseInspectionForm = ({
             <div>
               <Divider />
               {values?.rooms?.length > 0 &&
-                values.rooms.map((_: any, index: any) => (
+                values.rooms.map((room: HouseInspectionRoom, index: number) => (
                   <>
                     <div
                       className="flex flex-wrap items-center justify-between my-2 gap-x-3 gap-y-4"
-                      key={index}
+                      key={room.id}
                     >
                       <div className="flex flex-wrap items-center justify-center gap-x-3">
-                        {values.rooms[index].roomPhoto && (
+                        {room.roomPhoto && (
                           <img
-                            src={values.rooms[index].roomPhoto}
+                            src={room.roomPhoto}
                             alt="Room"
                             className="h-32 w-44 m-3 object-cover"
                           />
                         )}
-                        {!values.rooms[index].roomPhoto && (
+                        {!room.roomPhoto && (
                           <div
                             onClick={() => handleUploadPhoto(index)}
                             className="flex items-center justify-center h-32 w-44 m-3 bg-blue-200/50 hover:bg-blue-200/75 cursor-pointer"
@@ -139,7 +156,7 @@ const HouseInspectionForm = ({
                       <button
                         type="button"
                         className={` p-2 text-button-light`}
-                        onClick={() => remove(index)}
+                        onClick={() => removeRoom(room.id!)}
                       >
                         <DeleteOutline />
                       </button>
@@ -151,14 +168,7 @@ const HouseInspectionForm = ({
               <button
                 className={`p-4 text-lightBlue flex items-center`}
                 type="button"
-                onClick={() =>
-                  push({
-                    name: "",
-                    size: "",
-                    conditionDescription: "",
-                    roomPhoto: null,
-                  } as HouseInspectionRoom)
-                }
+                onClick={addRoom}
               >
                 <AddIcon />
                 Add Room
@@ -169,7 +179,7 @@ const HouseInspectionForm = ({
                 </div>
                 <ul>
                   <li>
-                    {"- Total House Size: "}
+                    {"- Total Property Size: "}
                     {values?.rooms?.length > 0 &&
                       values.rooms.reduce(
                         (sum: any, room: HouseInspectionRoom) =>

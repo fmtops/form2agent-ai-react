@@ -30,8 +30,8 @@ export const TRAVEL_REIMBURSEMENT_FORM_VALUES: TravelReimbursementFormType = {
       invoiceReceiptNumber: "",
       expenseCategory: "",
       expenseAttachment: {
-        receiptUploadAttachment: "",
-        invoiceUploadAttachment: "",
+        receiptUploadAttachment: null,
+        invoiceUploadAttachment: null,
       },
     },
   ],

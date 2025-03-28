@@ -25,26 +25,36 @@ export function mergeFormData(
       ...prevForm.perceptualSpeechAnalysis,
       ...responseData.perceptualSpeechAnalysis,
       specificSoundNasalEmission: [
-        ...(prevForm.perceptualSpeechAnalysis?.specificSoundNasalEmission || []),
-        ...(responseData.perceptualSpeechAnalysis?.specificSoundNasalEmission || []),
+        ...(responseData.perceptualSpeechAnalysis?.specificSoundNasalEmission ||
+          prevForm.perceptualSpeechAnalysis?.specificSoundNasalEmission ||
+          []),
       ],
-      specificSoundNasalEmissionOther: responseData.perceptualSpeechAnalysis?.specificSoundNasalEmissionOther || "",
+      specificSoundNasalEmissionOther:
+        responseData.perceptualSpeechAnalysis
+          ?.specificSoundNasalEmissionOther || "",
     },
     speechArticulationAssessment: {
       ...prevForm.speechArticulationAssessment,
       ...responseData.speechArticulationAssessment,
-        compensatoryArticulationPatterns: [
-            ...(prevForm.speechArticulationAssessment?.compensatoryArticulationPatterns || []),
-            ...(responseData.speechArticulationAssessment?.compensatoryArticulationPatterns || []),
-        ],
-        articulationModificationsRequired: [
-            ...(prevForm.speechArticulationAssessment?.articulationModificationsRequired || []),
-            ...(responseData.speechArticulationAssessment?.articulationModificationsRequired || []),
-        ],
-        articulationErrors: [
-            ...(prevForm.speechArticulationAssessment?.articulationErrors || []),
-            ...(responseData.speechArticulationAssessment?.articulationErrors || []),
-        ]
-  }
-}
+      compensatoryArticulationPatterns: [
+        ...(responseData.speechArticulationAssessment
+          ?.compensatoryArticulationPatterns ||
+          prevForm.speechArticulationAssessment
+            ?.compensatoryArticulationPatterns ||
+          []),
+      ],
+      articulationModificationsRequired: [
+        ...(responseData.speechArticulationAssessment
+          ?.articulationModificationsRequired ||
+          prevForm.speechArticulationAssessment
+            ?.articulationModificationsRequired ||
+          []),
+      ],
+      articulationErrors: [
+        ...(responseData.speechArticulationAssessment?.articulationErrors ||
+          prevForm.speechArticulationAssessment?.articulationErrors ||
+          []),
+      ],
+    },
+  };
 }

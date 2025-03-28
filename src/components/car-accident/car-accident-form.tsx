@@ -4,6 +4,7 @@ import StyledField from "../common/form/styled-field";
 import { CarAccidentFormType } from "../../models/car-accident-model";
 import { nameof } from "../../helpers/property-helper";
 import useDetectDevice from "../../hooks/useDetectDevice";
+import { DatepickerComponent } from "../common/form/datepicker";
 export interface CarAccidentFormProps {
   isChatExpanded: boolean;
   isNavbarExpanded: boolean;
@@ -28,7 +29,7 @@ export default function CarAccidentForm({
     }) => {
     const { isAndroid, isIOS } = useDetectDevice();
     const mobileDatePicker =
-      isAndroid() || isIOS() ? "h-11 dateInputCalc-1" : "";
+      isAndroid() || isIOS() ? "h-15 dateInputCalc-1" : "";
     useEffect(() => {
       setValues(form);
     }, [form, setValues]);
@@ -51,6 +52,17 @@ export default function CarAccidentForm({
 
     const nameGridClasses = `gap-4 grid grid-cols-1 ${nameGridRespClasses}`;
 
+    const handleDateChange = (date: Date | null) => {
+      try {
+        const dateStr = date?.toISOString();
+        setForm(() => ({
+          ...formikRef.current?.values,
+          date: dateStr ?? "",
+        }));
+      } catch (e) {
+        console.error(e);
+      }
+    };
     return (
       <Form className="flex flex-col gap-y-4">
         <div className="grid grid-cols-1 gap-4">
@@ -63,17 +75,15 @@ export default function CarAccidentForm({
                 placeholder="Time"
                 aria-label="Time"
                 onBlur={handleBlur}
+                className={`text-text-placeholder-light ${mobileDatePicker}`}
               />
             </div>
             <div className="flex flex-col gap-4">
               <div>Accident local date</div>
-              <StyledField
-                name={nameof<CarAccidentFormType>("date")}
-                type="date"
-                placeholder="Date"
-                aria-label="Date"
-                onBlur={handleBlur}
-                className={`w-full ${mobileDatePicker}`}
+              <DatepickerComponent
+                label="Date"
+                value={values.date}
+                handleDateChange={handleDateChange}
               />
             </div>
           </div>

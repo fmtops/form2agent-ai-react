@@ -119,3 +119,13 @@
 .dateInputCalc-4 {
   min-width: calc(25% - 24px);
 }
+video {
+  transform: scaleX(1) !important;
+}
+.MuiInputLabel-root.MuiInputLabel-shrink {
+  top: 3px !important;
+  background: white !important;
+}
+.MuiOutlinedInput-root {
+  height: 50px !important;
+}

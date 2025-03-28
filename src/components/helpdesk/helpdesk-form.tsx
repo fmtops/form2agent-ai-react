@@ -20,6 +20,7 @@ import {
   VisuallyHiddenInput,
 } from "../../consts/helpdesk.consts";
 import { SelectComponent } from "../common/form/select";
+import ImageUpload from "../common/image-upload";
 export interface HelpdeskFormProps {
   form: HelpdeskFormType;
   setForm: Dispatch<SetStateAction<HelpdeskFormType>>;
@@ -46,6 +47,13 @@ export default function HelpdeskForm({
       setForm(() => ({
         ...formikRef.current?.values,
         department: event.target.value as DepartmentOptions,
+      }));
+    };
+
+    const setImage = (image: string) => {
+      setForm(() => ({
+        ...formikRef.current?.values,
+        attachmentFile: image,
       }));
     };
 
@@ -170,18 +178,12 @@ export default function HelpdeskForm({
           onBlur={handleBlur}
         />
         <h2 className={`font-medium mt-8 text-black`}>Attachment</h2>
-        {/* TODO add file upload #42104 */}
-        <UploadButton
-          component="label"
-          role={undefined}
-          variant="outlined"
-          tabIndex={-1}
-          startIcon={<BackupOutlinedIcon />}
-          className="bg-green-200 w-fit"
-        >
-          Upload file
-          <VisuallyHiddenInput type="file" />
-        </UploadButton>
+        <ImageUpload
+          previewText="Image preview"
+          uploadText="Upload file"
+          setImage={setImage}
+          image={form.attachmentFile}
+        />
       </Form>
     );
   };

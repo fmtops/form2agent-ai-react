@@ -1,12 +1,8 @@
 # Form2Agent: Your AI-Powered Form Assistant
 
-Form2Agent is a React-based chat application that uses OpenAI's language models to help you fill out forms quickly and efficiently. With Form2Agent, you can simply chat with the AI assistant, and it will intelligently fill in your form fields based on your conversation. 
+Form2Agent is a React-based chat application that uses OpenAI's language models to help you fill out forms quickly and efficiently. With Form2Agent, you can simply chat with the AI assistant, and it will intelligently fill in your form fields based on your conversation.
 
-This repository contains a demo application with the chat widget and examples of how it can be utilized. 
-
-**Demo Video:** https://youtu.be/yToOQGCHikk?si=BfhlPnwvUEnEI9kE
-
-**Demo App:** [https://form2agent-demo.freeportmetrics.com](https://form2agent-demo.freeportmetrics.com/?utm_source=Github&utm_medium=Github&utm_campaign=Github_demoapp&utm_id=Github_demoapp)
+**Demo Video:** [Link to demo video]
 
 **Features:**
 
@@ -14,15 +10,6 @@ This repository contains a demo application with the chat widget and examples of
 - **Intuitive Chat Interface:** A user-friendly chat experience makes interacting with the AI simple.
 - **Pre-built Demo Forms:** Get started quickly with our included sample forms.
 - **Voice Interaction:** Speak your form answers and hear the AI's responses using text-to-speech and speech-to-text capabilities.
-
-## **Disclaimer**
-
-### Important Information Regarding Data Usage:
-- **Sensitive Data:** Users should **NOT** use or input any sensitive data (e.g., passwords, personal identification information, or financial information) when interacting with this project.
-
-- **Data Storage:** Please be aware that the messages sent to the Form2Agent assistant using the chat widget or the API directly are stored to maintain chat context for the assistant. This data is never reused for new chats. 
-
-- **API Keys:** We do **NOT** store any API keys within this project. Form2Agent requires API keys for external services, users are responsible for securely managing their own API keys and ensuring they are not exposed or stored within their repositories if forking the project.
 
 ## **Prerequisites:**
 
@@ -57,7 +44,7 @@ Now that you have your API key, you can proceed with setting up and running the 
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/fmtops/form2agent-ai-react.git
+   git clone https://github.com/fmtops/form2agent-web.git
    ```
 2. **Navigate to the project directory:**
    ```bash
@@ -76,7 +63,7 @@ Now that you have your API key, you can proceed with setting up and running the 
 
 ## **Environment Variables:**
 
-- **REACT_APP_AI_API_URL:** Backend API URL. Use `https://form2agent-demo.freeportmetrics.com`
+- **REACT_APP_AI_API_URL:** Backend API URL.
 
 ## **Running the Frontend:**
 

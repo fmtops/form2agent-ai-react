@@ -55,6 +55,7 @@ const ChatWindow: React.FC<ChatPropType> = ({
   formValues,
   formContext,
   executeFormLogic,
+  onFileUpload,
 }) => {
   const [chatHistory, setChatHistory] = useState<ChatMessageType[]>([]);
   const { isNavbarExpanded, isChatExpanded, setIsChatExpanded } = useLayout();
@@ -166,6 +167,8 @@ const ChatWindow: React.FC<ChatPropType> = ({
       await streamingService.handleReadAndExecute(reader, newChatHistory, [
         handleNewAppData,
       ]);
+      //clear state
+      if (onFileUpload) onFileUpload(null);
     } catch (e) {
       handleTrialExpiredError(e);
       streamingService.handleReadAndExecuteException(e);
@@ -338,6 +341,7 @@ const ChatWindow: React.FC<ChatPropType> = ({
           fileName={fileName}
           setFileName={setFileName}
           audioStateProgress={audioStateProgress}
+          onFileUpload={onFileUpload}
         />
       </StyledChatDrawer>
       {renderApiKeyModal && (

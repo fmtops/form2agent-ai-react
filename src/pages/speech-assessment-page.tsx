@@ -11,6 +11,7 @@ import { mergeFormData } from "../utils/speech-assessment.utils";
 import { SPEECH_ASSESSMENT_FORM_VALUES } from "../consts/speech-assessment.consts";
 import SpeechAssessmentForm from "../components/speech-assessment/speech-assessment-form";
 import { useLayout } from "../contexts/LayoutContext";
+import { Helmet } from "react-helmet-async";
 
 const SpeechAssessmentPage = () => {
   const [form, setForm] = useState(SPEECH_ASSESSMENT_FORM_VALUES);
@@ -48,31 +49,42 @@ const SpeechAssessmentPage = () => {
   };
 
   return (
-    <AudioProvider>
-      <FormPageLayout
-        title="Speech Assessment"
-        subTitle="See how Form2Agent AI manages speech assessment forms. Upload a photo or a PDF file of your speech assessment or hold the button to speak with the assistant and quickly add your speech assessment details."
-        onSubmit={handleSubmit}
-        chatElement={
-          <ChatWindow
-            executeFormLogic={executeFormLogic}
-            formDescription="Provide detailed information to assist the doctor in the patient's speech assessment."
-            formValues={stringifyValues(form)}
-            formContext={stringifyValues(DescriptionContext)}
-          />
-        }
-        isSuccessModalOpen={isSuccessModalOpen}
-        onCloseModal={() => setIsSuccessModalOpen(false)}
-      >
-        <SpeechAssessmentForm
-          form={form}
-          setForm={setForm}
-          formikRef={formikRef}
-          isChatExpanded={isChatExpanded}
-          isNavbarExpanded={isNavbarExpanded}
+    <>
+      <Helmet>
+        <title>
+          Comprehensive Speech Assessment Services with Form2Agent AI
+        </title>
+        <meta
+          name="description"
+          content="Simplify your speech assessment process with Form2Agent AI. Easily complete forms by speaking directly to the assistant or pasting details into the chat for quick and accurate evaluation submissions."
         />
-      </FormPageLayout>
-    </AudioProvider>
+      </Helmet>
+      <AudioProvider>
+        <FormPageLayout
+          title="Speech Assessment"
+          subTitle="See how Form2Agent AI manages speech assessment forms. Upload a photo or a PDF file of your speech assessment or hold the button to speak with the assistant and quickly add your speech assessment details."
+          onSubmit={handleSubmit}
+          chatElement={
+            <ChatWindow
+              executeFormLogic={executeFormLogic}
+              formDescription="Provide detailed information to assist the doctor in the patient's speech assessment."
+              formValues={stringifyValues(form)}
+              formContext={stringifyValues(DescriptionContext)}
+            />
+          }
+          isSuccessModalOpen={isSuccessModalOpen}
+          onCloseModal={() => setIsSuccessModalOpen(false)}
+        >
+          <SpeechAssessmentForm
+            form={form}
+            setForm={setForm}
+            formikRef={formikRef}
+            isChatExpanded={isChatExpanded}
+            isNavbarExpanded={isNavbarExpanded}
+          />
+        </FormPageLayout>
+      </AudioProvider>
+    </>
   );
 };
 

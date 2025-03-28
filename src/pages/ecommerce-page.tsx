@@ -26,6 +26,8 @@ import { stringifyValues } from "../utils/chat.utilts";
 import OrdersTitle from "../components/ecommerce/orders-title";
 import { AudioProvider } from "../contexts/AudioContext";
 import { useLayout } from "../contexts/LayoutContext";
+import { Helmet } from "react-helmet-async";
+import { ANIMATION_CLEAR_DELAY } from "../consts/animations";
 
 let orders: Order[] = generateOrders();
 
@@ -118,7 +120,7 @@ export default function EcommercePage() {
   useEffect(() => {
     let timeoutId: NodeJS.Timeout | null = null;
     if (updatedOrders.length > 0) {
-      timeoutId = setTimeout(() => setUpdatedOrders([]), 1500);
+      timeoutId = setTimeout(() => setUpdatedOrders([]), ANIMATION_CLEAR_DELAY);
     }
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
@@ -153,55 +155,64 @@ export default function EcommercePage() {
   const ordersAndFiltersClasses = `flex h-auto gap-4 w-full flex-col-reverse ${ordersAndFiltersRespClasses}`;
 
   return (
-    <AudioProvider>
-      <FormPageLayout
-        title={
-          <OrdersTitle
-            setAreFiltersOpenOnMobile={() =>
-              setAreFiltersOpenOnMobile((prev) => !prev)
-            }
-          />
-        }
-        subTitle="Explore how Form2Agent AI manages datasets. Change order details, search, and filter orders by speaking with the AI assistant."
-        chatElement={
-          <ChatWindow
-            executeFormLogic={executeFormLogic}
-            formDescription={CHAT_ECOMMERCE_DESCRIPTION}
-            formValues={stringifyValues({
-              filters,
-              orders: [],
-            })}
-            formContext={stringifyValues({
-              filters: FiltersDescriptionContext,
-              orders: OrderDescriptionContext,
-            })}
-          />
-        }
-      >
-        <div className={ordersAndFiltersClasses}>
-          <OrdersTable
-            orders={filteredOrders}
-            updatedOrders={updatedOrders}
-            page={page}
-            rowsPerPage={rowsPerPage}
-            handleRowsPerPageChange={handleRowsPerPageChange}
-            handlePageChange={handlePageChange}
-          />
-          <OrdersFilter
-            areFiltersOpenOnMobile={areFiltersOpenOnMobile}
-            dateFilter={filters.dateFilter}
-            onDateFilterChange={onDateFilterChange}
-            statusFilter={filters.statusFilter}
-            onStatusFilterChange={handleStatusFilterChange}
-            resetFilters={resetFilters}
-            querySearch={filters.querySearch}
-            setSearchQuery={handleSearchQueryChange}
-            handleAmountChange={handleAmountChange}
-            amountFilter={filters.amountFilter}
-            onCloseChat={() => setAreFiltersOpenOnMobile(false)}
-          />
-        </div>
-      </FormPageLayout>
-    </AudioProvider>
+    <>
+      <Helmet>
+        <title>Simplify Order Management with Form2Agent AI</title>
+        <meta
+          name="description"
+          content="Discover the power of Form2Agent AI in managing your order datasets. Easily change order details, and search or filter orders using voice commands. Experience a streamlined, hands-free approach to efficient order management."
+        />
+      </Helmet>
+      <AudioProvider>
+        <FormPageLayout
+          title={
+            <OrdersTitle
+              setAreFiltersOpenOnMobile={() =>
+                setAreFiltersOpenOnMobile((prev) => !prev)
+              }
+            />
+          }
+          subTitle="Explore how Form2Agent AI manages datasets. Change order details, search, and filter orders by speaking with the AI assistant."
+          chatElement={
+            <ChatWindow
+              executeFormLogic={executeFormLogic}
+              formDescription={CHAT_ECOMMERCE_DESCRIPTION}
+              formValues={stringifyValues({
+                filters,
+                orders: [],
+              })}
+              formContext={stringifyValues({
+                filters: FiltersDescriptionContext,
+                orders: OrderDescriptionContext,
+              })}
+            />
+          }
+        >
+          <div className={ordersAndFiltersClasses}>
+            <OrdersTable
+              orders={filteredOrders}
+              updatedOrders={updatedOrders}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              handleRowsPerPageChange={handleRowsPerPageChange}
+              handlePageChange={handlePageChange}
+            />
+            <OrdersFilter
+              areFiltersOpenOnMobile={areFiltersOpenOnMobile}
+              dateFilter={filters.dateFilter}
+              onDateFilterChange={onDateFilterChange}
+              statusFilter={filters.statusFilter}
+              onStatusFilterChange={handleStatusFilterChange}
+              resetFilters={resetFilters}
+              querySearch={filters.querySearch}
+              setSearchQuery={handleSearchQueryChange}
+              handleAmountChange={handleAmountChange}
+              amountFilter={filters.amountFilter}
+              onCloseChat={() => setAreFiltersOpenOnMobile(false)}
+            />
+          </div>
+        </FormPageLayout>
+      </AudioProvider>
+    </>
   );
 }

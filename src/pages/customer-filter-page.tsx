@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { DateFilters } from "../types/Ecommerce/Orders";
-import OrdersTable from "../components/ecommerce/orders-table";
 import ChatWindow from "../components/ai-chat/chat-window";
-import OrdersFilter from "../components/ecommerce/orders-filter";
-import { AmountFilterType, defaultFilters } from "../models/ecommerce-model";
+import { AmountFilterType } from "../models/ecommerce-model";
 import FormPageLayout from "../layouts/form-page-layout";
 import { stringifyValues } from "../utils/chat.utilts";
 import OrdersTitle from "../components/ecommerce/orders-title";
@@ -27,6 +25,8 @@ import {
   updateCustomerFilters,
 } from "../utils/customerOrder.utils";
 import { dateFilterLabelToEnum } from "../utils/orders.utils";
+import { Helmet } from "react-helmet-async";
+import { ANIMATION_CLEAR_DELAY } from "../consts/animations";
 
 export default function CustomerFilterPage() {
   const { isChatExpanded, isNavbarExpanded } = useLayout();
@@ -143,7 +143,7 @@ export default function CustomerFilterPage() {
   useEffect(() => {
     let timeoutId: NodeJS.Timeout | null = null;
     if (updatedOrders.length > 0) {
-      timeoutId = setTimeout(() => setUpdatedOrders([]), 1500);
+      timeoutId = setTimeout(() => setUpdatedOrders([]), ANIMATION_CLEAR_DELAY);
     }
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
@@ -184,56 +184,65 @@ export default function CustomerFilterPage() {
   };
 
   return (
-    <AudioProvider>
-      <FormPageLayout
-        title={
-          <OrdersTitle
-            setAreFiltersOpenOnMobile={() =>
-              setAreFiltersOpenOnMobile((prev) => !prev)
-            }
-            title="Customer Orders"
-          />
-        }
-        subTitle="Explore how Form2Agent AI manages datasets. Get customer order details, search, and filter orders by speaking with the AI assistant."
-        chatElement={
-          <ChatWindow
-            executeFormLogic={executeFormLogic}
-            formDescription={CUSTOMER_FILTERS_DESCRIPTION}
-            formValues={stringifyValues({
-              filters,
-              orders: [],
-            })}
-            formContext={stringifyValues({
-              filters: CustomerFiltersDescriptionContext,
-              orders: CustomerOrderDescriptionContext,
-            })}
-          />
-        }
-      >
-        <div className={ordersAndFiltersClasses}>
-          <CustomerOrdersTable
-            orders={filteredOrders}
-            updatedOrders={updatedOrders}
-            page={page}
-            rowsPerPage={rowsPerPage}
-            handleRowsPerPageChange={handleRowsPerPageChange}
-            handlePageChange={handlePageChange}
-          />
-          <CustomerOrdersFilter
-            areFiltersOpenOnMobile={areFiltersOpenOnMobile}
-            dateFilter={filters.dateOfLastOrder}
-            onDateFilterChange={onDateFilterChange}
-            resetFilters={resetFilters}
-            querySearch={filters.querySearch}
-            setSearchQuery={handleSearchQueryChange}
-            handleTotalValueChange={handleTotalValueChange}
-            handleNumberOfOrdersFilterChange={handleTotalAmountChange}
-            totalValueFilter={filters.totalValueOfOrders}
-            numberOfOrdersFilter={filters.totalAmountOfOrders}
-            onCloseChat={() => setAreFiltersOpenOnMobile(false)}
-          />
-        </div>
-      </FormPageLayout>
-    </AudioProvider>
+    <>
+      <Helmet>
+        <title>Streamline Dataset Management with Form2Agent AI</title>
+        <meta
+          name="description"
+          content="Discover how Form2Agent AI revolutionizes dataset management. Effortlessly obtain customer order details, and search and filter orders by simply speaking with the AI assistant. Enhance efficiency and accuracy in data handling."
+        />
+      </Helmet>
+      <AudioProvider>
+        <FormPageLayout
+          title={
+            <OrdersTitle
+              setAreFiltersOpenOnMobile={() =>
+                setAreFiltersOpenOnMobile((prev) => !prev)
+              }
+              title="Customer Orders"
+            />
+          }
+          subTitle="Explore how Form2Agent AI manages datasets. Get customer order details, search, and filter orders by speaking with the AI assistant."
+          chatElement={
+            <ChatWindow
+              executeFormLogic={executeFormLogic}
+              formDescription={CUSTOMER_FILTERS_DESCRIPTION}
+              formValues={stringifyValues({
+                filters,
+                orders: [],
+              })}
+              formContext={stringifyValues({
+                filters: CustomerFiltersDescriptionContext,
+                orders: CustomerOrderDescriptionContext,
+              })}
+            />
+          }
+        >
+          <div className={ordersAndFiltersClasses}>
+            <CustomerOrdersTable
+              orders={filteredOrders}
+              updatedOrders={updatedOrders}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              handleRowsPerPageChange={handleRowsPerPageChange}
+              handlePageChange={handlePageChange}
+            />
+            <CustomerOrdersFilter
+              areFiltersOpenOnMobile={areFiltersOpenOnMobile}
+              dateFilter={filters.dateOfLastOrder}
+              onDateFilterChange={onDateFilterChange}
+              resetFilters={resetFilters}
+              querySearch={filters.querySearch}
+              setSearchQuery={handleSearchQueryChange}
+              handleTotalValueChange={handleTotalValueChange}
+              handleNumberOfOrdersFilterChange={handleTotalAmountChange}
+              totalValueFilter={filters.totalValueOfOrders}
+              numberOfOrdersFilter={filters.totalAmountOfOrders}
+              onCloseChat={() => setAreFiltersOpenOnMobile(false)}
+            />
+          </div>
+        </FormPageLayout>
+      </AudioProvider>
+    </>
   );
 }

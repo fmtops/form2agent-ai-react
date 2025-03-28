@@ -27,6 +27,7 @@ import {
 } from "../utils/patient-registration.utils";
 import { AudioProvider } from "../contexts/AudioContext";
 import { FormAction } from "../consts/general-fields.consts";
+import { Helmet } from "react-helmet-async";
 
 export const PatientRegistrationPage = () => {
   const [patientRegistrationForm, setPatientRegistrationForm] =
@@ -166,48 +167,57 @@ export const PatientRegistrationPage = () => {
   };
 
   return (
-    <AudioProvider>
-      <FormPageLayout
-        title="Patient Registration"
-        subTitle="Try Form2Agent AI with a multi-step patient registration form. Hold the button to speak with the assistant, upload a photo of a registration form or paste details into the chat to quickly add the patient information."
-        chatElement={
-          <ChatWindow
-            executeFormLogic={executeFormLogic}
-            formDescription="Provide detailed health information to assist the doctor in patient's diagnosis and treatment planning."
-            formValues={stringifyValues(patientRegistrationForm)}
-            formContext={stringifyValues(PatientRegistrationContext)}
-          />
-        }
-        isSuccessModalOpen={isSuccessModalOpen}
-        onCloseModal={() => setIsSuccessModalOpen(false)}
-      >
-        <div className="flex flex-col gap-y-8">
-          <ProgressBar
-            steps={PatientRegistrationSteps}
-            currentStep={pageIndex}
-          />
-          {renderPage()}
-          <div className="flex flex-row-reverse justify-end gap-4">
-            <SubmitButton
-              value={
-                PatientRegistrationSteps.length === pageIndex
-                  ? "Submit"
-                  : "Next Step"
-              }
-              className="w-24 mt-4"
-              onClick={handleNextStep}
+    <>
+      <Helmet>
+        <title>Simplify Patient Registration with Form2Agent AI</title>
+        <meta
+          name="description"
+          content="Use Form2Agent AI for easy patient registration. Speak, upload a form photo, or paste details to quickly manage patient info."
+        />
+      </Helmet>
+      <AudioProvider>
+        <FormPageLayout
+          title="Patient Registration"
+          subTitle="Try Form2Agent AI with a multi-step patient registration form. Hold the button to speak with the assistant, upload a photo of a registration form or paste details into the chat to quickly add the patient information."
+          chatElement={
+            <ChatWindow
+              executeFormLogic={executeFormLogic}
+              formDescription="Provide detailed health information to assist the doctor in patient's diagnosis and treatment planning."
+              formValues={stringifyValues(patientRegistrationForm)}
+              formContext={stringifyValues(PatientRegistrationContext)}
             />
-            {pageIndex > 1 && (
-              <button
-                onClick={handleBackStep}
-                className={`py-[10px] mt-4 border rounded shadow-sm w-20 border-border-brand-light text-text-brand-light`}
-              >
-                Back
-              </button>
-            )}
+          }
+          isSuccessModalOpen={isSuccessModalOpen}
+          onCloseModal={() => setIsSuccessModalOpen(false)}
+        >
+          <div className="flex flex-col gap-y-8">
+            <ProgressBar
+              steps={PatientRegistrationSteps}
+              currentStep={pageIndex}
+            />
+            {renderPage()}
+            <div className="flex flex-row-reverse justify-end gap-4">
+              <SubmitButton
+                value={
+                  PatientRegistrationSteps.length === pageIndex
+                    ? "Submit"
+                    : "Next Step"
+                }
+                className="w-24 mt-4"
+                onClick={handleNextStep}
+              />
+              {pageIndex > 1 && (
+                <button
+                  onClick={handleBackStep}
+                  className={`py-[10px] mt-4 border rounded shadow-sm w-20 border-border-brand-light text-text-brand-light`}
+                >
+                  Back
+                </button>
+              )}
+            </div>
           </div>
-        </div>
-      </FormPageLayout>
-    </AudioProvider>
+        </FormPageLayout>
+      </AudioProvider>
+    </>
   );
 };

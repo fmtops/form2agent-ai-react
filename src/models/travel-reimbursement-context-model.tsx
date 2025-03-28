@@ -26,8 +26,8 @@ export type DescriptionContextType = {
     invoiceReceiptNumber?: string;
     expenseCategory?: string;
     expenseAttachment: {
-      receiptUploadAttachment: string;
-      invoiceUploadAttachment: string;
+      receiptUploadAttachment: string | null;
+      invoiceUploadAttachment: string | null;
     };
   }[];
   approvalAndSubmission: {
@@ -46,8 +46,8 @@ export const DescriptionContext: DescriptionContextType = {
     department: "",
     positionTitle: "",
     emailAddress: "",
-    contactNumber: "",
-    bankAccountNumber: "",
+    contactNumber: "if its not filled in, ask about this field",
+    bankAccountNumber: "if its not filled in, ask about this field",
   },
   travelDetails: {
     travelDestination: "",
@@ -58,23 +58,23 @@ export const DescriptionContext: DescriptionContextType = {
   expenseDetails: [
     {
       dateOfExpense:
-        "each time expense details are used, return all previous expense details too.",
+        "if its not filled in, ask about this field, each time expense details are used, return all previous expense details too.",
       vendorServiceProvider:
-        "each time expense details are used, return all previous expense details too.",
+        "if its not filled in, ask about this field, each time expense details are used, return all previous expense details too.",
       expenseAmount:
-        "each time expense details are used, return all previous expense details too.",
+        "if its not filled in, ask about this field, each time expense details are used, return all previous expense details too.",
       currency:
-        "each time expense details are used, return all previous expense details too.",
+        "if its not filled in, ask about this field, each time expense details are used, return all previous expense details too.",
       paymentMethod:
-        "each time expense details are used, return all previous expense details too.",
+        "if its not filled in, ask about this field, each time expense details are used, return all previous expense details too.",
       invoiceReceiptNumber:
-        "each time expense details are used, return all previous expense details too.",
-      expenseCategory: `each time expense details are used, return all previous expense details too. dropdown(${Object.values(ExpenseCategories).join()})`,
+        "if its not filled in, ask about this field, each time expense details are used, return all previous expense details too.",
+      expenseCategory: `if its not filled in, ask about this field, each time expense details are used, return all previous expense details too. dropdown(${Object.values(ExpenseCategories).join()})`,
       expenseAttachment: {
         receiptUploadAttachment:
-          "each time expense details are used, return all previous expense details too.",
+          "file(), each time expense details are used, return all previous expense details too.",
         invoiceUploadAttachment:
-          "each time expense details are used, return all previous expense details too.",
+          "file(), each time expense details are used, return all previous expense details too.",
       },
     },
   ],

@@ -1,3 +1,4 @@
+import { CHAT_NUMBER_FORMAT } from "../consts/chat.consts";
 import { FormAction } from "../consts/general-fields.consts";
 
 export const CarAccidentDescriptionContext = {
@@ -9,18 +10,18 @@ export const CarAccidentDescriptionContext = {
   firstName: "",
   lastName: "",
   age: "",
-  phone: "format(+1-222-222-2222)",
+  phone: CHAT_NUMBER_FORMAT,
   carAccidentFamilyGuardian: {
     firstNameFamilyGuardian: "optional(if participant is under 21)",
     lastNameFamilyGuardian: "optional(if participant is under 21)",
     ageFamilyGuardian: "optional(if participant is under 21)",
-    phoneNumberFamilyGuardian: "optional(if participant is under 21) format(+1-222-222-2222)",
+    phoneNumberFamilyGuardian: `optional(if participant is under 21) ${CHAT_NUMBER_FORMAT}`,
   },
   carAccidentOfficer: {
     firstNameOfficer: "",
     lastNameOfficer: "",
     badgeNumber: "",
-    phoneOfficer: "optonal() format(+1-222-222-2222)",
+    phoneOfficer: `optional() ${CHAT_NUMBER_FORMAT}`,
   },
   carAccidentVehicle: {
     vehicleMake: "",
@@ -32,12 +33,12 @@ export const CarAccidentDescriptionContext = {
   },
   carAcciedntWitness: {
     witnessName: "optional()",
-    witnessPhone: "format(+1-222-222-2222)",
+    witnessPhone: CHAT_NUMBER_FORMAT,
     witnessAddress: "optional(if witnessName is present)",
     witnessCity: "optional(if witnessName is present)",
     witnessState: "optional(if witnessName is present)",
     witnessPostalCode: "optional(if witnessName is present)",
     witnessCountry: "optional(if witnessName is present)",
     witnessInsuranceCompany: "optional(if witnessName is present)",
-  }
+  },
 };

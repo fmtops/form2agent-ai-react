@@ -13,10 +13,10 @@ import { Form, Formik, FormikHelpers, FormikProps, FormikValues } from "formik";
 import StyledField from "../common/form/styled-field";
 import { nameof } from "../../helpers/property-helper";
 import { Divider, IconButton } from "@mui/material";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import useDetectDevice from "../../hooks/useDetectDevice";
+import { DatepickerComponent } from "../common/form/datepicker";
 
 export interface PrimaryOwnerComponentProps {
   form: PrimaryOwnerFormType;
@@ -73,13 +73,23 @@ type FormComponentProps = {
 } & FormikValues &
   FormikHelpers<PrimaryOwnerFormType>;
 const FormComponent = ({ setValues, form, handleBlur }: FormComponentProps) => {
-  const { isAndroid, isIOS } = useDetectDevice();
-  const mobileDatePicker = isAndroid() || isIOS() ? "h-11 dateInputCalc-1" : "";
   useEffect(() => {
     setValues(form);
   }, [form, setValues]);
 
   const [isSSNVisible, setIsSSNVisible] = useState(false);
+
+  const handleDateChange = (date: Date | null) => {
+    try {
+      const dateStr = date?.toISOString();
+      setValues(() => ({
+        ...form,
+        birthdate: dateStr ?? "",
+      }));
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-y-4">
@@ -137,13 +147,10 @@ const FormComponent = ({ setValues, form, handleBlur }: FormComponentProps) => {
                   </IconButton>
                 )}
               </div>
-              <StyledField
-                className={`text-text-placeholder-light ${mobileDatePicker}`}
-                name={nameof<PrimaryOwnerFormType>("birthdate")}
+              <DatepickerComponent
                 label="Date of Birth"
-                type="date"
-                placeholder="Date of birth"
-                onBlur={handleBlur}
+                value={form?.birthdate}
+                handleDateChange={handleDateChange}
               />
             </div>
             <Divider />

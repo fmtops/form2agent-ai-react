@@ -27,6 +27,7 @@ import { TreatmentOverviewComponent } from "../components/no-surgery-claim/no-su
 import { NoSurgeryGoalsComponent } from "../components/no-surgery-claim/no-surgery-goals";
 import { NoSurgeryOutcomesComponent } from "../components/no-surgery-claim/no-surgery-outcomes";
 import { NO_SURGERY_CLAIM_FORM_VALUES } from "../consts/no-surgery.consts";
+import { Helmet } from "react-helmet-async";
 
 export const NoSurgeryClaimPage = () => {
   const [noSurgeryClaimForm, setNoSurgeryClaimForm] = useState(
@@ -165,45 +166,54 @@ export const NoSurgeryClaimPage = () => {
   };
 
   return (
-    <AudioProvider>
-      <FormPageLayout
-        title="Non Surgical Treatment Claim"
-        subTitle="Try Form2Agent AI with a multi-step non-surgical treatment claim form. Hold the button to speak with the assistant, or paste details into the chat to quickly fill in the form."
-        chatElement={
-          <ChatWindow
-            executeFormLogic={executeFormLogic}
-            formDescription="Provide detailed health information to assist the doctor in filling in non surgical treatment claim form."
-            formValues={stringifyValues(noSurgeryClaimForm)}
-            formContext={stringifyValues(NoSurgeryClaimContext)}
-          />
-        }
-        isSuccessModalOpen={isSuccessModalOpen}
-        onCloseModal={() => setIsSuccessModalOpen(false)}
-      >
-        <div className="flex flex-col gap-y-8">
-          <ProgressBar steps={NoSurgeryClaimSteps} currentStep={pageIndex} />
-          {renderPage()}
-          <div className="flex flex-row-reverse justify-end gap-4">
-            <SubmitButton
-              value={
-                NoSurgeryClaimSteps.length === pageIndex
-                  ? "Submit"
-                  : "Next Step"
-              }
-              className="w-24 mt-4"
-              onClick={handleNextStep}
+    <>
+      <Helmet>
+        <title>Simplify Treatment Claims with Form2Agent AI</title>
+        <meta
+          name="description"
+          content="Streamline non-surgical treatment claims using Form2Agent AI. Quickly complete forms by speaking to the assistant or pasting details into the chat for efficient processing."
+        />
+      </Helmet>
+      <AudioProvider>
+        <FormPageLayout
+          title="Non Surgical Treatment Claim"
+          subTitle="Try Form2Agent AI with a multi-step non-surgical treatment claim form. Hold the button to speak with the assistant, or paste details into the chat to quickly fill in the form."
+          chatElement={
+            <ChatWindow
+              executeFormLogic={executeFormLogic}
+              formDescription="Provide detailed health information to assist the doctor in filling in non surgical treatment claim form."
+              formValues={stringifyValues(noSurgeryClaimForm)}
+              formContext={stringifyValues(NoSurgeryClaimContext)}
             />
-            {pageIndex > 1 && (
-              <button
-                onClick={handleBackStep}
-                className={`py-[10px] mt-4 border rounded shadow-sm w-20 border-border-brand-light text-text-brand-light`}
-              >
-                Back
-              </button>
-            )}
+          }
+          isSuccessModalOpen={isSuccessModalOpen}
+          onCloseModal={() => setIsSuccessModalOpen(false)}
+        >
+          <div className="flex flex-col gap-y-8">
+            <ProgressBar steps={NoSurgeryClaimSteps} currentStep={pageIndex} />
+            {renderPage()}
+            <div className="flex flex-row-reverse justify-end gap-4">
+              <SubmitButton
+                value={
+                  NoSurgeryClaimSteps.length === pageIndex
+                    ? "Submit"
+                    : "Next Step"
+                }
+                className="w-24 mt-4"
+                onClick={handleNextStep}
+              />
+              {pageIndex > 1 && (
+                <button
+                  onClick={handleBackStep}
+                  className={`py-[10px] mt-4 border rounded shadow-sm w-20 border-border-brand-light text-text-brand-light`}
+                >
+                  Back
+                </button>
+              )}
+            </div>
           </div>
-        </div>
-      </FormPageLayout>
-    </AudioProvider>
+        </FormPageLayout>
+      </AudioProvider>
+    </>
   );
 };

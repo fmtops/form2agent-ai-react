@@ -29,6 +29,7 @@ import { MedicalAdmissionComponent } from "../components/surgery-claim/surgery-m
 import { AnesthesiaComponent } from "../components/surgery-claim/surgery-anesthesia";
 import { SurgeryDetailsComponent } from "../components/surgery-claim/surgery-details-form";
 import { ClaimDetailsComponent } from "../components/surgery-claim/surgery-claim-details";
+import { Helmet } from "react-helmet-async";
 
 export const SurgeryClaimPage = () => {
   const [surgeryClaimForm, setSurgeryClaimForm] = useState(
@@ -182,43 +183,54 @@ export const SurgeryClaimPage = () => {
   };
 
   return (
-    <AudioProvider>
-      <FormPageLayout
-        title="Surgery Claim"
-        subTitle="Try Form2Agent AI with a multi-step surgery claim form. Hold the button to speak with the assistant, or paste details into the chat to quickly fill in the form."
-        chatElement={
-          <ChatWindow
-            executeFormLogic={executeFormLogic}
-            formDescription="Provide detailed health information to assist the doctor in filling in surgery claim form."
-            formValues={stringifyValues(surgeryClaimForm)}
-            formContext={stringifyValues(SurgeryClaimContext)}
-          />
-        }
-        isSuccessModalOpen={isSuccessModalOpen}
-        onCloseModal={() => setIsSuccessModalOpen(false)}
-      >
-        <div className="flex flex-col gap-y-8">
-          <ProgressBar steps={SurgeryClaimSteps} currentStep={pageIndex} />
-          {renderPage()}
-          <div className="flex flex-row-reverse justify-end gap-4">
-            <SubmitButton
-              value={
-                SurgeryClaimSteps.length === pageIndex ? "Submit" : "Next Step"
-              }
-              className="w-24 mt-4"
-              onClick={handleNextStep}
+    <>
+      <Helmet>
+        <title>Efficient Surgery Claim Processing with Form2Agent AI</title>
+        <meta
+          name="description"
+          content="Streamline your surgery claim process using Form2Agent AI. Easily complete forms by speaking to the assistant or pasting details into the chat for quick and accurate submissions."
+        />
+      </Helmet>
+      <AudioProvider>
+        <FormPageLayout
+          title="Surgery Claim"
+          subTitle="Try Form2Agent AI with a multi-step surgery claim form. Hold the button to speak with the assistant, or paste details into the chat to quickly fill in the form."
+          chatElement={
+            <ChatWindow
+              executeFormLogic={executeFormLogic}
+              formDescription="Provide detailed health information to assist the doctor in filling in surgery claim form."
+              formValues={stringifyValues(surgeryClaimForm)}
+              formContext={stringifyValues(SurgeryClaimContext)}
             />
-            {pageIndex > 1 && (
-              <button
-                onClick={handleBackStep}
-                className={`py-[10px] mt-4 border rounded shadow-sm w-20 border-border-brand-light text-text-brand-light`}
-              >
-                Back
-              </button>
-            )}
+          }
+          isSuccessModalOpen={isSuccessModalOpen}
+          onCloseModal={() => setIsSuccessModalOpen(false)}
+        >
+          <div className="flex flex-col gap-y-8">
+            <ProgressBar steps={SurgeryClaimSteps} currentStep={pageIndex} />
+            {renderPage()}
+            <div className="flex flex-row-reverse justify-end gap-4">
+              <SubmitButton
+                value={
+                  SurgeryClaimSteps.length === pageIndex
+                    ? "Submit"
+                    : "Next Step"
+                }
+                className="w-24 mt-4"
+                onClick={handleNextStep}
+              />
+              {pageIndex > 1 && (
+                <button
+                  onClick={handleBackStep}
+                  className={`py-[10px] mt-4 border rounded shadow-sm w-20 border-border-brand-light text-text-brand-light`}
+                >
+                  Back
+                </button>
+              )}
+            </div>
           </div>
-        </div>
-      </FormPageLayout>
-    </AudioProvider>
+        </FormPageLayout>
+      </AudioProvider>
+    </>
   );
 };

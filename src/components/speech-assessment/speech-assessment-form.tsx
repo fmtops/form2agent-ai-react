@@ -1,4 +1,11 @@
-import { Formik, Form, FormikValues, FormikHelpers, FormikProps } from "formik";
+import {
+  Formik,
+  Form,
+  FormikValues,
+  FormikHelpers,
+  FormikProps,
+  Field,
+} from "formik";
 import { Dispatch, RefObject, SetStateAction, useEffect } from "react";
 import StyledField from "../common/form/styled-field";
 import {
@@ -13,9 +20,9 @@ import {
   ArticulationModificationsRequired,
   NasalEmissionObservations,
 } from "../../models/speech-assessment-model";
-import useDetectDevice from "../../hooks/useDetectDevice";
 import { SelectChangeEvent } from "@mui/material";
 import { SelectComponent } from "../common/form/select";
+import { DatepickerComponent } from "../common/form/datepicker";
 
 export interface SpeechAssessmentFormProps {
   isChatExpanded: boolean;
@@ -51,146 +58,183 @@ export default function SpeechAssessmentForm({
     };
 
     const handlePronounsChange = (event: SelectChangeEvent) => {
-      let updatedForm = formikRef.current!.values;
-      updatedForm.patientInformation!.pronouns = event.target.value as Pronouns;
-      setForm(updatedForm);
-      handleBlur();
+      setForm(() => ({
+        ...formikRef.current?.values,
+        patientInformation: {
+          ...formikRef.current?.values.patientInformation,
+          pronouns: event.target.value as Pronouns,
+        },
+      }));
     };
 
     const handleAssessmentLanguageChange = (event: SelectChangeEvent) => {
-      let updatedForm = formikRef.current!.values;
-      updatedForm.assessmentSessionDetails!.assessmentLanguage = event.target
-        .value as Language;
-      setForm(updatedForm);
-      handleBlur();
+      setForm(() => ({
+        ...formikRef.current?.values,
+        assessmentSessionDetails: {
+          ...formikRef.current?.values.assessmentSessionDetails,
+          assessmentLanguage: event.target.value as Language,
+        },
+      }));
     };
 
     const handleTreatmentStageChange = (event: SelectChangeEvent) => {
-      let updatedForm = formikRef.current!.values;
-      updatedForm.treatmentStage = event.target.value as TreatmentStage;
-      setForm(updatedForm);
-      handleBlur();
+      setForm(() => ({
+        ...formikRef.current?.values,
+        treatmentStage: event.target.value as TreatmentStage,
+      }));
     };
 
     const handleTelehealthSessionChange = (
       event: React.ChangeEvent<HTMLInputElement>
     ) => {
-      let updatedForm = formikRef.current!.values;
-      updatedForm.assessmentSessionDetails!.telehealthSession =
-        event.target.value === "yes";
-      setForm(updatedForm);
-      handleBlur();
+      setForm(() => ({
+        ...formikRef.current?.values,
+        assessmentSessionDetails: {
+          ...formikRef.current?.values.assessmentSessionDetails,
+          telehealthSession: event.target.value === "yes",
+        },
+      }));
+    };
+
+    const handleDateChange = (date: Date | null) => {
+      try {
+        const dateStr = date?.toISOString();
+        setForm(() => ({
+          ...formikRef.current?.values,
+          assessmentSessionDetails: {
+            ...formikRef.current?.values.assessmentSessionDetails,
+            dateOfAssessment: dateStr ?? "",
+          },
+        }));
+      } catch (e) {
+        console.error(e);
+      }
     };
 
     const handleVoiceResonanceChange = (event: SelectChangeEvent) => {
-      let updatedForm = formikRef.current!.values;
-      updatedForm.perceptualSpeechAnalysis!.voiceResonance = event.target
-        .value as VoiceResonance;
-      setForm(updatedForm);
-      handleBlur();
+      setForm(() => ({
+        ...formikRef.current?.values,
+        perceptualSpeechAnalysis: {
+          ...formikRef.current?.values.perceptualSpeechAnalysis,
+          voiceResonance: event.target.value as VoiceResonance,
+        },
+      }));
     };
 
     const handleNasalEmissionObservationsChange = (
       event: SelectChangeEvent
     ) => {
-      let updatedForm = formikRef.current!.values;
-      updatedForm.perceptualSpeechAnalysis!.nasalEmissionObservations = event
-        .target.value as NasalEmissionObservations;
-      setForm(updatedForm);
-      handleBlur();
+      setForm(() => ({
+        ...formikRef.current?.values,
+        perceptualSpeechAnalysis: {
+          ...formikRef.current?.values.perceptualSpeechAnalysis,
+          nasalEmissionObservations: event.target
+            .value as NasalEmissionObservations,
+        },
+      }));
     };
 
     const handleSpecificSoundNasalEmissionChange = (
       event: React.ChangeEvent<HTMLInputElement>
     ) => {
-      let updatedForm = formikRef.current!.values;
+      const updatedForm = formikRef.current!.values;
+      let oldSpecificSoundNasalEmission = [
+        ...updatedForm.perceptualSpeechAnalysis!.specificSoundNasalEmission!,
+      ];
       const { name, checked } = event.target;
       if (
         Object.values(SpecificSoundNasalEmission).includes(
           name as SpecificSoundNasalEmission
-        )
+        ) &&
+        oldSpecificSoundNasalEmission.includes(name)
       ) {
-        if (
-          updatedForm.perceptualSpeechAnalysis!.specificSoundNasalEmission.includes(
-            name
-          )
-        ) {
-          updatedForm.perceptualSpeechAnalysis!.specificSoundNasalEmission =
-            updatedForm.perceptualSpeechAnalysis!.specificSoundNasalEmission.map(
-              (item) => (item === name ? event.target.value : item)
-            );
-        } else {
-          updatedForm.perceptualSpeechAnalysis!.specificSoundNasalEmission.push(
-            name
-          );
-        }
-      } else {
-        updatedForm.perceptualSpeechAnalysis!.specificSoundNasalEmission.push(
-          name
+        oldSpecificSoundNasalEmission = oldSpecificSoundNasalEmission.map(
+          (item) => (item === name ? event.target.value : item)
         );
+      } else {
+        oldSpecificSoundNasalEmission.push(name);
       }
 
-      setForm(updatedForm);
-      handleBlur();
+      setForm(() => ({
+        ...formikRef.current?.values,
+        perceptualSpeechAnalysis: {
+          ...formikRef.current?.values.perceptualSpeechAnalysis,
+          specificSoundNasalEmission: oldSpecificSoundNasalEmission,
+        },
+      }));
     };
 
     const handleArticulationErrorsChange = (
       event: React.ChangeEvent<HTMLInputElement>
     ) => {
-      let updatedForm = formikRef.current!.values;
+      const updatedForm = formikRef.current!.values;
       const value = event.target.value as ArticulationErrors;
+      let articulationErrors = [
+        ...updatedForm.speechArticulationAssessment!.articulationErrors!,
+      ];
       if (event.target.checked) {
-        updatedForm.speechArticulationAssessment!.articulationErrors!.push(
-          value
-        );
+        articulationErrors.push(value);
       } else {
-        updatedForm.speechArticulationAssessment!.articulationErrors =
-          updatedForm.speechArticulationAssessment!.articulationErrors!.filter(
-            (item) => item !== value
-          );
+        articulationErrors = articulationErrors.filter(
+          (item) => item !== value
+        );
       }
-      setForm(updatedForm);
-      handleBlur();
+      setForm(() => ({
+        ...formikRef.current?.values,
+        speechArticulationAssessment: {
+          ...formikRef.current?.values.speechArticulationAssessment,
+          articulationErrors: articulationErrors,
+        },
+      }));
     };
 
     const handleCompensatoryArticulationPatternsChange = (
       event: React.ChangeEvent<HTMLInputElement>
     ) => {
-      let updatedForm = formikRef.current!.values;
+      const updatedForm = formikRef.current!.values;
       const value = event.target.value as CompensatoryArticulationPatterns;
+      let compensatoryArticulationPatterns = [
+        ...updatedForm.speechArticulationAssessment!
+          .compensatoryArticulationPatterns!,
+      ];
       if (event.target.checked) {
-        updatedForm.speechArticulationAssessment!.compensatoryArticulationPatterns!.push(
-          value
-        );
+        compensatoryArticulationPatterns!.push(value);
       } else {
-        updatedForm.speechArticulationAssessment!.compensatoryArticulationPatterns =
-          updatedForm.speechArticulationAssessment!.compensatoryArticulationPatterns!.filter(
-            (item) => item !== value
-          );
+        compensatoryArticulationPatterns =
+          compensatoryArticulationPatterns.filter((item) => item !== value);
       }
-      setForm(updatedForm);
-      handleBlur();
+      setForm(() => ({
+        ...formikRef.current?.values,
+        speechArticulationAssessment: {
+          ...formikRef.current?.values.speechArticulationAssessment,
+          compensatoryArticulationPatterns: compensatoryArticulationPatterns,
+        },
+      }));
     };
 
     const handleArticulationModificationsRequiredChange = (
       event: React.ChangeEvent<HTMLInputElement>
     ) => {
-      let updatedForm = formikRef.current!.values;
+      const updatedForm = formikRef.current!.values;
       const value = event.target.value as ArticulationModificationsRequired;
+      let articulationModificationsRequired = [
+        ...updatedForm.speechArticulationAssessment!
+          .articulationModificationsRequired!,
+      ];
       if (event.target.checked) {
-        updatedForm.speechArticulationAssessment!.articulationModificationsRequired!.push(
-          value
-        );
+        articulationModificationsRequired.push(value);
       } else {
-        updatedForm.speechArticulationAssessment!.articulationModificationsRequired =
-          updatedForm.speechArticulationAssessment!.articulationModificationsRequired!.filter(
-            (item) => item !== value
-          );
+        articulationModificationsRequired =
+          articulationModificationsRequired.filter((item) => item !== value);
       }
-      setForm(updatedForm);
-      handleBlur();
+      setForm(() => ({
+        ...formikRef.current?.values,
+        speechArticulationAssessment: {
+          ...formikRef.current?.values.speechArticulationAssessment,
+          articulationModificationsRequired: articulationModificationsRequired,
+        },
+      }));
     };
-
     return (
       <Form className="flex flex-col gap-y-4">
         <h2 className={`font-medium mt-8 text-black`}>Patient Information</h2>
@@ -220,9 +264,7 @@ export default function SpeechAssessmentForm({
           />
           <SelectComponent
             name="patientInformation.pronouns"
-            value={
-              (values as SpeechAssessmentFormType).patientInformation?.pronouns
-            }
+            value={values.patientInformation?.pronouns}
             options={Object.values(Pronouns)}
             placeholder="Pronouns"
             aria-label="Pronouns"
@@ -240,13 +282,10 @@ export default function SpeechAssessmentForm({
           Assessment Session Details
         </h2>
         <div className="grid grid-cols-2 gap-4">
-          <StyledField
-            className={`text-text-placeholder-light h-11 dateInputCalc-2`}
-            name="assessmentSessionDetails.dateOfAssessment"
-            type="date"
-            placeholder="Date of Assessment"
-            aria-label="Date of Assessment"
-            onBlur={handleBlur}
+          <DatepickerComponent
+            value={values.assessmentSessionDetails?.dateOfAssessment}
+            handleDateChange={handleDateChange}
+            label="Date of Assessment"
           />
           <StyledField
             name="assessmentSessionDetails.speechPathologist"
@@ -259,10 +298,7 @@ export default function SpeechAssessmentForm({
         <div className="grid grid-cols-2 gap-4">
           <SelectComponent
             name="assessmentSessionDetails.assessmentLanguage"
-            value={
-              (values as SpeechAssessmentFormType).assessmentSessionDetails
-                ?.assessmentLanguage
-            }
+            value={values.assessmentSessionDetails?.assessmentLanguage}
             options={Object.values(Language)}
             placeholder="Assessment Language"
             aria-label="Assessment Language"
@@ -270,7 +306,7 @@ export default function SpeechAssessmentForm({
           />
           <SelectComponent
             name="treatmentStage"
-            value={(values as SpeechAssessmentFormType).treatmentStage}
+            value={values.treatmentStage}
             options={Object.values(TreatmentStage)}
             placeholder="Treatment Stage"
             aria-label="Treatment Stage"
@@ -284,10 +320,7 @@ export default function SpeechAssessmentForm({
               type="radio"
               name="assessmentSessionDetails.telehealthSession"
               value="yes"
-              checked={
-                (values as SpeechAssessmentFormType).assessmentSessionDetails
-                  ?.telehealthSession === true
-              }
+              checked={values.assessmentSessionDetails?.telehealthSession}
               onChange={handleTelehealthSessionChange}
             />
             <label>Yes</label>
@@ -295,10 +328,7 @@ export default function SpeechAssessmentForm({
               type="radio"
               name="assessmentSessionDetails.telehealthSession"
               value="no"
-              checked={
-                (values as SpeechAssessmentFormType).assessmentSessionDetails
-                  ?.telehealthSession === false
-              }
+              checked={!values.assessmentSessionDetails?.telehealthSession}
               onChange={handleTelehealthSessionChange}
             />
             <label>No</label>
@@ -307,24 +337,18 @@ export default function SpeechAssessmentForm({
         <h2 className={`font-medium mt-8 text-black`}>
           Perceptual Speech Analysis
         </h2>
-        <div className="grid grid-cols-2">
+        <div className="grid grid-cols-2 gap-4">
           <SelectComponent
             name="perceptualSpeechAnalysis.voiceResonance"
-            value={
-              (values as SpeechAssessmentFormType).perceptualSpeechAnalysis
-                ?.voiceResonance
-            }
+            value={values.perceptualSpeechAnalysis?.voiceResonance}
             options={Object.values(VoiceResonance)}
             placeholder="Voice Resonance"
             aria-label="Voice Resonance"
             onChange={handleVoiceResonanceChange}
           />
           <SelectComponent
-            name="perceptualSpeechAnalysis.voiceResonance"
-            value={
-              (values as SpeechAssessmentFormType).perceptualSpeechAnalysis
-                ?.nasalEmissionObservations
-            }
+            name="perceptualSpeechAnalysis.nasalEmissionObservations"
+            value={values.perceptualSpeechAnalysis?.nasalEmissionObservations}
             options={Object.values(NasalEmissionObservations)}
             placeholder="Nasal Emission Observations"
             aria-label="Nasal Emission Observations"
@@ -342,8 +366,7 @@ export default function SpeechAssessmentForm({
                       type="checkbox"
                       name={field}
                       checked={(
-                        (values as SpeechAssessmentFormType)
-                          .perceptualSpeechAnalysis
+                        values.perceptualSpeechAnalysis
                           ?.specificSoundNasalEmission as SpecificSoundNasalEmission[]
                       ).includes(field)}
                       onChange={handleSpecificSoundNasalEmissionChange}
@@ -377,9 +400,7 @@ export default function SpeechAssessmentForm({
                   type="checkbox"
                   name="speechArticulationAssessment.compensatoryArticulationPatterns"
                   value={value}
-                  checked={(
-                    values as SpeechAssessmentFormType
-                  ).speechArticulationAssessment?.compensatoryArticulationPatterns?.includes(
+                  checked={values.speechArticulationAssessment?.compensatoryArticulationPatterns?.includes(
                     value
                   )}
                   onChange={handleCompensatoryArticulationPatternsChange}
@@ -396,9 +417,7 @@ export default function SpeechAssessmentForm({
                   type="checkbox"
                   name="speechArticulationAssessment.articulationErrors"
                   value={value}
-                  checked={(
-                    values as SpeechAssessmentFormType
-                  ).speechArticulationAssessment?.articulationErrors?.includes(
+                  checked={values.speechArticulationAssessment?.articulationErrors?.includes(
                     value
                   )}
                   onChange={handleArticulationErrorsChange}
@@ -418,9 +437,7 @@ export default function SpeechAssessmentForm({
                 type="checkbox"
                 name="speechArticulationAssessment.articulationModificationsRequired"
                 value={value}
-                checked={(
-                  values as SpeechAssessmentFormType
-                ).speechArticulationAssessment?.articulationModificationsRequired?.includes(
+                checked={values.speechArticulationAssessment?.articulationModificationsRequired?.includes(
                   value
                 )}
                 onChange={handleArticulationModificationsRequiredChange}

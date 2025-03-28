@@ -6,6 +6,7 @@ export const YesNoNotApplicableOptions: string[] = [
   "Not applicable",
 ];
 export const GenderOptions: string[] = ["Female", "Male"];
+export const GenderOptionsOther: string[] = ["Female", "Male", "Other"];
 export const GenderOptionsExtended: string[] = [
   "Female",
   "Male",

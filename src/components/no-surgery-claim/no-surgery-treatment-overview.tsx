@@ -13,6 +13,7 @@ import { Divider } from "@mui/material";
 import useDetectDevice from "../../hooks/useDetectDevice";
 import { TreatmentCenters } from "../../consts/patient-registration.consts";
 import { SelectComponent } from "../common/form/select";
+import { DatepickerComponent } from "../common/form/datepicker";
 
 export interface TreatmentOverviewComponentProps {
   form: NoSurgeryTreatmentOverviewFormType;
@@ -103,8 +104,28 @@ const FormComponent = ({
     setValues(form);
   }, [form, setValues]);
 
-  const { isAndroid, isIOS } = useDetectDevice();
-  const mobileDatePicker = isAndroid() || isIOS() ? "h-11 dateInputCalc-1" : "";
+  const handleStartDateChange = (date: Date | null) => {
+    try {
+      const dateStr = date?.toISOString();
+      setValues(() => ({
+        ...form,
+        startTreatmentDate: dateStr ?? "",
+      }));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+  const handleEndDateChange = (date: Date | null) => {
+    try {
+      const dateStr = date?.toISOString();
+      setValues(() => ({
+        ...form,
+        endTreatmentDate: dateStr ?? "",
+      }));
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-y-4">
@@ -145,28 +166,18 @@ const FormComponent = ({
             <div className="grid gap-4 grid-cols-2">
               <div className="grid gap-4">
                 <div>Start Date: </div>
-                <StyledField
-                  className={`text-text-placeholder-light ${mobileDatePicker}`}
-                  name={nameof<NoSurgeryTreatmentOverviewFormType>(
-                    "startTreatmentDate"
-                  )}
+                <DatepickerComponent
                   label="Start Date"
-                  type="date"
-                  placeholder="Start Date"
-                  onBlur={handleBlur}
+                  value={form?.startTreatmentDate}
+                  handleDateChange={handleStartDateChange}
                 />
               </div>
               <div className="grid gap-4">
                 <div>End Date: </div>
-                <StyledField
-                  className={`text-text-placeholder-light  ${mobileDatePicker}`}
-                  name={nameof<NoSurgeryTreatmentOverviewFormType>(
-                    "endTreatmentDate"
-                  )}
+                <DatepickerComponent
                   label="End Date"
-                  type="date"
-                  placeholder="End Date"
-                  onBlur={handleBlur}
+                  value={form?.endTreatmentDate}
+                  handleDateChange={handleEndDateChange}
                 />
               </div>
             </div>

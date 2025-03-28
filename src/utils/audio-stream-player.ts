@@ -1,6 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { INT_16_MAX } from "../consts/type.consts";
-import { AUDIO_PROCESSING_DELAY_MS } from "../consts/audio.consts";
+import {
+  AUDIO_PROCESSING_DELAY_MS,
+  AUDIO_CHUNK_BUFFER_LENGTH,
+  AUDIO_SCHEDULING_INITIAL_DELAY_S,
+} from "../consts/audio.consts";
 
 const useAudioStreamPlayer = (sampleRate: number) => {
   // Used to store the state of the audio playback and share it outside of the hook.
@@ -79,13 +83,13 @@ const useAudioStreamPlayer = (sampleRate: number) => {
 
   /**
    * @description Used to try to mark the audio as not playing.
-   * If the audio context time is greater than the next buffer time, the audio is not playing.
+   * If the audio context time is greater/equal to the next buffer time, the audio is done playing - a new buffer has not been scheduled yet.
    * When called in the onended event of the audio source, the next buffer time will always specify the end time of the latest buffer.
    */
   const tryMarkAudioAsNotPlaying = () => {
     if (
       !audioContextRef.current ||
-      audioContextRef.current!.currentTime > nextBufferContextTime.current
+      audioContextRef.current!.currentTime >= nextBufferContextTime.current
     ) {
       setIsAudioPlaying(false);
     }
@@ -137,7 +141,9 @@ const useAudioStreamPlayer = (sampleRate: number) => {
       // Init the buffer time if needed, then schedule the audio to play
       // This buffer time snapshot should be taken only immediately before scheduling
       if (nextBufferContextTime.current === 0)
-        nextBufferContextTime.current = audioContextRef.current!.currentTime;
+        nextBufferContextTime.current =
+          audioContextRef.current!.currentTime +
+          AUDIO_SCHEDULING_INITIAL_DELAY_S;
 
       source.start(nextBufferContextTime.current);
 
@@ -158,6 +164,19 @@ const useAudioStreamPlayer = (sampleRate: number) => {
   };
 
   /**
+   *
+   * @param buffer The buffer to concatenate the value to
+   * @param value The value to concatenate to the buffer
+   * @returns A new buffer with the value concatenated to the end
+   */
+  const concatValueToBuffer = (buffer: Uint8Array, value: Uint8Array) => {
+    let newBuffer = new Uint8Array(buffer.length + value.length);
+    newBuffer.set(buffer);
+    newBuffer.set(value, buffer.length);
+    return newBuffer;
+  };
+
+  /**
    * @param reader - ReadableStreamDefaultReader to read the audio data from
    * @description Used to play the audio stream from the reader
    */
@@ -172,36 +191,48 @@ const useAudioStreamPlayer = (sampleRate: number) => {
     // The audio is expected to play, set the flag to true to be able to process the buffers
     audioShouldPlayRef.current = true;
 
+    // Initialize an empty buffer; this variable will store the audio values returned by the API
+    let valueBuffer = new Uint8Array(0);
+
     // Process the audio stream chunk
     const processChunk = async () => {
-      // If the user has paused the audio, stop processing the buffers
-      if (!audioShouldPlayRef.current) {
-        await reader.cancel();
-        return;
-      }
-
-      const { done, value } = await reader.read();
-      if (done) return;
-
-      try {
-        // Once converted to expected format, push the data to the buffer queue
-        const pcmData = convertToPCM(value);
-        bufferQueueRef.current.push(pcmData);
-
-        // If the audio is not being scheduled and the buffer queue is large enough, start scheduling
-        // If scheduling is in-progress, continue adding onto the buffer queue, no need to retrigger here at this point
-        if (
-          !areBuffersBeingScheduledRef.current &&
-          bufferQueueRef.current.length > 0
-        ) {
-          scheduleQueuedBuffers();
+      while (true) {
+        // If the user has paused the audio, stop processing the buffers
+        if (!audioShouldPlayRef.current) {
+          await reader.cancel();
+          return;
         }
-      } catch (error) {
-        console.error("Error processing audio chunk", error);
-      }
 
-      // Recursively call the function to process the next chunk
-      processChunk();
+        const { done, value } = await reader.read();
+        if (done) return;
+
+        // Concatenate the new values with the buffer and update the old buffer
+        valueBuffer = concatValueToBuffer(valueBuffer, value);
+
+        // Process the buffer while there is enough data for chunks of the expected length
+        while (valueBuffer.length >= AUDIO_CHUNK_BUFFER_LENGTH) {
+          try {
+            // Slice the processable chunk out of the buffer
+            const audioChunk = valueBuffer.slice(0, AUDIO_CHUNK_BUFFER_LENGTH);
+            valueBuffer = valueBuffer.slice(AUDIO_CHUNK_BUFFER_LENGTH);
+
+            // Once converted to expected format, push the data to the buffer queue
+            const pcmData = convertToPCM(audioChunk);
+            bufferQueueRef.current.push(pcmData);
+
+            // If the audio is not being scheduled and the buffer queue is large enough, start scheduling
+            // If scheduling is in-progress, continue adding onto the buffer queue, no need to retrigger here at this point
+            if (
+              !areBuffersBeingScheduledRef.current &&
+              bufferQueueRef.current.length > 0
+            ) {
+              scheduleQueuedBuffers();
+            }
+          } catch (error) {
+            console.error("Error processing audio chunk", error);
+          }
+        }
+      }
     };
 
     // Init the recursive calls after a delay

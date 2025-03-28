@@ -8,6 +8,7 @@ import { SurgeryClaimContextFormType } from "../../models/surgery-claim-context-
 import { Divider } from "@mui/material";
 import { TreatmentCenters } from "../../consts/patient-registration.consts";
 import { SelectComponent } from "../common/form/select";
+import { DatepickerComponent } from "../common/form/datepicker";
 export interface MedicalAdmissionComponentProps {
   form: SurgeryMedicalAdmissionFormType;
   setForm: Dispatch<SetStateAction<SurgeryClaimContextFormType>>;
@@ -77,12 +78,54 @@ const FormComponent = ({
   values,
   handleMedicalCenterChange,
 }: FormComponentProps) => {
-  const { isAndroid, isIOS } = useDetectDevice();
-  const mobileDatePicker = isAndroid() || isIOS() ? "h-11 dateInputCalc-1" : "";
   useEffect(() => {
     setValues(form);
   }, [form, setValues]);
 
+  const handleAdmissionDateChange = (date: Date | null) => {
+    try {
+      const dateStr = date?.toISOString();
+      setValues(() => ({
+        ...form,
+        hospitalAdmissionDate: dateStr ?? "",
+      }));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+  const handleSurgeryDateChange = (date: Date | null) => {
+    try {
+      const dateStr = date?.toISOString();
+      setValues(() => ({
+        ...form,
+        surgeryDate: dateStr ?? "",
+      }));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+  const handleDischargeDateChange = (date: Date | null) => {
+    try {
+      const dateStr = date?.toISOString();
+      setValues(() => ({
+        ...form,
+        dateOfDischarge: dateStr ?? "",
+      }));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+  const handleFollowDateChange = (date: Date | null) => {
+    try {
+      const dateStr = date?.toISOString();
+      setValues(() => ({
+        ...form,
+        followUpDate: dateStr ?? "",
+      }));
+    } catch (e) {
+      console.error(e);
+    }
+  };
   return (
     <div className="flex flex-col gap-y-4">
       <div className="text-md font-medium">Hospital</div>
@@ -94,23 +137,15 @@ const FormComponent = ({
               <div>Surgery Date: </div>
             </div>
             <div className="grid gap-4 grid-cols-2">
-              <StyledField
-                className={`text-text-placeholder-light ${mobileDatePicker}`}
-                name={nameof<SurgeryMedicalAdmissionFormType>(
-                  "hospitalAdmissionDate"
-                )}
+              <DatepickerComponent
+                value={form?.hospitalAdmissionDate}
+                handleDateChange={handleAdmissionDateChange}
                 label="Hospital Admission Date"
-                type="date"
-                placeholder="Hospital Admission Date"
-                onBlur={handleBlur}
               />
-              <StyledField
-                className={`text-text-placeholder-light ${mobileDatePicker}`}
-                name={nameof<SurgeryMedicalAdmissionFormType>("surgeryDate")}
+              <DatepickerComponent
+                value={form?.surgeryDate}
+                handleDateChange={handleSurgeryDateChange}
                 label="Surgery Date"
-                type="date"
-                placeholder="Surgery Date"
-                onBlur={handleBlur}
               />
             </div>
           </div>
@@ -120,23 +155,15 @@ const FormComponent = ({
               <div>Scheduled Follow-Up Date: </div>
             </div>
             <div className="grid gap-4 grid-cols-2">
-              <StyledField
-                className={`text-text-placeholder-light ${mobileDatePicker}`}
-                name={nameof<SurgeryMedicalAdmissionFormType>(
-                  "dateOfDischarge"
-                )}
+              <DatepickerComponent
+                value={form?.dateOfDischarge}
+                handleDateChange={handleDischargeDateChange}
                 label="Date of Discharge"
-                type="date"
-                placeholder="Date of Discharge"
-                onBlur={handleBlur}
               />
-              <StyledField
-                className={`text-text-placeholder-light  ${mobileDatePicker}`}
-                name={nameof<SurgeryMedicalAdmissionFormType>("followUpDate")}
+              <DatepickerComponent
+                value={form?.followUpDate}
+                handleDateChange={handleFollowDateChange}
                 label="Scheduled Follow-Up Date"
-                type="date"
-                placeholder="Scheduled Follow-Up Date"
-                onBlur={handleBlur}
               />
             </div>
           </div>

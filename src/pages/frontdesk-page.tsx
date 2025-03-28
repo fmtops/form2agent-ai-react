@@ -14,6 +14,8 @@ import { SelectChangeEvent, TextField } from "@mui/material";
 import { SelectComponent } from "../components/common/form/select";
 import StyledField from "../components/common/form/styled-field";
 import SubmitButton from "../components/common/form/submit-button";
+import { Helmet } from "react-helmet-async";
+import { ANIMATION_CLEAR_DELAY } from "../consts/animations";
 
 const FrontDeskPage = () => {
   const [orders, setOrders] = useState<FrontdeskOrderItem[]>([]);
@@ -64,7 +66,7 @@ const FrontDeskPage = () => {
   useEffect(() => {
     let timeoutId: NodeJS.Timeout | null = null;
     if (updatedOrders.length > 0) {
-      timeoutId = setTimeout(() => setUpdatedOrders([]), 1500);
+      timeoutId = setTimeout(() => setUpdatedOrders([]), ANIMATION_CLEAR_DELAY);
     }
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
@@ -96,56 +98,65 @@ const FrontDeskPage = () => {
     setItemQuantity(0);
   };
   return (
-    <AudioProvider>
-      <FormPageLayout
-        title="Coffee Shop Frontdesk"
-        subTitle="Explore how Form2Agent AI can listen in or talk to your customer to create orders in a coffee shop."
-        chatElement={
-          <ChatWindow
-            executeFormLogic={executeFormLogic}
-            formDescription={CHAT_FRONTDESK_DESCRIPTION}
-            formValues={stringifyValues({
-              orders: orders,
-            })}
-            formContext={stringifyValues({
-              orders: FrontdeskOrderDescriptionContext,
-            })}
-          />
-        }
-      >
-        <h2 className={`text-text-primary-light font-medium mt-4`}>
-          Select Products
-        </h2>
-
-        <div className="flex gap-4">
-          <SelectComponent
-            options={Menu.map((menu) => menu.name)}
-            name={"product"}
-            placeholder={"Product"}
-            value={item}
-            onChange={handleItemChange}
-            className="w-1/2"
-            isBigInput={true}
-          />
-          <TextField
-            type="number"
-            label="Quantity"
-            variant="outlined"
-            value={itemQuantity}
-            onChange={(e) => setItemQuantity(parseInt(e.target.value))}
-            className="w-1/2 rounded-md border border-border-secondary-light bg-white text-black"
-          />
-        </div>
-
-        <SubmitButton
-          value={"Add Product"}
-          onClick={onAddItemClicked}
-          className="my-3 p-1"
+    <>
+      <Helmet>
+        <title>Revolutionize Coffee Shop Orders with Form2Agent AI</title>
+        <meta
+          name="description"
+          content="Explore how Form2Agent AI transforms your coffee shop operations by engaging with customers to effortlessly create and manage orders, enhancing the overall customer experience with precision and speed."
         />
+      </Helmet>
+      <AudioProvider>
+        <FormPageLayout
+          title="Coffee Shop Frontdesk"
+          subTitle="Explore how Form2Agent AI can listen in or talk to your customer to create orders in a coffee shop."
+          chatElement={
+            <ChatWindow
+              executeFormLogic={executeFormLogic}
+              formDescription={CHAT_FRONTDESK_DESCRIPTION}
+              formValues={stringifyValues({
+                orders: orders,
+              })}
+              formContext={stringifyValues({
+                orders: FrontdeskOrderDescriptionContext,
+              })}
+            />
+          }
+        >
+          <h2 className={`text-text-primary-light font-medium mt-4`}>
+            Select Products
+          </h2>
 
-        <FrontDeskView orders={orders} remove={removeById} />
-      </FormPageLayout>
-    </AudioProvider>
+          <div className="flex gap-4">
+            <SelectComponent
+              options={Menu.map((menu) => menu.name)}
+              name={"product"}
+              placeholder={"Product"}
+              value={item}
+              onChange={handleItemChange}
+              className="w-1/2"
+              isBigInput={true}
+            />
+            <TextField
+              type="number"
+              label="Quantity"
+              variant="outlined"
+              value={itemQuantity}
+              onChange={(e) => setItemQuantity(parseInt(e.target.value))}
+              className="w-1/2 rounded-md border border-border-secondary-light bg-white text-black"
+            />
+          </div>
+
+          <SubmitButton
+            value={"Add Product"}
+            onClick={onAddItemClicked}
+            className="my-3 p-1"
+          />
+
+          <FrontDeskView orders={orders} remove={removeById} />
+        </FormPageLayout>
+      </AudioProvider>
+    </>
   );
 };
 

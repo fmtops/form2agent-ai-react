@@ -1,4 +1,10 @@
-import { FormAction, GenderOptions, YesNoIDKOptions, YesNoOptions } from "../consts/general-fields.consts";
+import { CHAT_NUMBER_FORMAT } from "../consts/chat.consts";
+import {
+  FormAction,
+  GenderOptions,
+  YesNoIDKOptions,
+  YesNoOptions,
+} from "../consts/general-fields.consts";
 import {
   HearAboutTCOptions,
   Partners,
@@ -51,8 +57,8 @@ export const PatientRegistrationContext: PatientRegistrationContextFormType = {
     postalCode: "deduceFrom(city, state)",
     city: "",
     state: "abbreviate(2)",
-    phone: "format(+1-222-222-2222)",
-    phoneSecondary: "format(+1-222-222-2222), optional()",
+    phone: CHAT_NUMBER_FORMAT,
+    phoneSecondary: `${CHAT_NUMBER_FORMAT}, optional()`,
   },
   parentGuardinaInformation: {
     parentGuardianFirstName: "",

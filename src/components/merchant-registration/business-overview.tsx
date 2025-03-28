@@ -1,21 +1,15 @@
+import { Dispatch, RefObject, SetStateAction, useEffect } from "react";
 import {
-  Dispatch,
-  RefObject,
-  SetStateAction,
-  useEffect,
-  useState,
-} from "react";
-import {
-  BusinessOverviewFormType as BusinessOverviewFormType,
+  BusinessOverviewFormType,
   MerchantRegistrationFormType,
 } from "../../models/merchant-registration-model";
 import { Form, Formik, FormikHelpers, FormikProps, FormikValues } from "formik";
 import StyledField from "../common/form/styled-field";
 import { nameof } from "../../helpers/property-helper";
 import { Divider } from "@mui/material";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
-import useDetectDevice from "../../hooks/useDetectDevice";
+import { DatepickerComponent } from "../common/form/datepicker";
 
 export interface BusinessOverviewComponentProps {
   form: BusinessOverviewFormType;
@@ -70,12 +64,20 @@ type FormComponentProps = {
   FormikHelpers<BusinessOverviewFormType>;
 
 const FormComponent = ({ setValues, form, handleBlur }: FormComponentProps) => {
-  const { isAndroid, isIOS } = useDetectDevice();
-  const mobileDatePicker = isAndroid() || isIOS() ? "h-11 dateInputCalc-2" : "";
   useEffect(() => {
     setValues(form);
   }, [form, setValues]);
-
+  const handleDateChange = (date: Date | null) => {
+    try {
+      const dateStr = date?.toISOString();
+      setValues(() => ({
+        ...form,
+        businessOpenedDate: dateStr ?? "",
+      }));
+    } catch (e) {
+      console.error(e);
+    }
+  };
   return (
     <div className="flex flex-col gap-y-4">
       <div className="text-md font-medium">Product & Sales</div>
@@ -87,13 +89,10 @@ const FormComponent = ({ setValues, form, handleBlur }: FormComponentProps) => {
           <div className="gap-4 grid grid-cols-1">
             <div className="grid gap-4">
               <div>Business Opened Date: </div>
-              <StyledField
-                className={`text-text-placeholder-light w-1/2 md:w-1/4 ${mobileDatePicker}`}
-                name={nameof<BusinessOverviewFormType>("businessOpenedDate")}
+              <DatepickerComponent
                 label="Business Opened Date"
-                type="date"
-                placeholder="Business Opened Date"
-                onBlur={handleBlur}
+                value={form?.businessOpenedDate}
+                handleDateChange={handleDateChange}
               />
             </div>
 

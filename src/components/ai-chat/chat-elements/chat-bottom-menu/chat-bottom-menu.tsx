@@ -1,14 +1,17 @@
 import { ChangeEvent, useState, KeyboardEvent, useRef, useEffect } from "react";
 import { FormControlLabel, FormGroup, TextField } from "@mui/material";
 import { Checkbox } from "@mui/material";
-import { fetchFileContent } from "../../../../helpers/fetch-file-content";
+import {
+  fetchFileContent,
+  getFileExtension,
+  supportedFileExtensionsList,
+} from "../../../../helpers/fetch-file-content";
 import {
   CHAT_CHAR_LIMIT,
   CHAT_MAX_ROWS_INPUT,
 } from "../../../../consts/chat.consts";
 import { AudioState } from "../../../../types/Chat/Audio";
 import { FileSectionComponent } from "../../../common/file-section";
-import { SupportedFileExtensions } from "../../../../consts/files";
 import ChatMicrophoneIcon from "./chat-microphone-icon";
 import ChatSendIcon from "./chat-send-icon";
 import ChatUploadIcon from "./chat-upload-icon";
@@ -30,6 +33,7 @@ export default function ChatBottomMenu({
   fileName,
   setFileName,
   audioStateProgress,
+  onFileUpload,
 }: ChatBottomMenuPropType) {
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -82,22 +86,27 @@ export default function ChatBottomMenu({
     if (audioState === AudioState.NoState) setDisableMicrophone(() => false);
   }, [audioState]);
 
+  const onCameraPictureTaken = (image: string) => {
+    setFileContent(image);
+    if (onFileUpload) onFileUpload(image);
+    setFileName("camera-image.jpeg");
+    setErrorMessage("");
+  };
+
   const onFileChange = (
     event: ChangeEvent<HTMLInputElement> & { target: { files: FileList } }
   ) => {
     if (event?.target?.files?.length === 0) return;
     const file: File = event.target.files[0];
-    if (
-      !Object.values(SupportedFileExtensions).some((extension) =>
-        file.name.toLowerCase().endsWith(extension)
-      )
-    ) {
+    const extension = getFileExtension(file.name);
+    if (!supportedFileExtensionsList.includes(extension)) {
       setErrorMessage("Unsupported File Format");
       return;
     }
     setFileName(file.name);
     fetchFileContent(file, (progress) => setFileReadProgress(progress)).then(
       (result) => {
+        if (onFileUpload) onFileUpload(result.content.toString());
         setFileContent(result.content.toString());
       }
     );
@@ -109,6 +118,7 @@ export default function ChatBottomMenu({
 
   const handleClearFile = () => {
     setFileName("");
+    if (onFileUpload) onFileUpload(null);
     setFileContent("");
   };
 
@@ -178,6 +188,7 @@ export default function ChatBottomMenu({
             handleFileUpload={handleFileUpload}
             fileInputRef={fileInputRef}
             onFileChange={onFileChange}
+            onCameraPictureTaken={onCameraPictureTaken}
           />
           <ChatMicrophoneIcon
             isListening={isListening}
