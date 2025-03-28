@@ -1,8 +1,5 @@
 import { FormAction } from "../consts/general-fields.consts";
-import {
-  HelpdeskPriority,
-  DepartmentOptions,
-} from "./helpdesk-model";
+import { HelpdeskPriority, DepartmentOptions } from "./helpdesk-model";
 
 export const HelpdeskDescriptionContext = {
   action: `Allowed actions are ${Object.keys(FormAction).join(", ")} or null`,
@@ -14,6 +11,6 @@ export const HelpdeskDescriptionContext = {
   subject: "",
   description: "",
   priority: `radio(${Object.values(HelpdeskPriority).join(", ")})`,
-  attachmentFile: "optional()",
+  attachmentFile: "file()",
   department: `dropdown(${Object.values(DepartmentOptions).join(", ")})`,
 };

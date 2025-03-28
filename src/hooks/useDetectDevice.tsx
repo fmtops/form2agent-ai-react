@@ -21,8 +21,11 @@ function useDetectDevice() {
 
   const isAndroid = () => /android/i.test(userAgent);
   const isIOS = () => /ipad|iphone|ipod/i.test(userAgent);
+  const isMobile = () =>
+    /Mobi|Android|iPhone|iPad|iPod/i.test(userAgent) ||
+    ("ontouchstart" in window && navigator.maxTouchPoints > 0);
 
-  return { isAndroid, isIOS };
+  return { isAndroid, isIOS, isMobile };
 }
 
 export default useDetectDevice;

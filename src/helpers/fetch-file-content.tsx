@@ -1,13 +1,16 @@
 import { read, utils } from "xlsx";
+import { FileFieldStatus } from "../consts/chat.consts";
 
-type SupportedFileExtensions =
-  | "txt"
-  | "csv"
-  | "xlsx"
-  | "json"
-  | "pdf"
-  | "png"
-  | "jpg";
+export const supportedFileExtensionsList = [
+  "txt",
+  "csv",
+  "xlsx",
+  "json",
+  "pdf",
+  "png",
+  "jpg",
+  "jpeg",
+] as const;
 
 export interface FetchFileContentResult {
   content: string | object;
@@ -23,8 +26,13 @@ export interface FetchFileContentResult {
  * getFileExtension("file.csv") // "csv"
  * ```
  *  */
-function getFileExtension(fileName: string): SupportedFileExtensions {
-  return fileName.split(".").pop()?.toLowerCase() as SupportedFileExtensions;
+export function getFileExtension(
+  fileName: string
+): (typeof supportedFileExtensionsList)[number] {
+  return fileName
+    .split(".")
+    .pop()
+    ?.toLowerCase() as (typeof supportedFileExtensionsList)[number];
 }
 
 /**
@@ -113,6 +121,7 @@ export async function fetchFileContent(
       return getBase64Promise("image/png", file, onProgress);
 
     case "jpg":
+    case "jpeg":
       return getBase64Promise("image/jpg", file, onProgress);
 
     case "pdf":
@@ -161,3 +170,7 @@ function getBase64Promise(
     reader.readAsDataURL(file);
   });
 }
+
+export const convertFileContentToStatus = (file: string | undefined | null) => {
+  return !file ? FileFieldStatus.None : FileFieldStatus.Existing;
+};

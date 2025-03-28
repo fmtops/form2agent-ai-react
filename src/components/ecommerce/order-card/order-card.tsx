@@ -2,9 +2,9 @@ import { Order } from "../../../types/Ecommerce/Orders";
 import { StyledToolTip } from "../../common/mui-styled/styled-tooltip";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import OrderStatus from "./order-status";
-import { OrderProperty } from "./order-property";
 import { formatDate } from "../../../utils/dates.utils";
 import { forwardRef } from "react";
+import { FormProperty } from "../../common/form/form-property";
 
 type OrderCardProps = {
   order: Order;
@@ -38,12 +38,12 @@ const OrderCard = forwardRef<HTMLDivElement, OrderCardProps>(
               )}
             </div>
           </div>
-          <OrderProperty
+          <FormProperty
             label="Customer"
             value={order.customer_name}
             animate={Boolean(updatedValues?.customer_name)}
           />
-          <OrderProperty
+          <FormProperty
             label="Items"
             value={`${order.item_count} ${
               order.item_count === 1 ? "item" : "items"
@@ -52,7 +52,7 @@ const OrderCard = forwardRef<HTMLDivElement, OrderCardProps>(
           />
         </div>
         <div className="flex flex-col text-right gap-3">
-          <OrderProperty
+          <FormProperty
             label="Discount"
             value={`${order.discount !== 0 ? "-" : ""}$${Math.abs(
               order.discount
@@ -60,7 +60,7 @@ const OrderCard = forwardRef<HTMLDivElement, OrderCardProps>(
             animate={Boolean(updatedValues?.discount)}
           />
 
-          <OrderProperty
+          <FormProperty
             label="Total"
             value={`$${(order.cost - Math.abs(order.discount)).toFixed(2)}`}
             animate={Boolean(updatedValues?.discount || updatedValues?.cost)}

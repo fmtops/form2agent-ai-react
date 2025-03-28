@@ -32,6 +32,7 @@ export type ChatPropType = {
   formValues: string;
   formContext?: string;
   executeFormLogic: (appData: string) => void;
+  onFileUpload?: (file: string | null) => void;
 };
 
 export type ChatBottomMenuPropType = {
@@ -49,4 +50,5 @@ export type ChatBottomMenuPropType = {
   fileName: string;
   setFileName: (value: string) => void;
   audioStateProgress: number;
+  onFileUpload?: (file: string | null) => void;
 };

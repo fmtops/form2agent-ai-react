@@ -3,7 +3,7 @@ export enum SupportedFileExtensions {
   TXT = ".txt",
   CSV = ".csv",
   XLSX = ".xlsx",
-  PNG = ".png",
-  JPG = ".jpg",
-  PDF = ".pdf",
+  PNG = "image/png",
+  JPEG = "image/jpeg",
+  PDF = "application/pdf",
 }

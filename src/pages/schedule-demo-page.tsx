@@ -11,6 +11,7 @@ import { SCHEDULE_DEMO_FORM_VALUES } from "../consts/schedule-demo.consts";
 import FormPageLayout from "../layouts/form-page-layout";
 import { stringifyValues } from "../utils/chat.utilts";
 import { AudioProvider } from "../contexts/AudioContext";
+import { Helmet } from "react-helmet-async";
 
 const ScheduleDemoPage = () => {
   const [form, setForm] = useState(SCHEDULE_DEMO_FORM_VALUES);
@@ -52,29 +53,38 @@ const ScheduleDemoPage = () => {
   };
 
   return (
-    <AudioProvider>
-      <FormPageLayout
-        title="Schedule a Demo"
-        subTitle="Form2Agent simplifies scheduling a demo by automating the process. Just fill out a form with your availability, and it coordinates with all parties to confirm the best time. No more back-and-forth—Form2Agent handles it all, making scheduling quick and easy."
-        onSubmit={onSubmit}
-        chatElement={
-          <ChatWindow
-            executeFormLogic={executeFormLogic}
-            formDescription="Fill out this form to quickly schedule a demo of Form2Agent."
-            formValues={stringifyValues(form)}
-            formContext={stringifyValues(ScheduleDemoDescriptionContext)}
-          />
-        }
-        isSuccessModalOpen={isSuccessModalOpen}
-        onCloseModal={() => setIsSuccessModalOpen(false)}
-      >
-        <ScheduleDemoForm
-          form={form}
-          setForm={setForm}
-          formikRef={formikScheduleDemoRef}
+    <>
+      <Helmet>
+        <title>Effortless Demo Scheduling with Form2Agent</title>
+        <meta
+          name="description"
+          content="Experience seamless demo scheduling with Form2Agent. Simply fill out a form with your availability, and let the AI handle coordination for the perfect time. Eliminate the hassle of back-and-forth emails and streamline your scheduling process."
         />
-      </FormPageLayout>
-    </AudioProvider>
+      </Helmet>
+      <AudioProvider>
+        <FormPageLayout
+          title="Schedule a Demo"
+          subTitle="Form2Agent simplifies scheduling a demo by automating the process. Just fill out a form with your availability, and it coordinates with all parties to confirm the best time. No more back-and-forth—Form2Agent handles it all, making scheduling quick and easy."
+          onSubmit={onSubmit}
+          chatElement={
+            <ChatWindow
+              executeFormLogic={executeFormLogic}
+              formDescription="Fill out this form to quickly schedule a demo of Form2Agent."
+              formValues={stringifyValues(form)}
+              formContext={stringifyValues(ScheduleDemoDescriptionContext)}
+            />
+          }
+          isSuccessModalOpen={isSuccessModalOpen}
+          onCloseModal={() => setIsSuccessModalOpen(false)}
+        >
+          <ScheduleDemoForm
+            form={form}
+            setForm={setForm}
+            formikRef={formikScheduleDemoRef}
+          />
+        </FormPageLayout>
+      </AudioProvider>
+    </>
   );
 };
 

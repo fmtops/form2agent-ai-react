@@ -25,6 +25,7 @@ import { SelectComponent } from "../common/form/select";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import { OrganisationDatas, Organisations } from "../../consts/deal.consts";
+import { DatepickerComponent } from "../common/form/datepicker";
 
 export interface HelpdeskFormProps {
   form: DealFormType;
@@ -85,6 +86,31 @@ export default function DealForm({
         ...formikRef.current?.values,
       }));
     };
+
+    const handleStartingDateChange = (date: Date | null) => {
+      try {
+        const dateStr = date?.toISOString();
+        setValues(() => ({
+          ...form,
+          startingDate: dateStr ?? "",
+        }));
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    const handleClosingDateChange = (date: Date | null) => {
+      try {
+        const dateStr = date?.toISOString();
+        setValues(() => ({
+          ...form,
+          closingDate: dateStr ?? "",
+        }));
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
     return (
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <Form className="flex flex-col gap-y-4">
@@ -119,13 +145,21 @@ export default function DealForm({
           />
           <h2 className={` font-medium text-black`}>Deal information</h2>
           <div className="flex gap-4">
-            <StyledField
+            <TextField
               name="value"
               type="number"
+              label="Value"
               placeholder="Value"
               aria-label="Value"
-              className="w-1/2"
+              className="p-2.5 px-3 rounded-md border-bg-active-light border-[1px] bg-white text-black w-1/2"
               onBlur={handleBlur}
+              value={values?.value}
+              onChange={(e) =>
+                setValues(() => ({
+                  ...form,
+                  value: Number(e.target.value),
+                }))
+              }
             />
             <SelectComponent
               className="w-1/2"
@@ -146,6 +180,7 @@ export default function DealForm({
                   size="small"
                   type="number"
                   name="probability"
+                  label="Probability"
                   placeholder="Probability"
                   aria-label="Probability"
                   onBlur={handleBlur}
@@ -175,20 +210,16 @@ export default function DealForm({
           <div className="flex gap-4">
             <div className="relative mac-os-input w-1/2">
               <div className="text-sm">Expected starting date</div>
-              <StyledField
-                className={"w-full h-11 dateInputCalc-1"}
-                name="startingDate"
-                type="date"
-                onBlur={handleBlur}
+              <DatepickerComponent
+                value={form?.startingDate}
+                handleDateChange={handleStartingDateChange}
               />
             </div>
             <div className="relative mac-os-input w-1/2">
               <div className="text-sm">Expected closing date</div>
-              <StyledField
-                className={`w-full h-11 dateInputCalc-1`}
-                name="closingDate"
-                type="date"
-                onBlur={handleBlur}
+              <DatepickerComponent
+                value={form?.closingDate}
+                handleDateChange={handleClosingDateChange}
               />
             </div>
           </div>

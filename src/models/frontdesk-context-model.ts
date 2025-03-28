@@ -81,6 +81,7 @@ export const Menu: FrontdeskMenuItem[] = [
 export const CHAT_FRONTDESK_DESCRIPTION = `
 Manage this menu panel to quickly get assistance with selecting menu items.
 Help the user to choose menu items and their quantity.
+If user wants to delete the item, set it amount to 0.
 User can select items only from this menu ${JSON.stringify(Menu)}.
 Refer to this schema to update order: ${JSON.stringify(FrontdeskOrderDescriptionContext)}.
 Menu selections should be an array containing all of the items that the user changes with only the changed values.

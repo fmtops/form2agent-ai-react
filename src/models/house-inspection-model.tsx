@@ -1,10 +1,11 @@
 import { FormAction } from "../consts/general-fields.consts";
 
 export type HouseInspectionRoom = {
-  name?: string;
-  size?: string;
-  conditionDescription?: string;
-  roomPhoto?: File | null;
+  id?: string;
+  name: string;
+  size: string;
+  conditionDescription: string;
+  roomPhoto?: string | null;
 };
 
 export type HouseInspectionBaseFormType = {

@@ -1,3 +1,4 @@
+import { CHAT_NUMBER_FORMAT } from "../consts/chat.consts";
 import {
   FormAction,
   GenderOptions,
@@ -98,7 +99,7 @@ export const SurgeryClaimContext = {
   claimSubmissionDetails: {
     contactPersonName: "",
     contactPersonEmail: "",
-    contactPersonPhone: "format(+1-222-222-2222)",
+    contactPersonPhone: CHAT_NUMBER_FORMAT,
     additionalNotes: "optional(), end of form",
   },
 };

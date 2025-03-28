@@ -14,11 +14,12 @@ enum RoutingPath {
   MerchantRegistration = "/merchant-registration",
   AddProduct = "/add-product",
   CarAccidentPage = "/car-accident",
-  HouseInspectionPage = "/house-inspection",
+  HouseInspectionPage = "/room-inspection",
   TravelReimbursementPage = "/travel-reimbursement",
   SurgeryClaimPage = "/surgery-claim",
   SpeechAssessmentPage = "/speech-assessment",
   NoSurgeryClaimPage = "/no-surgery-claim",
+  PatientLookupPage = "/patient-lookup",
 }
 
 export default RoutingPath;

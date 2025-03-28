@@ -8,6 +8,7 @@ import { DealDescriptionContext } from "../models/deal-context-model";
 import { DealAction, DealFormType } from "../models/deal-model";
 import DealForm from "../components/deal/deal-form";
 import { DEAL_DESCRIPTION, DEAL_FORM_VALUES } from "../consts/deal.consts";
+import { Helmet } from "react-helmet-async";
 
 const DealPage = () => {
   const [form, setForm] = useState(DEAL_FORM_VALUES);
@@ -49,25 +50,38 @@ const DealPage = () => {
   };
 
   return (
-    <AudioProvider>
-      <FormPageLayout
-        title="Add new deal"
-        subTitle="Explore how Form2Agent AI can assist in creating new deals."
-        onSubmit={onSubmit}
-        chatElement={
-          <ChatWindow
-            executeFormLogic={executeFormLogic}
-            formDescription={DEAL_DESCRIPTION}
-            formValues={stringifyValues(form)}
-            formContext={stringifyValues(DealDescriptionContext)}
+    <>
+      <Helmet>
+        <title>Streamline Deal Creation with Form2Agent AI</title>
+        <meta
+          name="description"
+          content="Discover how Form2Agent AI simplifies the process of creating new deals. Enhance your workflow efficiency by leveraging AI assistance for seamless deal management and execution."
+        />
+      </Helmet>
+      <AudioProvider>
+        <FormPageLayout
+          title="Add new deal"
+          subTitle="Explore how Form2Agent AI can assist in creating new deals."
+          onSubmit={onSubmit}
+          chatElement={
+            <ChatWindow
+              executeFormLogic={executeFormLogic}
+              formDescription={DEAL_DESCRIPTION}
+              formValues={stringifyValues(form)}
+              formContext={stringifyValues(DealDescriptionContext)}
+            />
+          }
+          isSuccessModalOpen={isSuccessModalOpen}
+          onCloseModal={() => setIsSuccessModalOpen(false)}
+        >
+          <DealForm
+            form={form}
+            setForm={setForm}
+            formikRef={formikHelpdeskRef}
           />
-        }
-        isSuccessModalOpen={isSuccessModalOpen}
-        onCloseModal={() => setIsSuccessModalOpen(false)}
-      >
-        <DealForm form={form} setForm={setForm} formikRef={formikHelpdeskRef} />
-      </FormPageLayout>
-    </AudioProvider>
+        </FormPageLayout>
+      </AudioProvider>
+    </>
   );
 };
 

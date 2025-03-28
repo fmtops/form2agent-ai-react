@@ -13,6 +13,7 @@ import {
 import { CheckinFormType } from "../models/checkin-model";
 import CheckinForm from "../components/checkin/checkin-form";
 import { FormAction } from "../consts/general-fields.consts";
+import { Helmet } from "react-helmet-async";
 
 const CheckInPage = () => {
   const [form, setForm] = useState(CHECKIN_FORM_VALUES);
@@ -54,29 +55,38 @@ const CheckInPage = () => {
   };
 
   return (
-    <AudioProvider>
-      <FormPageLayout
-        title="Check in Form"
-        subTitle="Explore how Form2Agent AI can assist in checking in a new hotel resident."
-        onSubmit={onSubmit}
-        chatElement={
-          <ChatWindow
-            executeFormLogic={executeFormLogic}
-            formDescription={CHECKIN_DESCRIPTION}
-            formValues={stringifyValues(form)}
-            formContext={stringifyValues(CheckInDescriptionContext)}
-          />
-        }
-        isSuccessModalOpen={isSuccessModalOpen}
-        onCloseModal={() => setIsSuccessModalOpen(false)}
-      >
-        <CheckinForm
-          form={form}
-          setForm={setForm}
-          formikRef={formikHelpdeskRef}
+    <>
+      <Helmet>
+        <title>Simplify Check-In with Form2Agent AI</title>
+        <meta
+          name="description"
+          content="Discover the ease of checking in with Form2Agent AI. Streamline your process and enhance guest experience by utilizing advanced AI technology for efficient and accurate check-ins."
         />
-      </FormPageLayout>
-    </AudioProvider>
+      </Helmet>
+      <AudioProvider>
+        <FormPageLayout
+          title="Check in Form"
+          subTitle="Explore how Form2Agent AI can assist in checking in a new hotel resident."
+          onSubmit={onSubmit}
+          chatElement={
+            <ChatWindow
+              executeFormLogic={executeFormLogic}
+              formDescription={CHECKIN_DESCRIPTION}
+              formValues={stringifyValues(form)}
+              formContext={stringifyValues(CheckInDescriptionContext)}
+            />
+          }
+          isSuccessModalOpen={isSuccessModalOpen}
+          onCloseModal={() => setIsSuccessModalOpen(false)}
+        >
+          <CheckinForm
+            form={form}
+            setForm={setForm}
+            formikRef={formikHelpdeskRef}
+          />
+        </FormPageLayout>
+      </AudioProvider>
+    </>
   );
 };
 

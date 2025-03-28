@@ -12,6 +12,8 @@ export default function StyledField({
       style={{
         ...rest.style,
         backgroundColor: rest.readOnly ? "#F5F7FA" : undefined,
+
+        height: "50px",
       }}
     />
   );

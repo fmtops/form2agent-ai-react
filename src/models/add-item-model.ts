@@ -4,7 +4,7 @@ export interface AddItemType {
   price: number;
   name: string;
   barcode: string;
-  image: string;
+  image: string | null;
 }
 
 export const defaultAddItemTypeValue: AddItemType = {
@@ -13,5 +13,5 @@ export const defaultAddItemTypeValue: AddItemType = {
   price: 0,
   name: "",
   barcode: "",
-  image: "",
+  image: null,
 };

@@ -10,7 +10,7 @@ export type HelpdeskBaseFormType = {
   description?: string;
   priority?: HelpdeskPriority;
   department?: DepartmentOptions | "";
-  attachmentFile?: File | null;
+  attachmentFile?: string | null;
 };
 
 export type HelpdeskFormType = {

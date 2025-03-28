@@ -15,3 +15,10 @@ export const CHAT_TYPING_OPTIONS = {
 
 export const HOLD_TIME_MS = 1000;
 export const FIRST_TOOLTIP_APPEAR_MS = 3000;
+export const CHAT_NUMBER_FORMAT = "format(+1-222-222-2222)";
+
+export enum FileFieldStatus {
+  Existing = "existing",
+  New = "new",
+  None = "",
+}

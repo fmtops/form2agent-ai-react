@@ -21,6 +21,7 @@ import TravelReimbursementPage from "../pages/travel-reimbursement-page";
 import { SurgeryClaimPage } from "../pages/surgery-claim-page";
 import SpeechAssessmentPage from "../pages/speech-assessment-page";
 import { NoSurgeryClaimPage } from "../pages/no-surgery-claim-page";
+import PatientLookupPage from "../pages/patient-lookup-page";
 
 /**
  *
@@ -116,6 +117,10 @@ const CoreRouter = () => {
       <Route
         path={RoutingPath.NoSurgeryClaimPage}
         element={renderRoute(<NoSurgeryClaimPage />)}
+      />
+      <Route
+        path={RoutingPath.PatientLookupPage}
+        element={renderRoute(<PatientLookupPage />)}
       />
     </Routes>
   );

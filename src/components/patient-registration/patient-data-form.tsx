@@ -13,13 +13,9 @@ import {
   PatientPersonalDataFormType,
   PatientRegistrationFormType,
 } from "../../models/patient-registration-model";
-import useDetectDevice from "../../hooks/useDetectDevice";
 import { useLayout } from "../../contexts/LayoutContext";
-import {
-  IPAD_LABEL_HIDE,
-  IPAD_LABEL_SHOW,
-} from "../../consts/resolutions.consts";
 import { GenderOptions } from "../../consts/general-fields.consts";
+import { DatepickerComponent } from "../common/form/datepicker";
 export interface PatientDataComponentProps {
   form: PatientPersonalDataFormType;
   setForm: Dispatch<SetStateAction<PatientRegistrationFormType>>;
@@ -148,15 +144,7 @@ const FormComponent = ({
   useEffect(() => {
     setValues(form);
   }, [form, setValues]);
-  const { isAndroid, isIOS } = useDetectDevice();
   const { isChatExpanded, isNavbarExpanded } = useLayout();
-
-  const iPadLabelVisible =
-    !isAndroid() &&
-    IPAD_LABEL_HIDE > window.innerWidth &&
-    window.innerWidth > IPAD_LABEL_SHOW
-      ? "block"
-      : "none";
 
   const pdGridRespClasses =
     isChatExpanded && isNavbarExpanded
@@ -178,37 +166,40 @@ const FormComponent = ({
   const personalDataGridClasses = `gap-4 grid grid-cols-1 ${pdGridRespClasses}`;
   const birthdateGridClasses = `gap-4 items-end grid grid-cols-1 ${bdGridRespClasses}`;
 
+  const handleEvaluationDateChange = (date: Date | null) => {
+    try {
+      const dateStr = date?.toISOString();
+      setValues(() => ({
+        ...form,
+        evaluationDate: dateStr ?? "",
+      }));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleBirthDateChange = (date: Date | null) => {
+    try {
+      const dateStr = date?.toISOString();
+      setValues(() => ({
+        ...form,
+        dateOfBirth: dateStr ?? "",
+      }));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-y-4">
       <div className="text-md font-medium">Personal Data</div>
       <Form className="flex flex-col gap-y-4">
         <div className={personalDataGridClasses}>
-          <div className="relative mac-os-input">
-            <div
-              className="text-sm"
-              style={{
-                display: iPadLabelVisible,
-              }}
-            >
-              Evaluation Date
-            </div>
-            <StyledField
-              className={`w-full h-11 dateInputCalc-1`}
-              name="evaluationDate"
-              type="date"
-              onBlur={handleBlur}
-            />
-            {(isAndroid() || isIOS()) && values.evaluationDate === "" && (
-              <div
-                className={`absolute top-1/2 ${
-                  iPadLabelVisible === "block" ? "mt-[10px]" : ""
-                } transform left-3 -translate-y-1/2 text-text-placeholder-light`}
-                style={{ pointerEvents: "none" }}
-              >
-                Evaluation Date
-              </div>
-            )}
-          </div>
+          <DatepickerComponent
+            value={form?.evaluationDate}
+            handleDateChange={handleEvaluationDateChange}
+            label="Evaluation Date"
+          />
           <SelectComponent
             options={Partners}
             name={"partner"}
@@ -265,32 +256,11 @@ const FormComponent = ({
           />
         </div>
         <div className={birthdateGridClasses}>
-          <div className="relative h-fit mac-os-input">
-            <div
-              className="text-sm"
-              style={{
-                display: iPadLabelVisible,
-              }}
-            >
-              Date of birth
-            </div>
-            <StyledField
-              className={`w-full h-11 dateInputCalc-1`}
-              name="dateOfBirth"
-              type="date"
-              placeholder="dd/mm/yyyy"
-            />
-            {(isAndroid() || isIOS()) && values.dateOfBirth === "" && (
-              <div
-                className={`absolute top-1/2  ${
-                  iPadLabelVisible === "block" ? "mt-[10px]" : ""
-                } transform left-3 -translate-y-1/2 text-text-placeholder-light`}
-                style={{ pointerEvents: "none" }}
-              >
-                Date of Birth
-              </div>
-            )}
-          </div>
+          <DatepickerComponent
+            value={form?.dateOfBirth}
+            handleDateChange={handleBirthDateChange}
+            label="Date of birth"
+          />
 
           <FormGroup>
             <FormControlLabel

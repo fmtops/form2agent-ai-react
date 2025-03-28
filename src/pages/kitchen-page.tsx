@@ -11,6 +11,8 @@ import KitchenView from "../components/kitchen-view/kitchen-view";
 import { KitchenOrders } from "../consts/kitchen.consts";
 import { KitchenOrder } from "../types/Kitchen/Kitchen";
 import { KitchenOrderStatus } from "../models/kitchen-model";
+import { Helmet } from "react-helmet-async";
+import { ANIMATION_CLEAR_DELAY } from "../consts/animations";
 
 const KitchenPage = () => {
   const [orders, setOrders] = useState<KitchenOrder[]>(KitchenOrders);
@@ -73,7 +75,7 @@ const KitchenPage = () => {
   useEffect(() => {
     let timeoutId: NodeJS.Timeout | null = null;
     if (updatedOrders.length > 0) {
-      timeoutId = setTimeout(() => setUpdatedOrders([]), 1500);
+      timeoutId = setTimeout(() => setUpdatedOrders([]), ANIMATION_CLEAR_DELAY);
     }
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
@@ -81,30 +83,39 @@ const KitchenPage = () => {
   }, [updatedOrders]);
 
   return (
-    <AudioProvider>
-      <FormPageLayout
-        title="Kitchen Orders View"
-        subTitle="Explore how Form2Agent AI can assist in updating kitchen orders."
-        chatElement={
-          <ChatWindow
-            executeFormLogic={executeFormLogic}
-            formDescription={CHAT_KITCHEN_DESCRIPTION}
-            formValues={stringifyValues({
-              orders: orders,
-            })}
-            formContext={stringifyValues({
-              orders: KitchenOrderDescriptionContext,
-            })}
-          />
-        }
-      >
-        <KitchenView
-          orders={orders}
-          updatedOrders={updatedOrders}
-          handleUpdateOrderStatus={handleUpdateOrderStatus}
+    <>
+      <Helmet>
+        <title>Streamline Kitchen Order Updates with Form2Agent AI</title>
+        <meta
+          name="description"
+          content="Enhance your kitchen order updates with Form2Agent AI. Discover how this innovative tool streamlines the process, ensuring accuracy and efficiency in managing your kitchen orders."
         />
-      </FormPageLayout>
-    </AudioProvider>
+      </Helmet>
+      <AudioProvider>
+        <FormPageLayout
+          title="Kitchen Orders View"
+          subTitle="Explore how Form2Agent AI can assist in updating kitchen orders."
+          chatElement={
+            <ChatWindow
+              executeFormLogic={executeFormLogic}
+              formDescription={CHAT_KITCHEN_DESCRIPTION}
+              formValues={stringifyValues({
+                orders: orders,
+              })}
+              formContext={stringifyValues({
+                orders: KitchenOrderDescriptionContext,
+              })}
+            />
+          }
+        >
+          <KitchenView
+            orders={orders}
+            updatedOrders={updatedOrders}
+            handleUpdateOrderStatus={handleUpdateOrderStatus}
+          />
+        </FormPageLayout>
+      </AudioProvider>
+    </>
   );
 };
 

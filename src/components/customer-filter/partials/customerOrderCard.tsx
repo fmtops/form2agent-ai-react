@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import { CustomerOrder } from "../../../models/customer-filter-model";
-import { OrderProperty } from "../../ecommerce/order-card/order-property";
+import { FormProperty } from "../../common/form/form-property";
 
 type OrderCardProps = {
   order: CustomerOrder;
@@ -31,7 +31,7 @@ const CustomerOrderCard = forwardRef<HTMLDivElement, OrderCardProps>(
               </span>
             </div>
           </div>
-          <OrderProperty
+          <FormProperty
             label="Customer"
             value={order.customerFirstName + " " + order.customerLastName}
             animate={Boolean(
@@ -39,26 +39,26 @@ const CustomerOrderCard = forwardRef<HTMLDivElement, OrderCardProps>(
                 updatedValues?.customerLastName
             )}
           />
-          <OrderProperty
+          <FormProperty
             label="State"
             value={order.state}
             animate={Boolean(updatedValues?.state)}
           />
         </div>
         <div className="flex flex-col text-right gap-3">
-          <OrderProperty
+          <FormProperty
             label="Date of last order"
             value={`${formatDate(order.dateOfLastOrder)}`}
             animate={Boolean(updatedValues?.dateOfLastOrder)}
           />
-          <OrderProperty
+          <FormProperty
             label="Orders"
             value={`${order.totalAmountOfOrders} ${
               order.totalAmountOfOrders === 1 ? "order" : "orders"
             }`}
             animate={Boolean(updatedValues?.totalAmountOfOrders)}
           />
-          <OrderProperty
+          <FormProperty
             label="Total"
             value={`$${order.totalValueOfOrders.toFixed(2)}`}
             animate={Boolean(updatedValues?.totalValueOfOrders)}

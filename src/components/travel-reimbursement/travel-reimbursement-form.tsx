@@ -22,6 +22,7 @@ import { Divider, SelectChangeEvent } from "@mui/material";
 import { CloudDone, UploadOutlined } from "@mui/icons-material";
 import useDetectDevice from "../../hooks/useDetectDevice";
 import { SelectComponent } from "../common/form/select";
+import { DatepickerComponent } from "../common/form/datepicker";
 
 export interface TravelReimbursementFormProps {
   form: TravelReimbursementFormType;
@@ -41,8 +42,6 @@ const TravelReimbursementForm = ({
     const { isAndroid, isIOS } = useDetectDevice();
     const mobileDatePickerFull =
       isAndroid() || isIOS() ? "h-11 dateInputCalc-1" : "";
-    const mobileDatePickerHalf =
-      isAndroid() || isIOS() ? "h-11 dateInputCalc-2" : "";
     useEffect(() => {
       setValues(form);
     }, [form, setValues]);
@@ -82,8 +81,8 @@ const TravelReimbursementForm = ({
         invoiceReceiptNumber: "",
         expenseCategory: "",
         expenseAttachment: {
-          receiptUploadAttachment: "",
-          invoiceUploadAttachment: "",
+          receiptUploadAttachment: null,
+          invoiceUploadAttachment: null,
         },
       });
       handleBlur();
@@ -112,6 +111,50 @@ const TravelReimbursementForm = ({
       }));
     };
 
+    const handleDepartureDateChange = (date: Date | null) => {
+      try {
+        const dateStr = date?.toISOString();
+        setValues(() => ({
+          ...form,
+          dateOfDeparture: dateStr ?? "",
+        }));
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    const handleReturnDateChange = (date: Date | null) => {
+      try {
+        const dateStr = date?.toISOString();
+        setValues(() => ({
+          ...form,
+          dateOfReturn: dateStr ?? "",
+        }));
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    const handleExpenseDateChange = (date: Date | null, id: string) => {
+      const index = form.expenseDetails.findIndex(
+        (expense) => expense.id === id
+      );
+      try {
+        const dateStr = date?.toISOString();
+        setValues(() => ({
+          ...form,
+          expenseDetails: [
+            ...form.expenseDetails.slice(0, index),
+            {
+              ...form.expenseDetails[index],
+              dateOfExpense: dateStr ?? "",
+            },
+            ...form.expenseDetails.slice(index + 1),
+          ],
+        }));
+      } catch (e) {
+        console.error(e);
+      }
+    };
     return (
       <Form className="flex flex-col gap-y-4">
         <h2 className="text-text-primary-light font-medium">
@@ -178,7 +221,7 @@ const TravelReimbursementForm = ({
         <StyledField
           name="travelDetails.travelDestination"
           type="text"
-          placeholder="Travel Desination"
+          placeholder="Travel Destination"
           aria-label="Travel Destination"
           onBlur={handleBlur}
         />
@@ -190,19 +233,15 @@ const TravelReimbursementForm = ({
           onBlur={handleBlur}
         />
         <div className="flex gap-4">
-          <StyledField
-            className={`w-1/2 ${mobileDatePickerHalf}`}
-            name="travelDetails.dateOfDeparture"
-            type="date"
-            aria-label="Date of Departure"
-            onBlur={handleBlur}
+          <DatepickerComponent
+            value={form?.travelDetails?.dateOfDeparture}
+            handleDateChange={handleDepartureDateChange}
+            label="Date of Departure"
           />
-          <StyledField
-            className={`w-1/2 ${mobileDatePickerHalf}`}
-            name="travelDetails.dateOfReturn"
-            type="date"
-            aria-label="Date of Return"
-            onBlur={handleBlur}
+          <DatepickerComponent
+            value={form?.travelDetails?.dateOfReturn}
+            handleDateChange={handleReturnDateChange}
+            label="Date of Return"
           />
         </div>
         <h2 className="text-text-primary-light font-medium mt-4">
@@ -217,19 +256,18 @@ const TravelReimbursementForm = ({
                     <div className="flex flex-wrap items-center justify-between my-2 gap-x-4 gap-y-4">
                       <div className="flex flex-col gap-4">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                          <StyledField
-                            className={`flex-grow ${mobileDatePickerFull}`}
-                            name={`expenseDetails.${index}.dateOfExpense`}
-                            type="date"
-                            placeholder="Date of Expense"
-                            aria-label={`Date of Expense.${index}`}
-                            onBlur={handleBlur}
+                          <DatepickerComponent
+                            value={item?.dateOfExpense}
+                            label="Date"
+                            handleDateChange={(date) =>
+                              handleExpenseDateChange(date, item.id)
+                            }
                           />
                           <StyledField
                             className="flex-grow"
                             name={`expenseDetails.${index}.vendorServiceProvider`}
                             type="text"
-                            placeholder="Vendor/Service Provider"
+                            placeholder="Vendor"
                             aria-label={`Vendor/Service Provider.${index}`}
                             onBlur={handleBlur}
                           />

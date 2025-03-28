@@ -17,11 +17,11 @@ export type TravelDetails = {
 };
 
 export enum ExpenseCategories {
-  airfare = "Airfare",
-  accommodation = "Accommodation",
-  meals = "Meals",
-  transportation = "Transportation",
-  miscellaneous = "Miscellaneous",
+  Airfare = "Airfare",
+  Accommodation = "Accommodation",
+  Meals = "Meals",
+  Transportation = "Transportation",
+  Miscellaneous = "Miscellaneous",
 }
 
 export type ExpenseDetails = {
@@ -37,8 +37,8 @@ export type ExpenseDetails = {
 }[];
 
 export type AutomationFields = {
-  receiptUploadAttachment: string;
-  invoiceUploadAttachment: string;
+  receiptUploadAttachment: string | null;
+  invoiceUploadAttachment: string | null;
 };
 
 export type ApprovalAndSubmission = {

@@ -1,11 +1,11 @@
 import { StyledToolTip } from "../../common/mui-styled/styled-tooltip";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import { KitchenOrder } from "../../../types/Kitchen/Kitchen";
-import { OrderProperty } from "../../ecommerce/order-card/order-property";
 import KitchenOrderStatusChip from "./KitchenOrderStatusChip";
 import KitchenOrderItemRow from "./KitchenOrderItemRow";
 import SubmitButton from "../../common/form/submit-button";
 import { KitchenOrderStatus } from "../../../models/kitchen-model";
+import { FormProperty } from "../../common/form/form-property";
 
 export default function KitchenOrderCard({
   order,
@@ -58,17 +58,17 @@ export default function KitchenOrderCard({
             )}
           </div>
         </div>
-        <OrderProperty
+        <FormProperty
           label="Customer"
           value={order.customerName}
           animate={Boolean(updatedValues?.customerName)}
         />
-        <OrderProperty
+        <FormProperty
           label="Instructions"
           value={order.instructions}
           animate={Boolean(updatedValues?.instructions)}
         />
-        <OrderProperty
+        <FormProperty
           label="Additional Notes"
           value={order.orderNote ?? "None"}
           animate={Boolean(updatedValues?.orderNote)}

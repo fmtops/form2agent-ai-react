@@ -48,7 +48,7 @@ export class AiChatService {
    * @description Used to send a message to generated chat. If fails Throws an error if fails.
    */
   async sendMessage(chatMessage: ChatMessage) {
-    let response = await f2aFetch("/ai/form/v2", {
+    let response = await f2aFetch("/ai/form/v1", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

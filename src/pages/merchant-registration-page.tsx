@@ -25,6 +25,7 @@ import {
 } from "../utils/merchant-registration.utils";
 import { AudioProvider } from "../contexts/AudioContext";
 import { FormAction } from "../consts/general-fields.consts";
+import { Helmet } from "react-helmet-async";
 
 export const MerchantRegistrationPage = () => {
   const [merchantRegistrationForm, setMerchantRegistrationForm] =
@@ -150,48 +151,57 @@ export const MerchantRegistrationPage = () => {
   };
 
   return (
-    <AudioProvider>
-      <FormPageLayout
-        title="Merchant Registration"
-        subTitle="Try Form2Agent AI with a multi-step merchant registration form. Hold the button to speak with the assistant, upload a photo of a registration form or paste details into the chat to quickly add the merchant information."
-        chatElement={
-          <ChatWindow
-            executeFormLogic={executeFormLogic}
-            formDescription="Provide detailed business information to assist the merchant in business's application and sales planning."
-            formValues={stringifyValues(merchantRegistrationForm)}
-            formContext={stringifyValues(MerchantRegistrationContext)}
-          />
-        }
-        isSuccessModalOpen={isSuccessModalOpen}
-        onCloseModal={() => setIsSuccessModalOpen(false)}
-      >
-        <div className="flex flex-col gap-y-8">
-          <ProgressBar
-            steps={MerchantRegistrationSteps}
-            currentStep={pageIndex}
-          />
-          {renderPage()}
-          <div className="flex flex-row-reverse justify-end gap-4">
-            <SubmitButton
-              value={
-                MerchantRegistrationSteps.length === pageIndex
-                  ? "Submit"
-                  : "Next Step"
-              }
-              className="w-24 mt-4"
-              onClick={handleNextStep}
+    <>
+      <Helmet>
+        <title>Streamline Merchant Registration with Form2Agent AI</title>
+        <meta
+          name="description"
+          content="Experience effortless merchant registration using Form2Agent AI's multi-step form. Simply hold the button to interact with the assistant, upload a photo of your registration form, or paste the details into the chat to swiftly input merchant information."
+        />
+      </Helmet>
+      <AudioProvider>
+        <FormPageLayout
+          title="Merchant Registration"
+          subTitle="Try Form2Agent AI with a multi-step merchant registration form. Hold the button to speak with the assistant, upload a photo of a registration form or paste details into the chat to quickly add the merchant information."
+          chatElement={
+            <ChatWindow
+              executeFormLogic={executeFormLogic}
+              formDescription="Provide detailed business information to assist the merchant in business's application and sales planning."
+              formValues={stringifyValues(merchantRegistrationForm)}
+              formContext={stringifyValues(MerchantRegistrationContext)}
             />
-            {pageIndex > 1 && (
-              <button
-                onClick={handleBackStep}
-                className={`py-[10px] mt-4 border rounded shadow-sm w-20 border-border-brand-light text-text-brand-light`}
-              >
-                Back
-              </button>
-            )}
+          }
+          isSuccessModalOpen={isSuccessModalOpen}
+          onCloseModal={() => setIsSuccessModalOpen(false)}
+        >
+          <div className="flex flex-col gap-y-8">
+            <ProgressBar
+              steps={MerchantRegistrationSteps}
+              currentStep={pageIndex}
+            />
+            {renderPage()}
+            <div className="flex flex-row-reverse justify-end gap-4">
+              <SubmitButton
+                value={
+                  MerchantRegistrationSteps.length === pageIndex
+                    ? "Submit"
+                    : "Next Step"
+                }
+                className="w-24 mt-4"
+                onClick={handleNextStep}
+              />
+              {pageIndex > 1 && (
+                <button
+                  onClick={handleBackStep}
+                  className={`py-[10px] mt-4 border rounded shadow-sm w-20 border-border-brand-light text-text-brand-light`}
+                >
+                  Back
+                </button>
+              )}
+            </div>
           </div>
-        </div>
-      </FormPageLayout>
-    </AudioProvider>
+        </FormPageLayout>
+      </AudioProvider>
+    </>
   );
 };
